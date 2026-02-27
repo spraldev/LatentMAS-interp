@@ -45,6 +45,7 @@ Overall, LatentMAS achieves **superior performance**, **lower token usage**, and
 
 ## 🔔 News
 
+- **[2026-02-26]** 🦞 Check out [**OpenClaw-RL**](https://github.com/Gen-Verse/OpenClaw-RL) from our Gen-Verse group! OpenClaw-RL is a fully asynchronous RL framework that trains personalized AI agents directly from natural conversation feedback — no manual labels, no API keys. It introduces two learning paradigms (Binary RL via GRPO and On-Policy Distillation) and runs the entire stack on your own infrastructure. A great complement to LatentMAS's efficient multi-agent reasoning! 
 - **[2025-12-20]** Check [**Science-LatentMAS**](https://github.com/Gen-Verse/LatentMAS/tree/Science-LatentMAS), an excellent extension of LatentMAS developed by Prof. Markus J. Buehler and the [LAMM Lab](https://github.com/lamm-mit) at MIT. Science-LatentMAS is specifically designed for the scientific discovery downstream applications! For more details and instructions, please check our README section "Science-LatentMAS" below and the new `Science-LatentMAS` branch.
 - **[2025-12-15]** Check out these amazing community-driven extensions of LatentMAS!
   - **[KNN-LatentMAS](https://github.com/Bookmaster9/kNN-latentMAS)** — Enables more efficient KV utilization for latent memory.
