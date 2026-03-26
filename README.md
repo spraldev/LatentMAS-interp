@@ -64,7 +64,7 @@ Explore community-driven extensions that expand LatentMAS into new domains, arch
 **By Prof. Markus J. Buehler & MIT LAMM Group**  
 - **New Branch:** https://github.com/Gen-Verse/LatentMAS/tree/Science-LatentMAS  
 - **Original Code:** https://github.com/lamm-mit/LatentMAS/tree/flexible_agents  
-**What it adds:** Extends LatentMAS for scientific modeling and material-system collaboration, enabling flexible agent types and specialized latent communication for science domains.
+**New Features:** Extends LatentMAS for scientific modeling and material-system collaboration, enabling flexible agent types and specialized latent communication for science domains.
 
 
 ### 🧠 2. **KNN-LatentMAS**
@@ -91,10 +91,12 @@ Explore community-driven extensions that expand LatentMAS into new domains, arch
 - **Code:** https://github.com/Arifuzzamanjoy/latent_mas_slora
 - **New Features:** Augment LatentMAS with role-specialized, dynamically switchable LoRA adapters for better specialization and adaptability.
 
+### 🛰️ 6. AVP (Agent Vector Protocol)
+**By VectorArc**
+- **Code:** https://github.com/VectorArc/avp-python
+- **New Features:** Enables agents to share KV-cache and hidden states instead of text, supporting zero-training latent handoff, cross-model transfer, and faster multi-agent collaboration.
 
 **If your work extends LatentMAS, feel free to open a PR and we’ll feature it here! 🚀**
-
-
 
 
 ## 📊 Experiments Overview
