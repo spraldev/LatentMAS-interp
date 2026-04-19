@@ -120,11 +120,15 @@ def to_fp16_cpu(t: torch.Tensor) -> torch.Tensor:
     return t.detach().to(dtype=torch.float16, device="cpu").contiguous()
 
 
-def kv_to_legacy(past) -> Tuple:
-    """Convert HF Cache object (or legacy) to a tuple of (k, v) per layer."""
+def kv_to_legacy(past):
+    """Convert HF Cache object (or legacy) to a list of (k, v) per layer."""
     if past is None:
         return None
-    if Cache is not None and isinstance(past, Cache):
+    # transformers >= 4.40: DynamicCache exposes key_cache/value_cache directly
+    if hasattr(past, "key_cache") and hasattr(past, "value_cache"):
+        return list(zip(past.key_cache, past.value_cache))
+    # older Cache API
+    if Cache is not None and isinstance(past, Cache) and hasattr(past, "to_legacy_cache"):
         return past.to_legacy_cache()
     return past
 
