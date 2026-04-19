@@ -17,10 +17,7 @@ def set_seed(seed: int) -> None:
 
 def auto_device(device: Optional[str] = None) -> torch.device:
     if device is not None:
-        d = torch.device(device)
-        if d.type == "cuda" and not torch.cuda.is_available():
-            return torch.device("cpu")
-        return d
+        return torch.device(device)
     if torch.cuda.is_available():
         return torch.device("cuda")
     return torch.device("cpu")
