@@ -36,6 +36,7 @@ The run is resumable: existing example_XXXX/ folders are skipped.
 
 import argparse
 import json
+import logging
 import os
 import shutil
 import sys
@@ -72,6 +73,24 @@ try:
     from transformers.cache_utils import Cache
 except ImportError:
     Cache = None
+
+
+log = logging.getLogger("instrumented_run")
+
+
+def setup_logging(log_file: Optional["Path"] = None, level: str = "INFO") -> None:
+    fmt = "%(asctime)s [%(levelname)s] %(message)s"
+    datefmt = "%H:%M:%S"
+    handlers: List[logging.Handler] = [logging.StreamHandler(sys.stdout)]
+    if log_file is not None:
+        handlers.append(logging.FileHandler(log_file, mode="a"))
+    logging.basicConfig(
+        level=getattr(logging, level.upper(), logging.INFO),
+        format=fmt,
+        datefmt=datefmt,
+        handlers=handlers,
+        force=True,
+    )
 
 
 # ============================================================
@@ -271,6 +290,8 @@ class InstrumentedLatentMAS:
     def run_and_capture(self, item: Dict, save_dir: Path) -> Dict:
         save_dir.mkdir(parents=True, exist_ok=True)
         question = item["question"]
+        log.info("[example] dir=%s  q_preview=%r", save_dir.name, question[:80])
+        t_start = time.time()
 
         # captured tensors per latent agent
         cap_pre_aligned: List[torch.Tensor] = []      # [m, D] per agent (h_t before W_a)
@@ -285,7 +306,10 @@ class InstrumentedLatentMAS:
         past_kv = None
 
         for agent in self.agents:
+            t_agent = time.time()
             prompt_text, input_ids, attention_mask = self._build_prompt(agent.role, question)
+            log.info("  [agent=%s] prompt_tokens=%d past_kv=%d",
+                     agent.role, int(input_ids.shape[-1]), _past_length(past_kv))
 
             if agent.role != "judger":
                 latent_agent_names.append(agent.role)
@@ -389,6 +413,10 @@ class InstrumentedLatentMAS:
                         past_kv, latent_start_in_cache, latent_end
                     )
 
+                log.info("    completed %d latent steps in %.2fs (last_hidden_norm=%.3f)",
+                         self.latent_steps, time.time() - t_agent,
+                         float(last_hidden.float().norm()))
+
                 cap_text[agent.role] = {
                     "input": prompt_text,
                     "output": "",
@@ -428,6 +456,9 @@ class InstrumentedLatentMAS:
                 )
                 gen_ids = gen_out.sequences[0, input_ids.shape[-1]:]
                 final_text = self.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
+                log.info("    judger generated %d tokens in %.2fs",
+                         int(gen_ids.shape[-1]), time.time() - t_agent)
+                log.info("    judger output preview: %r", final_text[:160])
                 cap_text[agent.role] = {
                     "input": prompt_text,
                     "output": final_text,
@@ -436,6 +467,7 @@ class InstrumentedLatentMAS:
         # ---- score ----
         final_text = cap_text["judger"]["output"]
         pred, gold, ok = score_prediction(self.args.task_current, item, final_text)
+        log.info("  [score] pred=%r gold=%r correct=%s", str(pred)[:40], str(gold)[:40], ok)
 
         # ---- write to disk ----
         if cap_pre_aligned:
@@ -484,6 +516,10 @@ class InstrumentedLatentMAS:
         del cap_prompt_hidden, cap_attn, cap_kv_latent
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+
+        ex_size = dir_size_bytes(save_dir)
+        log.info("  [done] %s in %.2fs  size=%s", save_dir.name,
+                 time.time() - t_start, fmt_bytes(ex_size))
         return meta
 
 
@@ -570,6 +606,10 @@ def main():
     parser.add_argument("--latent_only", action="store_true")
     parser.add_argument("--sequential_info_only", action="store_true")
     parser.add_argument("--text_mas_context_length", type=int, default=-1)
+    parser.add_argument("--log_level", type=str, default="INFO",
+                        choices=["DEBUG", "INFO", "WARNING", "ERROR"])
+    parser.add_argument("--log_file", type=str, default=None,
+                        help="Path to log file (default: <output_dir>/run.log)")
 
     args = parser.parse_args()
 
@@ -584,6 +624,16 @@ def main():
     device = auto_device(args.device)
     out_root = Path(args.output_dir)
     out_root.mkdir(parents=True, exist_ok=True)
+
+    log_file = Path(args.log_file) if args.log_file else (out_root / "run.log")
+    setup_logging(log_file, args.log_level)
+    log.info("=" * 70)
+    log.info("instrumented_run starting")
+    log.info("  output_dir=%s  log_file=%s", out_root, log_file)
+    log.info("  model=%s  device=%s  tasks=%s", args.model_name, device, args.tasks)
+    log.info("  latent_steps=%d  max_samples_per_task=%d  test=%s",
+             args.latent_steps, args.max_samples, args.test)
+    log.info("=" * 70)
 
     # global metadata
     run_meta = {
@@ -608,8 +658,10 @@ def main():
     with (out_root / "metadata.json").open("w") as f:
         json.dump(run_meta, f, ensure_ascii=False, indent=2)
 
-    print(f"[init] loading model {args.model_name} on {device}")
+    log.info("[init] loading model %s on %s ...", args.model_name, device)
+    t0 = time.time()
     model_wrapper = ModelWrapper(args.model_name, device, use_vllm=False, args=args)
+    log.info("[init] model loaded in %.1fs", time.time() - t0)
 
     cfg = CaptureConfig(
         save_attention=args.save_attention,
@@ -633,7 +685,7 @@ def main():
 
     # save W_a once
     runner.save_wa(out_root / "wa_matrix.pt")
-    print(f"[init] W_a saved to {out_root / 'wa_matrix.pt'}")
+    log.info("[init] W_a saved to %s", out_root / "wa_matrix.pt")
 
     total_processed = 0
     overall_correct = 0
@@ -643,7 +695,7 @@ def main():
         task_dir = out_root / task
         task_dir.mkdir(parents=True, exist_ok=True)
         items = load_task(task, args.split, args.max_samples)
-        print(f"[task={task}] {len(items)} examples")
+        log.info("[task=%s] %d examples", task, len(items))
 
         # per-task metadata.csv (rebuild from existing folders + new)
         meta_rows: List[Dict] = []
@@ -665,7 +717,7 @@ def main():
             try:
                 meta = runner.run_and_capture(item, ex_dir)
             except Exception as e:
-                print(f"\n[error] example {idx} ({task}) failed: {e}")
+                log.exception("[error] example %d (%s) failed: %s", idx, task, e)
                 # clean partial dir to allow retry
                 if ex_dir.exists():
                     shutil.rmtree(ex_dir, ignore_errors=True)
@@ -678,14 +730,19 @@ def main():
             if (idx + 1) % args.verify_every == 0:
                 issues = verify_example(ex_dir)
                 if issues:
-                    print(f"\n[verify] example {idx}: {issues}")
+                    log.warning("[verify] example %d: %s", idx, issues)
+                else:
+                    log.info("[verify] example %d ok", idx)
 
             if (idx + 1) % args.check_storage_every == 0:
                 used = dir_size_bytes(out_root)
                 used_gb = used / (1024 ** 3)
                 pbar.set_postfix(disk=fmt_bytes(used), acc=f"{overall_correct}/{total_processed}")
+                log.info("[storage] %s used  running_acc=%d/%d",
+                         fmt_bytes(used), overall_correct, total_processed)
                 if used_gb > cfg.storage_warn_gb:
-                    print(f"\n[stop] storage {used_gb:.2f}GB exceeds limit {cfg.storage_warn_gb}GB")
+                    log.error("[stop] storage %.2fGB exceeds limit %.2fGB",
+                              used_gb, cfg.storage_warn_gb)
                     sys.exit(2)
 
         # write per-task metadata.csv
@@ -699,12 +756,15 @@ def main():
                     w.writerow({k: row.get(k, "") for k in keys})
 
     final_used = dir_size_bytes(out_root)
-    print(json.dumps({
+    summary = {
         "processed_this_run": total_processed,
         "correct_this_run": overall_correct,
         "disk_usage": fmt_bytes(final_used),
         "output_dir": str(out_root),
-    }, indent=2))
+    }
+    log.info("=" * 70)
+    log.info("RUN COMPLETE: %s", json.dumps(summary))
+    log.info("=" * 70)
 
 
 if __name__ == "__main__":
