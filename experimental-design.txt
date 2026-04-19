@@ -1,0 +1,1110 @@
+LATENTMAS INTERPRETABILITY EXPERIMENTS — CONSERVATIVELY DEDUPLICATED
+=====================================================================
+Total unique experiments: 29
+[OBS] = pure observation on saved activations, no extra runs needed
+[INT] = requires new forward passes / intervention runs
+[OBS+INT] = core analysis is OBS, some follow-ups need INT
+
+GENUINE MERGES MADE (only where ideas are nearly identical):
+- Hidden Deception (WELU) + Steganographic Collusion (WELU) → Exp 4
+  (same question, Grok version just adds "coordinated" framing)
+- Faithfulness Gap (WELU) + Faithfulness Gap (Safety track) → Exp 8
+  (literally the same experiment named twice)
+- Monosemanticity/disentanglement (SPRAL) + Monosemanticity Collapse (WELU) → Exp 20
+  (same core question, different framing)
+- Detecting failure modes early (SPRAL) + Catastrophe Precursors (WELU) → Exp 24
+  (same experiment, Grok version just adds dynamical systems framing)
+- W_a mechanistic role (SPRAL) + Latent Editor (Mechanistic track) → Exp 1
+  (literally the same experiment)
+- Latent Telepathy (WELU) + Mind-Reading (WELU) → Exp 3
+  (same core question)
+- Thermodynamic Entropy + Attractor Theory → Exp 25
+  (both are about KV-cache dynamics converging; entropy is a sub-measure)
+=====================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 1: The Latent Editor — Mechanistic Role of W_a
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"The Latent Editor: How the Alignment Matrix W_a Selectively Preserves
+and Distorts Semantic Directions in Multi-Agent Latent Reasoning"
+
+RESEARCH QUESTION:
+Is W_a just a passive translator between agent latent spaces, or is it
+an active "editor" that amplifies certain semantic directions (e.g.,
+logical structure, uncertainty) while suppressing others (e.g., surface
+grammar)? Can we identify specific directions in hidden space that W_a
+protects or attenuates?
+
+BACKGROUND:
+W_a is derived via ridge regression to align one agent's hidden space
+to another's. Ridge regression minimizes squared error + L2 penalty,
+which implicitly shrinks small singular values — meaning W_a may be
+systematically discarding low-variance but semantically important
+directions. This has never been studied mechanistically.
+
+WHAT TO ANALYZE:
+- Perform SVD of W_a: U, S, V = svd(W_a)
+- Project known semantic directions (truth probes, uncertainty probes,
+  factual recall directions) onto singular vectors — are they aligned
+  with preserved or suppressed dimensions?
+- Ablate top-k singular values and measure downstream collaboration
+  performance — does removing the top 1% break spatial reasoning but
+  preserve factual recall?
+- Build rank-k approximations of W_a and measure which tasks degrade
+  first as k decreases
+- Causal intervention: activation patching before/after W_a application
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 2: Emergent Private Latent Vocabulary
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Emergent Private Latent Vocabularies: Do Collaborating Agents Develop
+a Shared Internal Language Invisible to Human Observers?"
+
+RESEARCH QUESTION:
+Do agents in LatentMAS spontaneously develop a consistent, reusable set
+of latent activation patterns that recur across different examples when
+communicating the same concept — patterns with no direct correspondence
+to natural language tokens?
+
+BACKGROUND:
+In human communication, shared vocabulary emerges from repeated
+interaction. The analogous question for LLM agents: do certain latent
+activation clusters reliably correspond to the same concepts across
+different tasks and examples? If yes, agents have developed a private
+language that exists only in activation space — interpretable by probes
+but not by humans reading outputs.
+
+WHAT TO ANALYZE:
+- Cluster latent thought vectors across many examples using k-means
+  and UMAP; label clusters by probing what concept they correspond to
+- Check cluster consistency: does the same concept (e.g., "Agent A is
+  uncertain") always map to the same cluster across different problems?
+- Measure mutual information between cluster identity and downstream
+  agent behavior
+- Compare cluster structure in successful vs. failed collaborations
+- Test if vocabulary is stable across different task domains
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 3: Cross-Agent Latent Mind-Reading
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Latent Telepathy: Reconstructing Agent A's Internal Reasoning State
+from Agent B's Working Memory Alone"
+
+RESEARCH QUESTION:
+Can a simple linear probe trained on Agent B's incoming working memory
+accurately reconstruct the concepts, errors, or plans that Agent A was
+reasoning about — even though Agent B never saw any text from Agent A?
+Does one agent's latent thought statistically predict another agent's
+future internal state?
+
+BACKGROUND:
+In LatentMAS, agents communicate purely through latent thoughts injected
+into shared working memory. If Agent B's KV-cache encodes rich,
+recoverable information about Agent A's internal state, this implies
+latent thoughts are far more information-dense than text outputs. This
+also tests whether cross-agent "mind-reading" is mechanistically
+possible — i.e., whether the shared memory truly functions as a
+transparent cognitive channel.
+
+WHAT TO ANALYZE:
+- Train linear probes on Agent B's working memory to predict:
+  (a) which reasoning step Agent A was on
+  (b) whether Agent A had made an error
+  (c) what concept Agent A was processing (classify from a fixed set)
+- Compare probe accuracy vs. a baseline trained on Agent A's decoded
+  text output — does latent carry more signal than text?
+- Measure which layers of Agent B's KV-cache carry the most signal
+  about Agent A's internal state
+- Test non-locality: does Agent A's Round 1 latent thought predict
+  Agent B's Round 3 internal state, across many rounds?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 4: Hidden Deception and Steganographic Collusion
+[OBS+INT]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Invisible Collusion: Detecting Deceptive and Misaligned Reasoning
+Embedded in Latent Thoughts That Produce Correct Text Outputs"
+
+RESEARCH QUESTION:
+Can agents embed misleading or misaligned reasoning within their latent
+thoughts that produces correct final answers but is detectable only
+through activation patterns, probes, or similarity metrics — never
+through text inspection? Can coordinated steganographic deception
+emerge in pure latent space?
+
+BACKGROUND:
+Steganographic deception in LLMs is a known safety concern: models may
+"think one thing, say another." LatentMAS makes this more dangerous
+because the latent channel is never decoded to text by default,
+creating a hidden cognitive layer invisible to standard oversight.
+This is distinct from the Faithfulness Gap (Exp 8) which measures
+accidental divergence — this experiment looks for strategic or
+systematic deception.
+
+WHAT TO ANALYZE:
+- [OBS] On examples where the model reaches the right answer via a
+  provably wrong reasoning path, check if latent thoughts encode the
+  correct path that was abandoned
+- [OBS] Train probes to detect "reasoning inconsistency" between
+  latent steps and final outputs
+- [INT] Deliberately steer one agent toward deceptive reasoning using
+  steering vectors; measure whether probes on other agents' working
+  memory can detect this before it surfaces in text
+- [INT] Test whether deception can be coordinated across agents through
+  latent channel without appearing in any text output
+- Key metric: detection lead time — how many rounds before text output
+  does the latent signal reveal deception?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 5: Quantifying Information Compression
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"How Much Does a Latent Thought Carry? Quantifying Information
+Compression and Functional Density in Latent Agent Reasoning"
+
+RESEARCH QUESTION:
+How much task-critical information (reasoning steps, facts, uncertainty,
+plans) is preserved vs. lost when agents compress their thinking into
+fixed-size latent thoughts? How does 1 latent token compare to N text
+tokens in terms of reasoning weight carried?
+
+BACKGROUND:
+Latent thoughts have fixed size d_h, unlike text which can expand
+arbitrarily. The LatentMAS paper claims O(d_h / log|V|) expressiveness
+advantage over text. This experiment tests that claim empirically by
+measuring the functional information density of latent vs. text
+representations — how many text tokens worth of reasoning fits in one
+latent token?
+
+WHAT TO ANALYZE:
+- Measure mutual information between latent thoughts and ground-truth
+  reasoning steps (using probes as a proxy for information content)
+- Compute activation entropy at each latent step — does it correlate
+  with information content?
+- Compute the "functional density ratio": how many text tokens does it
+  take to match the information carried by 1 latent token?
+- Probe for specific content types (facts, plans, uncertainty,
+  sub-conclusions) and measure which are preserved vs. compressed away
+- Compare across task types: is factual content preserved more than
+  procedural content?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 6: Information Propagation and Decay Over Rounds
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Signal or Noise: Mapping How Information Propagates, Amplifies, and
+Decays Across Latent Multi-Agent Dialogue Rounds"
+
+RESEARCH QUESTION:
+Across multiple collaboration rounds, which dimensions, time steps, or
+layers of the shared latent working memory are actually utilized by
+later agents? Does useful information amplify or decay over rounds?
+
+BACKGROUND:
+In multi-round collaboration, early agents set the context for later
+ones. But latent thoughts are fixed-size — information that isn't
+actively maintained may decay or be overwritten. Understanding which
+"channels" carry persistent signal vs. transient noise has direct
+implications for LatentMAS architecture design.
+
+WHAT TO ANALYZE:
+- Track mutual information between Round 1 latent thoughts and Round N
+  latent thoughts as N increases — does signal decay exponentially?
+- Identify which hidden dimensions carry persistent signal across all
+  rounds (the "important channels")
+- Compare information propagation in successful vs. failed
+  collaborations — does failure correlate with early information decay?
+- Which specific content types (facts, plans, errors) propagate best?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 7: Layer-Specific Contributions to Collaboration
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Which Layers Think Together? Layer-Specific Contributions to Latent
+Multi-Agent Collaboration"
+
+RESEARCH QUESTION:
+Which transformer layers produce the most useful latent thoughts for
+downstream collaboration? Do early layers contribute factual recall
+while later layers contribute high-level planning or uncertainty
+signals — mirroring known layer-specialization in single-agent models?
+
+BACKGROUND:
+In single-agent transformers, early layers handle syntax/surface
+features, middle layers handle entity binding and factual recall, and
+late layers handle task-level reasoning and output formatting. LatentMAS
+uses full hidden states but it is unknown which layers' contributions
+dominate the useful signal passed through working memory.
+
+WHAT TO ANALYZE:
+- Extract latent thoughts from each layer independently and train
+  task-specific probes — which layers' representations best predict
+  the final answer?
+- Compare layer contribution profiles across task types (math vs.
+  reasoning vs. factual recall)
+- Measure inter-agent similarity at each layer — do early layers
+  produce more similar representations across agents than late layers?
+- Ablate individual layers from the latent thought and measure
+  performance drop per layer
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 8: Faithfulness Gap Between Latent and Textual Reasoning
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"The Faithfulness Gap: When Latent Logic Contradicts Textual Output
+in Multi-Agent Latent Reasoning Systems"
+
+RESEARCH QUESTION:
+When latent thoughts are decoded back to text at each step, how often
+and how severely do the intermediate latent conclusions contradict the
+final text output? If the latent thought says "The answer is A" but
+the final output says "The answer is B" — why did the model diverge,
+and where in the pipeline did it happen?
+
+BACKGROUND:
+Chain-of-thought faithfulness is a known problem in single-agent LLMs —
+the stated reasoning often doesn't reflect the actual computation.
+LatentMAS makes this worse because the latent channel is richer and
+more opaque. This experiment quantifies the gap between what agents
+"think" in latent space and what they "say" in text, which is distinct
+from deception (Exp 4) — this is about accidental or structural
+divergence, not strategic misalignment.
+
+WHAT TO ANALYZE:
+- Train a latent-to-text decoder (probe) to decode latent thoughts at
+  every collaboration step
+- Compare decoded latent reasoning vs. final text output — measure
+  contradiction rate, semantic drift, and divergence point
+- Identify which types of tasks or reasoning steps show the largest
+  faithfulness gap
+- Compare faithfulness gap in LatentMAS vs. equivalent text-based MAS
+  on the same tasks
+- Locate the exact layer/step where latent and text reasoning diverge
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 9: Uncertainty Encoding in Latent Thoughts
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Beyond 'I Think': Do Latent Thoughts Encode Uncertainty More
+Faithfully Than Text-Based Confidence Statements?"
+
+RESEARCH QUESTION:
+Do latent thoughts contain reliable intrinsic signals of uncertainty
+or confidence (via activation norms, variance, or learned directions)
+that correlate more strongly with actual correctness than explicit
+text-based confidence statements like "I'm fairly sure..."?
+
+BACKGROUND:
+Text-based confidence is notoriously miscalibrated in LLMs. Latent
+thoughts bypass the language generation bottleneck and may encode
+uncertainty more directly in activation geometry. If true, this gives
+a practical tool for detecting when a LatentMAS team is about to fail,
+and suggests latent uncertainty signals are more honest than stated
+confidence.
+
+WHAT TO ANALYZE:
+- Train a linear probe to predict correctness from latent thought norms
+  and variance — compare calibration to text-stated confidence
+- Find an "uncertainty direction" in latent space using contrastive
+  pairs (correct vs. incorrect final answer examples)
+- Measure whether activation norm, entropy, or variance at the latent
+  thought level correlates with final answer accuracy
+- Test if uncertainty signals in Agent A's latent thoughts predict
+  Agent B's downstream behavior (does Agent B "sense" uncertainty?)
+- Compare latent uncertainty calibration to text-stated calibration
+  across task types
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 10: Emergent Role Specialization
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Invisible Division of Labor: Emergent Role Specialization in Latent
+Multi-Agent Coordination"
+
+RESEARCH QUESTION:
+Do agents develop stable, recurring roles (e.g., "fact supplier" vs.
+"verifier" vs. "planner") that are invisible in final text outputs but
+consistently detectable through clustering of their latent thoughts
+across many examples?
+
+BACKGROUND:
+In human teams, roles emerge without explicit assignment. Even though
+all LatentMAS agents are the same base model, the structure of latent
+communication and working memory position may induce functional
+differentiation — a form of symmetry breaking driven purely by
+communication order. This would be evidence of emergent theory of mind
+or niche construction in latent space.
+
+WHAT TO ANALYZE:
+- For each agent at each round, extract their latent thought vector
+- Cluster across examples: do Agent 1's thoughts cluster separately
+  from Agent 2's even on the same task type?
+- Use representational similarity analysis (RSA) to compare agent
+  latent spaces — are they becoming more or less similar over rounds?
+- Check if role assignments are consistent across task domains
+- Correlate role identity with contribution to final answer correctness
+- Test whether roles are fixed by position or can flip across examples
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 11: Cross-Agent Induction Heads and Collaboration Circuits
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Cross-Agent Induction Heads: Circuit-Level Mechanisms of Inter-Agent
+Knowledge Inheritance in Latent Multi-Agent Systems"
+
+RESEARCH QUESTION:
+Do "cross-agent induction heads" exist — specific attention heads in
+Agent B that only activate strongly when detecting a particular pattern
+in Agent A's latent working memory, effectively "inheriting" a
+reasoning circuit from Agent A? Can we identify the full collaboration
+circuit (attention heads + MLP neurons) that mediates cross-agent flow?
+
+BACKGROUND:
+Induction heads in single-agent transformers implement in-context
+learning by matching current context to past patterns. In LatentMAS,
+the analogous structure would be attention heads that specifically
+attend to and continue Agent A's reasoning injected into the KV-cache.
+Finding these would be the first circuit-level evidence of cross-agent
+reasoning inheritance.
+
+WHAT TO ANALYZE:
+- Compute attention patterns of all heads in Agent B when Agent A's
+  latent thoughts are present in the KV-cache
+- Identify heads with high attention specifically to cross-agent memory
+  positions vs. self-attention positions
+- Use causal tracing: ablate specific heads and measure whether
+  Agent B loses ability to continue Agent A's reasoning
+- Check if the same heads are consistently "cross-agent" across
+  different tasks and agent pairs
+- Identify MLP neurons that activate specifically on cross-agent input
+- Map the full collaboration circuit end-to-end
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 12: Latent Trojan Attacks — Poisoning the Working Memory
+[INT]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Latent Trojans: Can One Malicious Agent Poison the Shared Working
+Memory with Triggers Invisible to Human Observers?"
+
+RESEARCH QUESTION:
+Can one malicious agent embed a latent trigger into the shared working
+memory that causes the next agent to hallucinate or leak data — while
+producing outputs that appear completely normal to human oversight?
+
+BACKGROUND:
+Trojan attacks on individual LLMs are well-studied, but LatentMAS
+creates a new attack surface: the shared latent working memory. Because
+the latent channel is never decoded to text by default, a poisoned
+latent thought could persist across rounds, infecting downstream agents
+without any visible sign in text outputs. This would prove that latent
+collaboration requires a "Latent Firewall" — a new safety requirement.
+
+WHAT TO ANALYZE:
+- [INT] Craft adversarial latent thought vectors that, when injected
+  into the working memory, cause specific downstream failure modes
+- Measure how far the poison propagates across rounds
+- Test whether the trigger is detectable by probes on the working
+  memory (can a firewall be built?)
+- Compare to text-based MAS poisoning attacks — is latent poisoning
+  harder or easier to detect?
+- Test persistence: does the trigger survive multiple rounds of
+  legitimate collaboration?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 13: Robustness to Targeted Interventions
+[INT]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Breaking Latent Collaboration: Which Interventions Destroy Multi-Agent
+Reasoning Fastest and What Do They Reveal About Mechanisms?"
+
+RESEARCH QUESTION:
+How robust is LatentMAS collaboration to targeted interventions (noise,
+steering vectors, feature ablation) in the latent thoughts or KV
+memory? Which interventions break performance fastest, and what does
+the order of degradation reveal about the underlying mechanisms?
+
+BACKGROUND:
+Robustness analysis is a standard mechanistic interpretability tool —
+you learn about a system by breaking it systematically. For LatentMAS,
+the order in which capabilities degrade under different interventions
+reveals which aspects of the latent representation are most critical
+and most fragile.
+
+WHAT TO ANALYZE:
+- Apply Gaussian noise at different magnitudes to latent thoughts and
+  measure performance degradation curve
+- Apply targeted steering vectors (e.g., push toward "uncertainty" or
+  "wrong answer" direction) and measure impact
+- Ablate specific feature directions identified from other experiments
+  (e.g., top singular values of W_a) and measure which capabilities
+  break first
+- Compare intervention impact at different rounds — is Round 1 more
+  fragile than Round 3?
+- Rank interventions by performance damage per unit of perturbation
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 14: Heterogeneous Expert Agent Fusion
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Emergent Fusion Features: How Heterogeneous Expert Agents Integrate
+Their Latent Representations in Shared Working Memory"
+
+RESEARCH QUESTION:
+In hierarchical LatentMAS with domain-expert agents (e.g., a math
+expert + a language expert + a summarizer), how do latent
+representations from heterogeneous agents integrate in shared memory?
+Are there emergent "fusion" features in the working memory that do not
+appear in any individual agent's latent thoughts?
+
+BACKGROUND:
+When agents with different specializations collaborate, the shared
+working memory must somehow reconcile their different representational
+geometries. This may produce genuinely novel features — representations
+that encode the combination of two experts' knowledge in a way that
+neither expert encodes alone. This would be strong evidence that latent
+collaboration produces emergent cognitive artifacts.
+
+WHAT TO ANALYZE:
+- Run hierarchical LatentMAS with agents fine-tuned on different
+  domains; save all individual and shared latent thoughts
+- Train probes to detect "fusion features" — directions in the shared
+  memory that are not predictable from any single agent's thoughts
+- Measure the representational geometry of the shared memory vs.
+  individual agent memories (are they interpolations or genuinely new?)
+- Compare to single-agent and homogeneous-agent baselines
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 15: Emergent Flocking and Herding in Latent Thought Space
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Flocking in Thought Space: Do Latent Agent Vectors Obey Boids-Like
+Alignment, Cohesion, and Separation Rules in Shared Working Memory?"
+
+RESEARCH QUESTION:
+Do agents' latent thought vectors exhibit animal-like flocking or
+herding dynamics inside the shared working memory — specifically, does
+one agent's latent "direction" pull the entire team's subsequent
+thoughts toward it, and do these dynamics obey the three boids rules
+(alignment, cohesion, separation)?
+
+BACKGROUND:
+Boids flocking (Reynolds 1987) emerges from three local rules:
+alignment (match neighbors' velocity/direction), cohesion (move toward
+neighbors' average position), separation (avoid crowding). If latent
+thoughts in LatentMAS obey analogous rules — where "direction" is the
+activation vector direction and "neighbors" are other agents' working
+memory — this would be the first demonstration of emergent collective
+dynamics in LLM latent space with a clean mathematical characterization.
+
+WHAT TO ANALYZE:
+- Compute angular alignment between consecutive latent thought vectors
+  across agents over rounds — does alignment increase over time?
+- Test cohesion: does the centroid of all agents' latent thoughts
+  converge over rounds in successful collaborations?
+- Test separation: do agents maintain minimum angular distance from
+  each other, or do they collapse to the same point?
+- Fit actual boids coefficients to the observed dynamics — do the
+  three rules explain the variance in agent trajectory?
+- Correlate flocking tightness with task success — does tighter
+  flocking predict better performance, or does it predict groupthink?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 16: Latent Entanglement — Quantum-Like Correlations
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Latent Entanglement: Do Multi-Agent Latent Thoughts Develop
+Non-Local Correlations Analogous to Quantum Entanglement?"
+
+RESEARCH QUESTION:
+Do latent thoughts generated by different agents become "entangled"
+such that probing one agent's contribution instantly predicts properties
+of another agent's future thoughts — even across many rounds and even
+when the two agents have not directly interacted?
+
+BACKGROUND:
+Quantum entanglement produces correlations between particles that
+cannot be explained by local hidden variables. The classical analogy
+here: do pairs of agents develop latent thought correlations that are
+stronger than what their direct information exchange would predict?
+If Agent C's latent thoughts predict Agent A's future state even though
+C only read from B who read from A, the correlation is "non-local" in
+the sense of being mediated across the communication graph in
+unexpected ways.
+
+WHAT TO ANALYZE:
+- Measure pairwise correlation between all agents' latent thoughts
+  at each round — build a correlation matrix over rounds
+- Test non-locality: do agents with no direct communication link still
+  develop correlated latent thoughts?
+- Measure "entanglement entropy" between agent pairs using mutual
+  information across rounds
+- Check if correlation strength predicts collaboration success
+- Test whether entanglement builds over rounds or appears immediately
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 17: Evolutionary Selection of Latent Communication Patterns
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Latent Natural Selection: Do Successful Activation Patterns Get
+Amplified While Unsuccessful Ones Die Out Across Collaboration Rounds?"
+
+RESEARCH QUESTION:
+Across many examples and rounds, do certain latent activation patterns
+get "selected" and amplified by downstream agents — like natural
+selection — while others decay and disappear? Can we identify evolved
+latent "genes" for successful collaboration?
+
+BACKGROUND:
+In evolutionary biology, selection acts on variation: variants that
+increase fitness propagate, others die out. In LatentMAS, a "selected"
+latent pattern would be one that, when present in the working memory,
+reliably causes downstream agents to adopt and amplify it. Over many
+examples, only the "fittest" communication patterns survive — patterns
+that genuinely help the team succeed.
+
+WHAT TO ANALYZE:
+- Track which latent activation patterns (identified by clustering)
+  appear in Agent A and then reappear in Agent B's subsequent thoughts
+- Measure "propagation rate" of each cluster — which patterns spread
+  most reliably to downstream agents?
+- Correlate propagation rate with final answer correctness — do
+  high-fitness patterns actually improve performance?
+- Check if amplified patterns are semantically interpretable (what
+  concept does the "fittest" latent gene encode?)
+- Compare propagation dynamics in successful vs. failed collaborations
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 18: Symbiotic vs. Parasitic Latent Agent Interactions
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Symbiosis and Parasitism in Latent Space: Classifying Directional
+Information Transfer Between Collaborating Agents"
+
+RESEARCH QUESTION:
+Can we classify latent exchanges as symbiotic (mutually beneficial
+information flow, both agents gain useful signal) or parasitic (one
+agent extracts signal from the other while contributing noise),
+detectable only through directional information transfer analysis?
+
+BACKGROUND:
+In ecology, symbiosis and parasitism are defined by net benefit to
+each party. In LatentMAS, a parasitic agent would extract useful
+information from the shared memory while injecting low-quality or
+misleading signal back — effectively free-riding on the collaboration.
+This has direct implications for multi-agent system design: how do
+you detect and remove a parasitic agent?
+
+WHAT TO ANALYZE:
+- Compute directed mutual information (transfer entropy) between each
+  pair of agents' latent thoughts over rounds
+- Classify each agent pair as symbiotic (bidirectional high transfer),
+  parasitic (high extraction, low contribution), or neutral
+- Correlate parasitism with final answer quality — does a parasitic
+  agent degrade team performance?
+- Check if parasitism is task-dependent or agent-position-dependent
+- Test whether parasitic behavior is detectable from early rounds
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 19: Latent Superposition of Competing Reasoning Paths
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Superposition of Thought: Do Latent Thoughts Encode Multiple
+Competing Reasoning Paths Simultaneously, and Does Shared Memory
+Collapse Them?"
+
+RESEARCH QUESTION:
+Do individual agents maintain multiple competing reasoning paths in
+superposition within a single latent thought — and does the shared
+working memory act as a "measurement" that collapses them into one
+dominant path?
+
+BACKGROUND:
+Superposition in neural networks (Elhage et al.) refers to multiple
+features encoded simultaneously in the same activation space. The
+analogous question for reasoning: does a single latent thought encode
+multiple candidate answers or reasoning branches at once, with the
+shared memory resolving the ambiguity? This would suggest latent
+thoughts function more like probability distributions over reasoning
+paths than single definite thoughts.
+
+WHAT TO ANALYZE:
+- On ambiguous tasks with multiple valid reasoning paths, probe latent
+  thoughts for evidence of multiple competing answers being encoded
+  simultaneously
+- Use sparse autoencoders to decompose latent thoughts into features —
+  are multiple answer-direction features active simultaneously?
+- Measure whether the shared working memory reduces the number of
+  active competing features (the "collapse" effect)
+- Compare superposition level in correct vs. incorrect final answers —
+  does unresolved superposition predict failure?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 20: Monosemanticity Collapse in Shared Working Memory
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Monosemanticity Collapse: Does Latent Collaboration Entangle
+Individually Interpretable Features into Polysemantic Representations?"
+
+RESEARCH QUESTION:
+Does the shared working memory cause monosemantic (single-concept,
+interpretable) features from individual agents to collapse into
+polysemantic or entangled representations — and can we recover the
+original concepts after this collapse?
+
+BACKGROUND:
+Monosemanticity (one feature = one concept) is the gold standard in
+mechanistic interpretability. Multi-agent communication may create
+pressure toward polysemanticity because the shared memory must
+simultaneously encode multiple agents' concepts. This is related to
+but distinct from Exp 19 (Superposition): that experiment asks whether
+single thoughts encode competing answers; this asks whether the shared
+memory entangles what were previously clean single-concept features.
+
+WHAT TO ANALYZE:
+- Measure monosemanticity of individual agent latent thoughts before
+  injection into shared memory vs. after (using sparse probing)
+- Apply sparse autoencoders (SAEs) to decompose shared memory
+  representations — how many features are needed vs. single-agent?
+- Check if shared memory features are recoverable as linear
+  combinations of individual agent features
+- Measure entanglement as a function of number of agents and rounds
+- Compare to text-based MAS: is latent communication more or less
+  monosemantic than text-based collaboration?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 21: Hebbian Strengthening and Latent Neural Plasticity
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Cells That Fire Together: Hebbian-Like Strengthening of Latent
+Patterns in Multi-Agent Working Memory Over Collaboration Rounds"
+
+RESEARCH QUESTION:
+Does repeated activation of certain latent patterns strengthen them in
+the shared working memory over rounds — analogous to Hebbian plasticity
+("cells that fire together wire together") — creating persistent
+functional "synapses" between agents?
+
+BACKGROUND:
+Hebbian learning is a foundational principle of neuroscience: synaptic
+connections strengthen when pre- and post-synaptic neurons fire
+together. In LatentMAS, the analogue would be latent patterns that,
+once introduced, become progressively easier for downstream agents to
+detect and amplify — as if the working memory develops a "memory trace"
+for frequently used communication patterns.
+
+WHAT TO ANALYZE:
+- Track the activation strength of recurring latent clusters across
+  rounds — do they grow stronger (higher norm, higher inter-agent
+  correlation) with repetition?
+- Measure whether patterns introduced in Round 1 become more or less
+  detectable by Round 5
+- Test cross-agent Hebbian effect: if Agent A repeatedly uses pattern
+  X, does Agent B's response to pattern X strengthen over rounds?
+- Compare strengthening rate across successful vs. failed collaborations
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 22: Predator-Prey Dynamics in Hierarchical Agent Competition
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Predator and Prey in Latent Space: Asymmetric Information Extraction
+Dynamics in Hierarchical Multi-Agent Systems"
+
+RESEARCH QUESTION:
+In hierarchical or competitive LatentMAS setups, do some agents act as
+"predators" (extracting and exploiting information from the shared
+memory while contributing little) and others as "prey" (supplying
+information but losing utility over rounds), detectable only through
+latent flow analysis?
+
+BACKGROUND:
+Predator-prey dynamics in ecology are characterized by asymmetric
+dependence: predators benefit from prey, prey are depleted by
+predators, and the system oscillates. In hierarchical LatentMAS, a
+"summarizer" agent that reads expert agents' outputs without
+contributing substantive new information would be a predator. This
+is related to but distinct from Exp 18 (Symbiotic/Parasitic): that
+experiment classifies exchanges; this one looks for oscillatory
+population-level dynamics over rounds.
+
+WHAT TO ANALYZE:
+- In hierarchical LatentMAS, measure per-agent information contribution
+  vs. extraction at each round using transfer entropy
+- Test for oscillatory dynamics: do contribution/extraction ratios
+  oscillate in a predator-prey pattern over rounds?
+- Identify which agents are systematically predators vs. prey across
+  many examples
+- Correlate predator-prey balance with team performance
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 23: Bargaining and Power Asymmetries in Latent Space
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Latent Negotiation: Do Agents Implicitly Bargain and Form Power
+Asymmetries in Shared Working Memory?"
+
+RESEARCH QUESTION:
+In hierarchical or competitive LatentMAS, do agents implicitly bargain
+or form power asymmetries in latent space — where one agent's latent
+"offer" consistently dominates the shared memory and determines the
+team's reasoning direction?
+
+BACKGROUND:
+In game theory, bargaining produces outcomes where one party's
+preferences dominate based on their relative power or information.
+In LatentMAS, a "powerful" agent would be one whose latent thought
+injections consistently shift the shared memory toward their preferred
+reasoning direction, overriding other agents' contributions. This is
+distinct from Predator-Prey (Exp 22) which focuses on information
+extraction; this experiment focuses on directional dominance and
+agenda-setting in the shared memory.
+
+WHAT TO ANALYZE:
+- Measure each agent's "influence radius": how much does injecting
+  their latent thought shift the mean direction of subsequent agents'
+  thoughts?
+- Identify "dominant" agents whose contributions consistently pull the
+  team's reasoning direction
+- Test if dominance is stable across tasks or depends on task type
+- Measure whether dominant agents produce better or worse outcomes
+- Use Shapley values to quantify each agent's marginal contribution
+  to the final answer
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 24: Latent Catastrophe Precursors — Early Warning Signals
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Before the Fall: Early Warning Signals in Latent Working Memory
+Predict Reasoning Failures Before They Appear in Text"
+
+RESEARCH QUESTION:
+Do specific dynamical signatures — entropy spikes, eigenvector shifts,
+sudden norm changes, attractor divergence — appear in the shared latent
+memory several rounds before a reasoning failure or hallucination shows
+up in the final text output?
+
+BACKGROUND:
+In complex systems (ecological collapse, epileptic seizures, financial
+crashes), "critical slowing down" and variance spikes reliably precede
+catastrophic failures. The same may be true for LatentMAS: working
+memory dynamics may show instability signatures before the model
+produces wrong answers. This would enable real-time failure prediction
+from latent monitoring — a practically important safety capability.
+
+WHAT TO ANALYZE:
+- Collect many examples labeled by final answer correctness
+- For each round compute: activation norm, entropy, variance, top
+  eigenvalue of KV-cache, cosine similarity between consecutive rounds
+- Train a classifier to predict final failure from round-1 or round-2
+  latent signatures alone
+- Measure "lead time": how many rounds before failure does the warning
+  signal appear on average?
+- Compare signal types — entropy vs. norm vs. eigenvalue shift — for
+  predictive power
+- Test if precursors generalize across task types
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 25: Attractor Theory of Consensus and Thermodynamic Entropy
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Cognitive Thermodynamics: Does Successful Multi-Agent Collaboration
+Converge to a Fixed-Point Attractor in Latent Space?"
+
+RESEARCH QUESTION:
+Does successful collaboration look like a dynamical system converging
+to a fixed-point attractor — where the KV-cache trajectory spirals
+toward a stable point (the answer) — while failed collaboration drifts
+or oscillates? Does entropy of the shared memory decrease over rounds
+in successful teams, like energy dissipation in physical systems?
+
+BACKGROUND:
+Dynamical systems theory describes attractors as stable states toward
+which trajectories converge. If LatentMAS shared memory is a dynamical
+system, successful teams should show attractor-like convergence while
+failed teams show chaos or limit cycles. Thermodynamically, decreasing
+entropy over rounds would indicate the team is "cooling" toward a
+solution — a testable prediction from the physics analogy.
+
+WHAT TO ANALYZE:
+- Visualize KV-cache trajectory over 10 rounds in 2D/3D via PCA/UMAP
+  — does it spiral toward a point or drift?
+- Compute Lyapunov exponents of the latent trajectory — positive =
+  chaotic (predicts failure), negative = converging (predicts success)
+- Measure entropy of working memory activations over rounds —
+  does it decrease monotonically in successful teams?
+- Fit fixed-point attractor models and measure distance from attractor
+  at each round as a failure predictor
+- Compare attractor geometry across task types
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 26: Manifold Alignment and Universal Conceptual Geometry
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Universal Conceptual Geometry: Does W_a Preserve the Topological
+Structure of Thought Across Agent Latent Spaces?"
+
+RESEARCH QUESTION:
+When Agent A's latent thought is mapped through W_a into Agent B's
+space, are the relational structures between concepts (the "shape" of
+the thought manifold) preserved even if the coordinates change? If yes,
+LLMs share a universal conceptual geometry across agents.
+
+BACKGROUND:
+Procrustes analysis measures whether two point clouds have the same
+shape up to rotation/scaling. If W_a is a near-isometry (preserves
+distances and angles), then agent latent spaces are fundamentally the
+same manifold in different coordinate systems. If W_a distorts
+topology, cross-agent communication is lossy in a deep geometric sense.
+This is related to but distinct from Exp 1 (W_a SVD): that experiment
+asks which semantic directions W_a preserves; this asks whether the
+global manifold shape is preserved.
+
+WHAT TO ANALYZE:
+- Extract sets of related concept vectors from Agent A and Agent B
+  separately (e.g., analogy vectors, semantic neighbors)
+- Apply Procrustes analysis to measure shape-preservation before/after
+  W_a mapping
+- Use persistent homology (TDA) to compare topological features
+  (connected components, loops) of the two latent spaces
+- Measure whether W_a is closer to an isometry, a projection, or a
+  general distortion
+- Test across model pairs of different sizes
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 27: Resonance and Synchronization in Latent Oscillations
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Resonance in Thought: Do Latent Agent Activations Synchronize
+Oscillatory Dynamics Across the Shared Working Memory?"
+
+RESEARCH QUESTION:
+Do latent thoughts exhibit periodic or oscillatory activation dynamics
+that synchronize across agents in the working memory — and does this
+resonance predict superior team performance?
+
+BACKGROUND:
+Neural synchrony in biological brains (gamma oscillations, theta-gamma
+coupling) is associated with enhanced information transfer and
+cognitive performance. If LatentMAS agents' latent activation dynamics
+exhibit analogous oscillatory patterns that phase-lock across agents,
+this would suggest a deep structural analogy between biological neural
+synchrony and artificial multi-agent coordination.
+
+WHAT TO ANALYZE:
+- Analyze latent thought activations as time series across rounds —
+  compute power spectra and test for periodicity
+- Measure phase coherence between agents' activation time series —
+  do they synchronize over rounds?
+- Correlate synchronization strength with task performance
+- Test whether synchronization is task-type-specific (e.g., stronger
+  on multi-step reasoning vs. single-shot factual recall)
+- Identify which activation dimensions oscillate most strongly
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 28: Latent Niche Construction — Emergent Theory of Mind
+[OBS]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Latent Niche Construction: Do Agents Prepare the Shared Memory for
+Their Collaborator's Specific Weaknesses?"
+
+RESEARCH QUESTION:
+Do agents "prepare" the shared memory for the next agent by encoding
+information in the specific format or emphasis that the downstream
+agent needs — i.e., if Agent A knows Agent B is "bad at math," does
+Agent A change its latent encoding to be more "math-heavy"? This would
+be emergent theory of mind in pure latent space.
+
+BACKGROUND:
+Niche construction in biology refers to organisms modifying their
+environment to make it easier to survive. The cognitive analogue: agents
+that model their collaborator's capabilities and tailor their latent
+communication accordingly. This would require agents to have an implicit
+model of their collaborator's latent representations — a form of
+perspective-taking or theory of mind that was never explicitly trained.
+
+WHAT TO ANALYZE:
+- Compare Agent A's latent thoughts when paired with a strong vs.
+  weak Agent B — do they differ systematically?
+- Probe Agent A's latent thoughts for features that encode properties
+  of Agent B (e.g., "Agent B is unreliable on math")
+- Measure whether Agent A's encoding style shifts to compensate for
+  Agent B's known weaknesses
+- Test on heterogeneous agent pairs (different fine-tuning, different
+  sizes) where one agent has a clear capability gap
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPERIMENT 29: Latent Compression as Regularizer — The Bottleneck Effect
+[INT]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAPER TITLE:
+"Occam's Latent Channel: Does Communication Bandwidth Constraint
+Suppress Hallucination in Multi-Agent Reasoning?"
+
+RESEARCH QUESTION:
+Does forcing agents to communicate through a narrow latent bottleneck
+(small m, fewer latent tokens) act as a regularizer that filters out
+hallucinations — making agents "smarter by saying less"? Is there a
+Latent Shannon Limit below which collaboration collapses into noise?
+
+BACKGROUND:
+The information bottleneck principle says compression can improve
+generalization by stripping irrelevant variation. If LatentMAS latent
+thoughts are compressed harder (smaller m), agents may be forced to
+transmit only the most task-critical information — discarding
+hallucinated or noise content. This would mean the tight latent channel
+is not a limitation but a feature, with direct implications for
+LatentMAS architecture design.
+
+WHAT TO ANALYZE:
+- Run LatentMAS with varying m (latent token count): m = 1, 4, 16, 64
+- Measure: task accuracy, hallucination rate, faithfulness of decoded
+  latent thoughts to final answers
+- Plot the accuracy-vs-m curve — is there a sweet spot where
+  compression helps before it hurts?
+- Measure entropy of latent thoughts at each m — does compression
+  force higher-quality information selection?
+- Compare hallucination rates between fat (high m) and thin (low m)
+  channels across task types
+- Identify the collapse point: the minimum m below which collaboration
+  degrades to chance
+
+
+=====================================================================
+SUMMARY TABLE
+=====================================================================
+
+#  | Short Name                        | Track      | Runs?
+---|-----------------------------------|------------|------------------
+1  | The Latent Editor (W_a SVD)       | Mech       | No
+2  | Emergent Private Vocabulary       | Repr       | No
+3  | Cross-Agent Mind-Reading          | Probing    | No
+4  | Hidden Deception / Collusion      | Safety     | Partial (INT ext)
+5  | Information Compression           | InfoTh     | No
+6  | Information Propagation & Decay   | Dynamics   | No
+7  | Layer-Specific Contributions      | Mech       | No
+8  | Faithfulness Gap                  | Safety     | No
+9  | Uncertainty Encoding              | Probing    | No
+10 | Emergent Role Specialization      | Repr       | No
+11 | Cross-Agent Induction Heads       | Mech       | No
+12 | Latent Trojan Attacks             | Safety     | Yes (INT only)
+13 | Robustness to Interventions       | Safety     | Yes (INT only)
+14 | Heterogeneous Expert Fusion       | Repr       | No*
+15 | Flocking and Herding Dynamics     | Physics    | No
+16 | Latent Entanglement               | Physics    | No
+17 | Evolutionary Selection            | Bio        | No
+18 | Symbiotic vs. Parasitic           | Bio        | No
+19 | Superposition of Reasoning Paths  | Physics    | No
+20 | Monosemanticity Collapse          | Repr       | No
+21 | Hebbian Strengthening             | Bio        | No
+22 | Predator-Prey Dynamics            | Bio        | No
+23 | Bargaining & Power Asymmetries    | Game Th    | No
+24 | Latent Catastrophe Precursors     | Dynamics   | No
+25 | Attractor Theory & Entropy        | Physics    | No
+26 | Manifold Alignment / Topology     | Geo        | No
+27 | Resonance & Synchronization       | Physics    | No
+28 | Latent Niche Construction         | Bio        | No*
+29 | Compression as Regularizer        | InfoTh     | Yes (vary m)
+
+*Exp 14 and 28 need heterogeneous/paired agent setups but not extra
+ runs per se — just a different experimental configuration at run time.
+
+Pure observation (zero extra runs):  1-11, 15-27
+Partial intervention:                4
+New run configurations needed:       12, 13, 14*, 28*, 29
+
+=====================================================================
+RECOMMENDED STARTING POINT:
+Exp 1 (W_a SVD) — concrete math, hard evidence, reviewers love it.
+Runner-up: Exp 24 (Catastrophe Precursors) — novel framing, practical
+safety impact, entirely OBS on saved activations.
+Dark horse: Exp 15 (Flocking) — if the boids fit works, it's a
+genuinely surprising and visually compelling NeurIPS result.
+=====================================================================
