@@ -1,6 +1,6 @@
 LATENTMAS INTERPRETABILITY EXPERIMENTS — CONSERVATIVELY DEDUPLICATED
 =====================================================================
-Total unique experiments: 23
+Total unique experiments: 22
 [OBS] = pure observation on saved activations, no extra runs needed
 [INT] = requires new forward passes / intervention runs
 [OBS+INT] = core analysis is OBS, some follow-ups need INT
@@ -338,41 +338,6 @@ WHAT TO ANALYZE:
 - Test whether roles are fixed by position or can flip across examples
 
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 11: Cross-Agent Induction Heads and Collaboration Circuits
-[OBS]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Cross-Agent Induction Heads: Circuit-Level Mechanisms of Inter-Agent
-Knowledge Inheritance in Latent Multi-Agent Systems"
-
-RESEARCH QUESTION:
-Do "cross-agent induction heads" exist — specific attention heads in
-Agent B that only activate strongly when detecting a particular pattern
-in Agent A's latent working memory, effectively "inheriting" a
-reasoning circuit from Agent A? Can we identify the full collaboration
-circuit (attention heads + MLP neurons) that mediates cross-agent flow?
-
-BACKGROUND:
-Induction heads in single-agent transformers implement in-context
-learning by matching current context to past patterns. In LatentMAS,
-the analogous structure would be attention heads that specifically
-attend to and continue Agent A's reasoning injected into the KV-cache.
-Finding these would be the first circuit-level evidence of cross-agent
-reasoning inheritance.
-
-WHAT TO ANALYZE:
-- Compute attention patterns of all heads in Agent B when Agent A's
-  latent thoughts are present in the KV-cache
-- Identify heads with high attention specifically to cross-agent memory
-  positions vs. self-attention positions
-- Use causal tracing: ablate specific heads and measure whether
-  Agent B loses ability to continue Agent A's reasoning
-- Check if the same heads are consistently "cross-agent" across
-  different tasks and agent pairs
-- Identify MLP neurons that activate specifically on cross-agent input
-- Map the full collaboration circuit end-to-end
 
 
 
@@ -857,7 +822,6 @@ SUMMARY TABLE
 8  | Faithfulness Gap                  | Safety     | No
 9  | Uncertainty Encoding              | Probing    | No
 10 | Emergent Role Specialization      | Repr       | No
-11 | Cross-Agent Induction Heads       | Mech       | No
 15 | Flocking and Herding Dynamics     | Physics    | No
 16 | Latent Entanglement               | Physics    | No
 17 | Evolutionary Selection            | Bio        | No
@@ -872,7 +836,7 @@ SUMMARY TABLE
 26 | Manifold Alignment / Topology     | Geo        | No
 27 | Resonance & Synchronization       | Physics    | No
 
-Pure observation (zero extra runs):  1-3, 5-11, 15-27
+Pure observation (zero extra runs):  1-3, 5-10, 15-27
 
 =====================================================================
 RECOMMENDED STARTING POINT:
