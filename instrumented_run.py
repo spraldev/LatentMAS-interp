@@ -696,6 +696,7 @@ def main():
 
     for task in args.tasks:
         args.task_current = task
+        args.task = task
         task_dir = out_root / task
         task_dir.mkdir(parents=True, exist_ok=True)
         items = load_task(task, args.split, args.max_samples)
