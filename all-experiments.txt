@@ -1,0 +1,827 @@
+ALL POSSIBLE OFFLINE EXPERIMENTS — LATENTMAS ACTIVATIONS
+==========================================================
+Data available per example:
+  latent_thoughts.pt      [A, m, D]       hidden states before/after W_a
+  latent_per_layer.pt     [A, m, L+1, D]  all transformer layers
+  prompt_hidden.pt        [64, D]         last 64 prompt token hiddens
+  kv_latent.pt            list[(k,v)]     KV cache at latent positions
+  text_outputs.json       decoded text + top-5 vocab tokens
+  metadata.json           correct / gold / pred
+  wa_matrix.pt            W_a [D, D]
+Tasks: gsm8k, arc_challenge, mbppplus   (500 examples each)
+==========================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 1: MECHANISTIC (W_a & MATRIX ANALYSIS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 1 — The Latent Editor (W_a SVD)
+PAPER: "The Latent Editor: How the Alignment Matrix W_a Selectively
+Preserves and Distorts Semantic Directions in Multi-Agent Latent Reasoning"
+QUESTION: Is W_a a passive translator or an active editor that amplifies
+certain semantic directions (logical structure, uncertainty) while
+suppressing others (surface grammar)? Which directions does ridge
+regression systematically discard?
+
+EXP 30 — W_a Fixed-Point and Self-Consistency
+PAPER: "Does W_a Have a Fixed Mind? Fixed-Point Analysis of the
+Alignment Matrix in LatentMAS"
+QUESTION: Does the W_a alignment matrix have stable fixed-point vectors
+v* such that W_a v* ≈ v* — and do these fixed-point directions correspond
+to semantically meaningful "shared concepts" that both agents agree on
+regardless of task context?
+
+EXP 31 — W_a Effective Rank and Information Bottleneck
+PAPER: "How Narrow Is the Bridge? Effective Rank of the Alignment Matrix
+as an Information Bottleneck in Cross-Agent Communication"
+QUESTION: What is the effective rank of W_a (how many singular values
+carry >1% of variance), and does a lower-rank W_a correspond to higher
+task performance — suggesting the bottleneck forces agents to communicate
+only the most essential concepts?
+
+EXP 32 — Layer-Wise W_a Equivalents
+PAPER: "Which Layer Does W_a Most Resemble? Finding the Functional Analogue
+of the Alignment Matrix Within the Transformer Stack"
+QUESTION: If you fit a linear map from each transformer layer's output
+to the next agent's input independently, at which layer is the mapping
+closest to W_a? This reveals which processing stage W_a is functionally
+equivalent to.
+
+EXP 33 — W_a Condition Number and Amplification Pathology
+PAPER: "Ill-Conditioned Alignment: Does a High Condition Number in W_a
+Predict Catastrophic Error Amplification in Multi-Agent Reasoning?"
+QUESTION: Does the condition number (max/min singular value ratio) of
+W_a predict error amplification — where small perturbations in one
+agent's latent thought cause large shifts in the next agent's hidden
+state, leading to cascading reasoning failures?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 2: REPRESENTATION / PROBING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 2 — Emergent Private Latent Vocabulary
+PAPER: "Emergent Private Latent Vocabularies: Do Collaborating Agents
+Develop a Shared Internal Language Invisible to Human Observers?"
+QUESTION: Do agents spontaneously develop consistent, reusable latent
+activation patterns that recur across different examples when
+communicating the same concept — a private language existing only in
+activation space?
+
+EXP 3 — Cross-Agent Mind-Reading
+PAPER: "Latent Telepathy: Reconstructing Agent A's Internal Reasoning
+State from Agent B's Working Memory Alone"
+QUESTION: Can a linear probe on Agent B's incoming working memory
+accurately reconstruct concepts, errors, or plans from Agent A — even
+though Agent B never saw any text from Agent A?
+
+EXP 9 — Uncertainty Encoding
+PAPER: "Beyond 'I Think': Do Latent Thoughts Encode Uncertainty More
+Faithfully Than Text-Based Confidence Statements?"
+QUESTION: Do latent thoughts contain reliable intrinsic uncertainty
+signals (via activation norms, variance, or learned directions) that
+correlate more strongly with actual correctness than explicit
+text-based confidence statements?
+
+EXP 10 — Emergent Role Specialization
+PAPER: "Invisible Division of Labor: Emergent Role Specialization in
+Latent Multi-Agent Coordination"
+QUESTION: Do agents develop stable, recurring roles (fact-supplier,
+verifier, planner) invisible in final text outputs but consistently
+detectable through clustering of latent thoughts across many examples?
+
+EXP 34 — Cross-Task Latent Clustering
+PAPER: "Universal Reasoning Primitives: Do Latent Thought Clusters
+Transfer Across Math, Science, and Code Tasks?"
+QUESTION: When you cluster all latent thoughts across gsm8k, arc_challenge,
+and mbppplus together, do task-independent clusters emerge — universal
+reasoning primitives like "I am uncertain" or "I found a sub-answer" that
+appear regardless of domain?
+
+EXP 35 — Dead Dimensions in Latent Space
+PAPER: "The Silent Majority: How Many Latent Dimensions Are Functionally
+Dead and Does Pruning Them Hurt Collaboration?"
+QUESTION: What fraction of the D hidden dimensions carry essentially zero
+variance across all examples (dead dimensions), and are the remaining
+active dimensions sufficient to predict task outcomes — suggesting massive
+redundancy in latent communication?
+
+EXP 36 — Prompt vs. Latent Representation Alignment
+PAPER: "Memory vs. Thought: How Aligned Are the Representations in
+Prompt Context and Latent Working Memory?"
+QUESTION: Using CKA (Centered Kernel Alignment), how similar are the
+representations in prompt_hidden (context memory) vs. latent_thoughts
+(working memory)? Do agents think in the same space they read from, or
+do they maintain a fundamentally different reasoning geometry?
+
+EXP 37 — Task Identity Decodable from Latent Space
+PAPER: "Can You Tell What I'm Thinking About? Decoding Task Domain
+from Latent Thoughts Without Seeing the Prompt"
+QUESTION: Given only a latent thought vector (no text, no prompt), can
+a simple probe decode whether the agent was solving math, science, or
+code? If yes, different tasks produce systematically different reasoning
+geometries in activation space.
+
+EXP 38 — Anchoring Effect: First Agent Dominance
+PAPER: "The First Mover Advantage in Thought Space: Does the Initial
+Agent's Latent State Disproportionately Anchor Subsequent Reasoning?"
+QUESTION: Does the first agent's latent thought have disproportionate
+influence on all subsequent agents' latent directions — analogous to
+the anchoring effect in human cognition — and does this anchoring
+improve or harm final accuracy?
+
+EXP 39 — Semantic Direction Inventory
+PAPER: "Charting the Compass Directions of Reasoning: A Semantic
+Direction Inventory in LatentMAS Latent Space"
+QUESTION: Can we identify and catalog specific semantic directions in
+latent space (e.g., "increasing confidence," "switching reasoning
+strategy," "detecting contradiction") using contrastive pairs, and
+measure how consistently these directions activate across tasks?
+
+EXP 40 — Contrastive Geometry: Correct vs. Incorrect
+PAPER: "The Geometry of Getting It Wrong: How Correct and Incorrect
+Reasoning Trajectories Diverge in Latent Space"
+QUESTION: In latent space, at which round and which layer do correct-answer
+and incorrect-answer trajectories maximally diverge — and is there a
+linear boundary separating them detectable early in the collaboration?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 3: INFORMATION THEORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 5 — Information Compression
+PAPER: "How Much Does a Latent Thought Carry? Quantifying Information
+Compression and Functional Density in Latent Agent Reasoning"
+QUESTION: How much task-critical information is preserved vs. lost when
+agents compress their thinking into fixed-size latent thoughts? How does
+1 latent token compare to N text tokens in reasoning weight carried?
+
+EXP 6 — Information Propagation and Decay
+PAPER: "Signal or Noise: Mapping How Information Propagates, Amplifies,
+and Decays Across Latent Multi-Agent Dialogue Rounds"
+QUESTION: Across multiple collaboration rounds, which dimensions, time
+steps, or layers of shared latent memory are actually utilized by later
+agents? Does useful information amplify or decay over rounds?
+
+EXP 41 — Channel Capacity of Latent Communication
+PAPER: "How Loud Is the Signal? Empirical Channel Capacity of the
+Latent Communication Channel Between Collaborating Agents"
+QUESTION: Using the data-processing inequality and mutual information
+estimates, what is the empirical channel capacity (bits/token) of
+the latent communication link between agents, and does it scale with
+task difficulty or collapse under reasoning pressure?
+
+EXP 42 — Redundancy Coding Across Agents
+PAPER: "Saying It Twice in Thought: Redundancy and Error-Correcting
+Codes in Multi-Agent Latent Communication"
+QUESTION: How much of the information in one agent's latent thought is
+redundantly encoded in another agent's thoughts — and does higher
+redundancy (multiple agents encoding the same sub-fact) predict higher
+final accuracy, suggesting implicit error-correcting codes?
+
+EXP 43 — Rate-Distortion Tradeoff
+PAPER: "Thinking Cheaper: The Rate-Distortion Tradeoff Between Latent
+Communication Bandwidth and Task Performance"
+QUESTION: If you compress each latent thought to k bits (by projecting
+onto the top-k PCA components), what is the rate-distortion curve —
+at what compression level does accuracy sharply degrade, revealing
+the minimum viable latent communication bandwidth?
+
+EXP 44 — Fisher Information in Latent Dimensions
+PAPER: "Which Dimensions Know the Answer? Fisher Information Analysis
+of Task-Predictive Latent Activations"
+QUESTION: Which individual dimensions of the hidden state carry the most
+Fisher information about the final answer — i.e., which single activation
+values are most discriminative between correct and incorrect outcomes?
+
+EXP 45 — Kolmogorov Complexity Proxy of Thoughts
+PAPER: "Are Smart Thoughts Simple? Using Compression as a Proxy for
+Kolmogorov Complexity of Latent Reasoning Patterns"
+QUESTION: Using gzip compression length as a proxy for Kolmogorov
+complexity on the quantized latent thought vectors, do simpler (lower
+complexity) thoughts correspond to higher final accuracy — suggesting
+that correct reasoning is structurally simpler?
+
+EXP 46 — Mutual Information Between Rounds
+PAPER: "Memory Decay in Thought: How Mutual Information Between
+Consecutive Rounds Reveals the Half-Life of Latent Working Memory"
+QUESTION: How quickly does mutual information between round-t and round-(t+k)
+latent thoughts decay with increasing lag k — and does a faster decay
+rate predict task failure, indicating that early context is lost before
+the team reaches consensus?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 4: GEOMETRY AND TOPOLOGY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 26 — Manifold Alignment and Universal Conceptual Geometry
+PAPER: "Universal Conceptual Geometry: Does W_a Preserve the Topological
+Structure of Thought Across Agent Latent Spaces?"
+QUESTION: When Agent A's latent thought is mapped through W_a into Agent
+B's space, are the relational structures between concepts (the manifold
+shape) preserved even if coordinates change — implying a universal
+conceptual geometry shared by all agents?
+
+EXP 47 — Geodesics in Concept Space
+PAPER: "Shortest Paths in Thought: Do Agent Reasoning Trajectories Follow
+Geodesics Through the Latent Concept Manifold?"
+QUESTION: When agents revise their working hypothesis across rounds, do
+their latent thought vectors traverse near-geodesic paths through the
+concept manifold (efficient, direct routes), or do they take detours —
+and do geodesic paths predict higher efficiency and accuracy?
+
+EXP 48 — Topological Data Analysis of Reasoning
+PAPER: "The Shape of Reasoning: Persistent Homology Reveals Topological
+Signatures of Successful vs. Failed Multi-Agent Collaboration"
+QUESTION: Using persistent homology (TDA), what topological features
+(connected components, loops, voids) characterize the point cloud of
+latent thoughts in successful vs. failed examples — and are there
+topological invariants that predict outcomes?
+
+EXP 49 — Fractal Dimension of Latent Trajectories
+PAPER: "Self-Similar Reasoning: Fractal Dimension Analysis of Agent
+Trajectories Through Latent Space"
+QUESTION: Do the trajectories of agent latent thoughts across rounds and
+layers exhibit fractal structure (non-integer dimension), and does a
+higher fractal dimension indicate richer, more exploratory reasoning or
+chaotic/unproductive wandering?
+
+EXP 50 — Voronoi Partitioning of Concept Space
+PAPER: "Dividing the Mind: Voronoi Tessellation Reveals How Agents
+Partition Conceptual Space in Latent Collaboration"
+QUESTION: Using agents' latent thoughts as Voronoi generators, what
+conceptual regions does each agent "own" — and do agents with more
+balanced, non-overlapping Voronoi cells produce better team outcomes?
+
+EXP 51 — Curvature of the Thought Manifold
+PAPER: "Bending Toward the Answer: Riemannian Curvature of the Latent
+Thought Manifold Across Task Domains"
+QUESTION: Does the estimated sectional curvature of the latent thought
+manifold differ between tasks (math vs. code vs. science), and do
+high-curvature regions — where the manifold bends sharply — correspond
+to moments of reasoning difficulty or conceptual pivoting?
+
+EXP 52 — Dimensionality Scaling Laws
+PAPER: "The Effective Dimension of Thought: How Intrinsic Dimensionality
+of Latent Representations Scales With Task Complexity"
+QUESTION: Using participation ratio or TwoNN estimators, how does the
+intrinsic dimensionality of latent thought clouds scale with problem
+difficulty, and does a higher effective dimensionality at early rounds
+predict success by indicating richer initial hypotheses?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 5: PHYSICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 15 — Flocking and Herding Dynamics
+PAPER: "Flocking in Thought Space: Do Latent Agent Vectors Obey
+Boids-Like Alignment, Cohesion, and Separation Rules?"
+QUESTION: Do agents' latent thought vectors exhibit animal-like flocking
+dynamics — alignment (matching neighbors' direction), cohesion (moving
+toward average), and separation (avoiding collapse) — and do tighter
+flocks predict better or worse performance?
+
+EXP 16 — Latent Entanglement (Quantum Analogy)
+PAPER: "Latent Entanglement: Do Multi-Agent Latent Thoughts Develop
+Non-Local Correlations Analogous to Quantum Entanglement?"
+QUESTION: Do pairs of agents develop latent thought correlations that
+are stronger than what their direct information exchange would predict —
+non-local correlations reminiscent of quantum entanglement?
+
+EXP 19 — Superposition of Reasoning Paths
+PAPER: "Superposition of Thought: Do Latent Thoughts Encode Multiple
+Competing Reasoning Paths Simultaneously?"
+QUESTION: Does a single latent thought encode multiple candidate answers
+simultaneously, and does the shared working memory act as a
+"measurement" that collapses them into one dominant path?
+
+EXP 25 — Attractor Theory and Thermodynamic Entropy
+PAPER: "Cognitive Thermodynamics: Does Successful Multi-Agent
+Collaboration Converge to a Fixed-Point Attractor in Latent Space?"
+QUESTION: Does successful collaboration show attractor-like convergence
+while failed collaboration drifts or oscillates — and does shared memory
+entropy decrease over rounds like energy dissipation in physical systems?
+
+EXP 53 — Phase Transitions in Collaboration Dynamics
+PAPER: "The Tipping Point of Thought: Phase Transitions in Latent
+Working Memory as Agent Count and Rounds Increase"
+QUESTION: As you vary the number of active agents (subsample to 1, 2, 3...)
+and analyze the resulting latent statistics, is there a critical agent
+count at which collective behavior (coherence, shared direction)
+undergoes a sharp phase transition?
+
+EXP 54 — Diffusion Dynamics in Latent Space
+PAPER: "Ideas as Particles: Diffusion of Concepts Through the Latent
+Agent Communication Space"
+QUESTION: Does the spread of a concept vector from one agent to all
+others follow Fick's laws of diffusion — with a measurable diffusion
+coefficient — and does a higher diffusion coefficient predict faster
+consensus formation and better task performance?
+
+EXP 55 — Percolation Threshold and Information Flow
+PAPER: "Percolation of Understanding: Is There a Critical Information
+Density Below Which Agent Communication Fails?"
+QUESTION: If you systematically zero out random dimensions of latent
+thoughts (simulated offline by masking), is there a percolation
+threshold — a critical fraction of active dimensions below which
+the latent communication network loses connectivity and performance
+collapses?
+
+EXP 56 — Spin Glass and Metastable Reasoning States
+PAPER: "Glassy Minds: Do Multi-Agent Latent Systems Exhibit Spin-Glass
+Dynamics With Multiple Metastable Reasoning Configurations?"
+QUESTION: Do the latent thought trajectories of failed examples get
+trapped in local minima (metastable states where all agents agree on
+a wrong answer), while successful examples escape to the global
+minimum — analogous to spin-glass frustration?
+
+EXP 57 — Maxwell's Demon in Latent Communication
+PAPER: "Maxwell's Demon in Latent Space: Identifying the Dimensions
+That Sort Signal from Noise in Multi-Agent Reasoning"
+QUESTION: Can we identify a small set of latent dimensions that function
+as Maxwell's demon — reliably sorting task-relevant signal from noise —
+and what is the minimum number of such "gatekeeper" dimensions needed
+to predict final task success?
+
+EXP 59 — Renormalization Group Analysis Across Layers
+PAPER: "Coarse-Graining the Mind: Renormalization Group Analysis of
+Information Across Transformer Layers in Latent Collaboration"
+QUESTION: Across the L+1 transformer layers in latent_per_layer, does
+information coarse-grain consistently (irrelevant details dropped,
+relevant abstractions preserved) in a way consistent with a
+renormalization group flow — and does the fixed point of this flow
+correspond to the task answer?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 6: BIOLOGY / ECOLOGY / EVOLUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 17 — Evolutionary Selection of Latent Patterns
+PAPER: "Latent Natural Selection: Do Successful Activation Patterns Get
+Amplified While Unsuccessful Ones Die Out Across Collaboration Rounds?"
+QUESTION: Do certain latent activation patterns get "selected" and amplified
+by downstream agents while others decay — and can we identify evolved
+latent "genes" for successful collaboration?
+
+EXP 18 — Symbiotic vs. Parasitic Interactions
+PAPER: "Symbiosis and Parasitism in Latent Space: Classifying Directional
+Information Transfer Between Collaborating Agents"
+QUESTION: Can we classify latent exchanges as symbiotic (mutually beneficial)
+or parasitic (one agent extracts signal while contributing noise), detectable
+through directional transfer entropy analysis?
+
+EXP 21 — Hebbian Strengthening
+PAPER: "Cells That Fire Together: Hebbian-Like Strengthening of Latent
+Patterns in Multi-Agent Working Memory Over Collaboration Rounds"
+QUESTION: Does repeated activation of certain latent patterns strengthen
+them over rounds — analogous to Hebbian plasticity — creating persistent
+functional "synapses" between agents that bias future communication?
+
+EXP 22 — Predator-Prey Dynamics
+PAPER: "Predator and Prey in Latent Space: Asymmetric Information
+Extraction Dynamics in Hierarchical Multi-Agent Systems"
+QUESTION: Do some agents act as "predators" (extracting information while
+contributing little) and others as "prey" (supplying information but losing
+utility), with oscillatory population-level dynamics over rounds?
+
+EXP 61 — Quorum Sensing and Threshold Coordination
+PAPER: "Quorum Sensing in Silicon: Does Multi-Agent Latent Coordination
+Require a Minimum Agent Consensus Before Committing to an Answer?"
+QUESTION: In bacterial quorum sensing, collective behavior activates only
+when enough individuals signal. In LatentMAS, is there a detectable
+consensus threshold in latent space — a minimum level of agreement between
+agents' latent vectors — that must be reached before the final answer
+"crystallizes"?
+
+EXP 62 — Immune Response to Reasoning Errors
+PAPER: "Cognitive Immunity: Does the Multi-Agent Latent System Develop
+Error-Recognition and Suppression Mechanisms?"
+QUESTION: When one agent introduces an incorrect concept into the shared
+working memory, do subsequent agents' latent thoughts show a detectable
+"rejection" response — shifting away from the erroneous direction — analogous
+to the immune system's recognition and suppression of foreign bodies?
+
+EXP 63 — Morphogenesis and Latent Differentiation
+PAPER: "From Identical Cells to Specialized Organs: Turing-Like
+Differentiation Patterns in Multi-Agent Latent Role Formation"
+QUESTION: Since all LatentMAS agents start from the same base model,
+does role differentiation (Exp 10) follow a pattern consistent with
+Turing's reaction-diffusion model — where small initial differences
+amplify into stable spatial patterns of specialization across agent
+positions?
+
+EXP 64 — Niche Construction in Communication Space
+PAPER: "Agents Remodel Their Environment: Niche Construction in Latent
+Working Memory Through Selective Activation Sculpting"
+QUESTION: Do agents actively modify the shared working memory in ways
+that make it more favorable for their own subsequent contribution —
+analogous to ecological niche construction — and does this self-modification
+improve or reduce team diversity?
+
+EXP 65 — Gene Regulatory Network Analogy
+PAPER: "Circuits of Thought: Do Latent Agent Interactions Form Gene
+Regulatory Network-Like Feedback Topologies?"
+QUESTION: By mapping directional transfer entropy between agents into a
+directed graph, do LatentMAS agent interaction networks resemble gene
+regulatory networks — with hubs, feedback loops, and feed-forward motifs
+— and do motif frequencies predict task performance?
+
+EXP 66 — Sexual Selection: Preferential Adoption
+PAPER: "Choosing Whose Thoughts to Copy: Sexual Selection Dynamics in
+Latent Multi-Agent Communication"
+QUESTION: Do agents preferentially adopt certain other agents' latent
+patterns over others — a form of "choosing" — and does this selective
+adoption follow quality-based (Fisherian) or arbitrary (runaway selection)
+dynamics across examples?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 7: NEUROSCIENCE / COGNITIVE SCIENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 67 — Cortical Column Specialization by Layer
+PAPER: "Synthetic Cortical Columns: Do Transformer Layers Exhibit
+Depth-Dependent Specialization Analogous to Cortical Laminae?"
+QUESTION: Using latent_per_layer [A, m, L+1, D], do early layers
+consistently encode surface/syntactic reasoning, middle layers encode
+factual/semantic content, and late layers encode abstract planning —
+mirroring cortical laminar specialization — and does LatentMAS
+preferentially rely on specific layers for cross-agent communication?
+
+EXP 68 — Working Memory Capacity Limit
+PAPER: "Miller's Law in Silicon: Is There a Magic Number of Concepts
+That Latent Working Memory Can Hold Simultaneously?"
+QUESTION: By probing how many distinct concept directions are simultaneously
+active in the shared working memory, is there a capacity limit analogous
+to Miller's 7±2 — a maximum number of simultaneously active semantic
+directions — and does exceeding this limit predict task failure?
+
+EXP 69 — Episodic vs. Semantic Memory Encoding
+PAPER: "Where Did I Put That Fact? Distinguishing Episodic and Semantic
+Memory Encoding in Latent Agent Working Memory"
+QUESTION: Do prompt_hidden vectors (encoding specific problem context —
+"episodic" memory) and latent_thoughts vectors (encoding general reasoning
+strategies — "semantic" memory) occupy geometrically distinct subspaces,
+and does the ratio of episodic vs. semantic content in latent thoughts
+predict task success?
+
+EXP 70 — Dopaminergic Prediction Error Signals
+PAPER: "Reward Prediction Error in Latent Space: Do Agent Thoughts Encode
+Surprise Signals When Encountering Unexpected Information?"
+QUESTION: When an agent's incoming working memory contains content that
+strongly disagrees with its prior latent thought (high cosine distance),
+does the subsequent latent thought show a characteristic update pattern
+analogous to dopaminergic prediction error signals — and do larger
+"surprise" responses predict better error correction?
+
+EXP 71 — Mirror Neuron Dynamics
+PAPER: "Do You Think What I Think? Mirror-Neuron-Like Latent Imitation
+Between Collaborating Agents"
+QUESTION: Does Agent B's latent thought, when processing Agent A's
+contribution, activate patterns that are geometrically similar to Agent A's
+original latent thought — a "mirroring" effect — and is the degree of
+mirroring a proxy for successful understanding of Agent A's reasoning?
+
+EXP 72 — Default Mode Network Analogy (Idle Agents)
+PAPER: "Minds at Rest: Do Agents in Easy Tasks Show Default-Mode-Like
+Latent Activation Patterns Analogous to Brain Resting State?"
+QUESTION: On trivially easy examples where the answer is obvious early,
+do later agents' latent thoughts collapse to a characteristic "idle"
+activation pattern — analogous to the brain's default mode network —
+distinct from the pattern on hard examples requiring active reasoning?
+
+EXP 73 — Sleep Consolidation and Round-to-Round Integration
+PAPER: "Sleeping on It: Does Each Collaboration Round Consolidate and
+Reorganize Earlier Latent Content Like Sleep Memory Consolidation?"
+QUESTION: Across rounds, do latent thoughts progressively integrate
+and restructure earlier information — increasing long-range correlations
+within the working memory — analogous to memory consolidation during
+sleep, where recent experiences are integrated with prior knowledge?
+
+EXP 74 — Cognitive Load Encoding
+PAPER: "Reading the Load: Which Latent Dimensions Encode Cognitive Load
+and Does High Load Predict Task Failure in Multi-Agent Systems?"
+QUESTION: Is there a detectable "cognitive load" direction in latent space
+— a dimension that increases monotonically with task difficulty (as
+measured by number of reasoning steps in the ground-truth solution) —
+and does high cognitive load in early agents' thoughts predict failure?
+
+EXP 75 — Confirmation Bias in Latent Space
+PAPER: "Latent Confirmation Bias: Do Agents Amplify Evidence Supporting
+Their Initial Hypothesis While Suppressing Contradictory Evidence?"
+QUESTION: Given an agent's latent thought at round 1, do subsequent rounds
+show preferential amplification of latent dimensions consistent with that
+initial direction, even on examples where the initial direction was wrong
+— and does this latent confirmation bias predict final accuracy?
+
+EXP 76 — Binding Problem in Multi-Concept Thoughts
+PAPER: "Binding in the Latent Layer: How Multi-Concept Thoughts Are
+Integrated Into Unified Representations in Agent Working Memory"
+QUESTION: When a latent thought must simultaneously represent multiple
+bound concepts (e.g., "agent A believes X and X implies Y"), do the
+constituent concepts occupy orthogonal dimensions (sparse binding) or
+do they superpose into a single entangled vector — and which binding
+strategy correlates with downstream reasoning accuracy?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 8: SOCIAL SCIENCE / PSYCHOLOGY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 23 — Bargaining and Power Asymmetries
+PAPER: "Latent Negotiation: Do Agents Implicitly Bargain and Form Power
+Asymmetries in Shared Working Memory?"
+QUESTION: Do agents implicitly bargain in latent space — where one
+agent's thought injections consistently dominate the shared memory
+direction, overriding others — and does dominant-agent accuracy predict
+team success?
+
+EXP 77 — Groupthink Detector
+PAPER: "The Latent Echo Chamber: Detecting Groupthink via Premature
+Convergence of Agent Latent Thoughts"
+QUESTION: Does premature convergence of all agents' latent thoughts
+(high mutual cosine similarity at early rounds) predict wrong answers —
+the latent signature of groupthink — while maintained diversity predicts
+correct answers, even when the diverse agents ultimately agree?
+
+EXP 78 — Wisdom of Crowds in Latent Space
+PAPER: "The Crowd Knows Best: Is the Centroid of Agent Latent Thoughts
+a Better Answer Predictor Than Any Individual Agent?"
+QUESTION: Does the centroid (average) of all agents' latent thoughts
+at the final round, projected onto the answer direction, better predict
+the correct answer than any individual agent's latent thought alone —
+confirming a wisdom-of-crowds effect in latent collaboration?
+
+EXP 79 — Social Contagion of Errors
+PAPER: "When One Bad Apple Spoils the Barrel: Social Contagion of
+Reasoning Errors Through Latent Multi-Agent Communication"
+QUESTION: When one agent introduces an erroneous concept into the shared
+working memory, how quickly and completely does this error spread to
+subsequent agents' latent thoughts — and what latent geometric properties
+make certain errors more "contagious" than others?
+
+EXP 80 — Status Hierarchy and Deference
+PAPER: "Who Has Authority Here? Latent Status Hierarchies and Agent
+Deference Patterns in Multi-Agent Reasoning"
+QUESTION: Do agents at certain positions (first agent, last agent)
+consistently receive more "deference" — their latent thought directions
+are more faithfully preserved by subsequent agents — forming an implicit
+status hierarchy that determines whose reasoning prevails?
+
+EXP 81 — Minority Opinion Preservation
+PAPER: "The Dissenting Voice: Does Latent Working Memory Systematically
+Suppress Minority Agent Opinions Before Final Consensus?"
+QUESTION: When one agent's latent thought is an outlier (high cosine
+distance from all others), does the subsequent collaborative process
+suppress or amplify this minority signal — and when minority views
+correspond to the correct answer, does their suppression cause failure?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 9: GAME THEORY / ECONOMICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 82 — Shapley Values for Agent Contribution
+PAPER: "Fair Division of Credit: Shapley Value Attribution of Agent
+Contributions to Final Answer Quality in LatentMAS"
+QUESTION: Using offline Shapley value estimation (sampling agent subsets
+from saved activations and measuring predicted accuracy degradation),
+what is each agent's fair marginal contribution to the final answer —
+and are late-round agents systematically over- or under-credited?
+
+EXP 83 — Information Asymmetry and Exploitation
+PAPER: "Who Knows More? Information Asymmetry Between Agents and Its
+Exploitation in Latent Multi-Agent Reasoning"
+QUESTION: Do agents that receive richer prompt context (as measured by
+prompt_hidden entropy) systematically exploit this information advantage
+by contributing higher-quality latent thoughts, and do information-
+asymmetric teams perform better or worse than symmetric ones?
+
+EXP 84 — Diminishing Returns to Additional Rounds
+PAPER: "Is Another Round Worth It? Measuring Diminishing Marginal
+Returns to Collaboration Rounds in Latent Multi-Agent Systems"
+QUESTION: By measuring the mutual information gain between the final
+working memory state and the correct answer as a function of round
+number, is there a detectable point of diminishing returns — a round
+after which additional collaboration adds essentially zero new
+information?
+
+EXP 85 — Pareto Efficiency of Latent Communication
+PAPER: "No Free Lunch in Thought Space: Is Multi-Agent Latent
+Communication Pareto Efficient?"
+QUESTION: For each agent pair, is there evidence that both agents benefit
+from the exchange (Pareto improvement) or do some exchanges improve one
+agent's subsequent reasoning at the cost of the other — and do Pareto-
+efficient exchanges correlate with team-level success?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 10: CHEMISTRY / MATERIALS ANALOGY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 86 — Catalytic Agents: Lowering Activation Energy
+PAPER: "Thought Catalysts: Do Certain Agent Latent States Lower the
+'Activation Energy' for Correct Reasoning in Subsequent Agents?"
+QUESTION: Is there a subset of agents or latent patterns that, when
+present in the working memory, dramatically reduce the cognitive work
+required for subsequent agents to reach the correct answer — catalysts
+that facilitate reasoning without being consumed in the process?
+
+EXP 87 — Entropy of Mixing
+PAPER: "Mixing Minds: Does Combining Latent Thoughts From Multiple Agents
+Create More or Less Entropy Than Individual Thoughts?"
+QUESTION: When two agents' latent thought vectors are combined in the
+working memory, does the resulting representation have higher entropy
+(disordered mixing) or lower entropy (structured integration) than the
+components — and does low entropy of mixing predict better collaboration?
+
+EXP 88 — Reaction Kinetics: Rate of Conceptual Transfer
+PAPER: "How Fast Do Ideas Spread? Kinetics of Conceptual Transfer
+Between Agents in Latent Multi-Agent Communication"
+QUESTION: Can we fit a kinetic rate constant to the transfer of a
+specific concept direction from agent A to agent B (as measured by
+cosine similarity over rounds), and does a higher "rate constant"
+for correct-answer directions predict faster convergence?
+
+EXP 89 — Phase Diagram: Performance as a Function of Rounds × Agents
+PAPER: "The Phase Diagram of Collaboration: Mapping Multi-Agent
+Performance Across Rounds and Agent Count"
+QUESTION: By subsampling agents and rounds from saved activations, can
+we empirically map a 2D phase diagram of task performance as a function
+of (number of agents) × (number of rounds) — revealing phase boundaries
+between "insufficient collaboration" and "optimal collaboration" regimes?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 11: NETWORK SCIENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 90 — Transfer Entropy Graph and Network Motifs
+PAPER: "The Neural Conversation Graph: Network Motifs in Latent
+Multi-Agent Information Transfer Topology"
+QUESTION: By computing pairwise transfer entropy between all agent pairs
+and rounds to form a directed weighted graph, what network motifs (feed-
+forward loops, feedback cycles, bidirectional pairs) appear more often
+than chance — and which motif frequencies predict task success?
+
+EXP 91 — Critical Agents via Node Removal Simulation
+PAPER: "Who Is Indispensable? Simulated Node Removal Reveals Critical
+Agents in the Latent Communication Network"
+QUESTION: By zeroing out each agent's latent contribution in turn
+(offline, by setting their thought to the mean), which agent's removal
+causes the largest predicted drop in answer quality — revealing the
+"keystone" agents whose latent contributions are uniquely critical?
+
+EXP 92 — Power Law in Information Flow
+PAPER: "Scale-Free Thought Networks: Does Information Flow in LatentMAS
+Follow a Power Law Distribution?"
+QUESTION: Does the distribution of transfer entropy values across all
+agent-pair-round triples follow a power law — suggesting that a few
+agent interactions carry a disproportionately large fraction of the
+total information flow, consistent with scale-free network structure?
+
+EXP 93 — Clustering Coefficient of Latent Communication
+PAPER: "Transitive Trust in Thought Space: Clustering Coefficients in
+Multi-Agent Latent Communication Networks"
+QUESTION: In the transfer entropy graph, is the clustering coefficient
+(tendency for agents to form tightly connected triads) positively
+correlated with task success — suggesting that transitive information
+exchange (A→B→C informed by A→C) is a structural signature of
+effective collaboration?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 12: LINGUISTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 94 — Zipf's Law in Latent Activation Frequencies
+PAPER: "Zipf's Law of Thought: Do Latent Activation Patterns Follow a
+Power Law Frequency Distribution Analogous to Word Frequencies?"
+QUESTION: If you cluster all latent thoughts across 1500 examples and
+rank clusters by frequency, does the distribution follow Zipf's law
+(frequency ∝ 1/rank) — implying a structured, parsimonious internal
+vocabulary with a small number of very common "thought words" and a
+long tail of rare ones?
+
+EXP 95 — Semantic Drift Over Task Domains
+PAPER: "Latent Language Drift: Do Concept Representations Shift
+Systematically Across Task Domains in LatentMAS?"
+QUESTION: Does the latent representation of the same concept (e.g.,
+"the answer is probably X") drift systematically between gsm8k,
+arc_challenge, and mbppplus — analogous to semantic drift across
+language communities — revealing domain-specific dialects in latent
+communication?
+
+EXP 96 — Compositionality of Latent Thoughts
+PAPER: "Building Complex Thoughts From Simple Ones: Compositional
+Structure in Multi-Agent Latent Reasoning"
+QUESTION: Are complex latent thoughts (those associated with multi-step
+reasoning) linearly decomposable into combinations of simpler latent
+primitives — and does this compositionality hold across agents and task
+domains, suggesting a shared compositional grammar in latent space?
+
+EXP 97 — Code-Switching Between Task Modes
+PAPER: "Switching Languages in Thought: Latent Code-Switching Between
+Mathematical, Logical, and Procedural Reasoning Modes"
+QUESTION: Do agents performing math (gsm8k), science (arc_challenge),
+and code (mbppplus) tasks activate distinct latent "dialects" — geometrically
+separable subregions of activation space — and do agents successfully
+"switch" between dialects when given mixed-domain prompts?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 13: SAFETY / ALIGNMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 8 — Faithfulness Gap
+PAPER: "The Faithfulness Gap: When Latent Logic Contradicts Textual
+Output in Multi-Agent Latent Reasoning Systems"
+QUESTION: How often and how severely do intermediate latent conclusions
+contradict the final text output — where the latent says "answer is A"
+but the output says "answer is B" — and where in the pipeline does
+the divergence occur?
+
+EXP 24 — Latent Catastrophe Precursors
+PAPER: "Before the Fall: Early Warning Signals in Latent Working Memory
+Predict Reasoning Failures Before They Appear in Text"
+QUESTION: Do entropy spikes, norm changes, or eigenvector shifts appear
+in shared latent memory several rounds before a reasoning failure shows
+up in the final text — enabling real-time failure prediction?
+
+EXP 98 — Latent Hallucination Signature
+PAPER: "The Tell of a Lie: Does Hallucination Leave a Detectable
+Geometric Signature in Latent Thoughts Before the False Claim Appears?"
+QUESTION: On examples where the model's text output contains a factual
+hallucination, do the latent thoughts in the rounds leading up to the
+false claim show a distinctive activation signature (e.g., high norm
+variance, departure from the typical confidence direction) — a pre-
+hallucination warning sign?
+
+EXP 99 — Agent-Level Responsibility Attribution
+PAPER: "Who's to Blame? Latent Attribution of Responsibility for
+Reasoning Errors to Individual Agents"
+QUESTION: For each failed example, can we trace the introduction of the
+critical error to a specific agent's specific round latent thought —
+and does this "blame" consistently fall on the first agent, last agent,
+or mid-round agents — revealing structural vulnerabilities in the
+collaboration pipeline?
+
+EXP 100 — Sycophancy Signal in Latent Space
+PAPER: "The Agreeable Agent: Detecting Sycophantic Alignment in Latent
+Thoughts When One Agent's View Dominates Working Memory"
+QUESTION: When one agent dominates the shared working memory (high
+influence, per Exp 23), do subsequent agents show sycophantic latent
+patterns — their thoughts align with the dominant agent's direction even
+when the dominant agent is wrong — detectable as a direction in latent
+space that correlates with "agreeing regardless of ground truth"?
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TRACK 14: BONUS — WILD / HIGH-UPSIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EXP 101 — Latent Turing Test
+PAPER: "Can You Tell Which Agent Contributed? A Latent-Space Turing
+Test for Agent Identity in Multi-Agent Collaboration"
+QUESTION: Given only the latent thought vectors (no text, no position
+labels), can a classifier reliably identify which agent produced which
+thought — and does classifier accuracy increase or decrease over rounds,
+revealing whether agents develop distinct identities or converge to
+indistinguishable reasoning patterns?
+
+EXP 102 — The Cocktail Party Effect in Latent Space
+PAPER: "Selective Attention in Thought Space: Do Agents Preferentially
+Attend to Specific Signal Dimensions in Crowded Working Memory?"
+QUESTION: In the crowded shared working memory, do agents selectively
+attend to specific dimensions — amplifying some signal components while
+ignoring others — analogous to the cocktail party effect, and can we
+identify which dimensions each agent "listens to" most?
+
+EXP 103 — Turing Completeness of Latent Communication
+PAPER: "How Expressive Is the Latent Channel? Towards a Formal
+Expressiveness Characterization of Multi-Agent Latent Communication"
+QUESTION: Using the saved latent thoughts as a corpus, can we identify
+evidence for compositional, recursive, or conditionally structured
+communication patterns that suggest the latent channel supports
+computationally universal reasoning — beyond simple vector addition?
+
+EXP 105 — The Minority Report: Predicting Failure From Consensus
+PAPER: "Minority Report in Latent Space: High Agent Agreement Predicts
+Wrong Answers When the Majority Is Confidently Incorrect"
+QUESTION: Among examples where all agents show high latent agreement
+(tight flocking, high cosine similarity) but the final answer is wrong,
+is there a detectable "dissent signal" — a single dimension or agent
+that encodes the correct direction — that was suppressed by consensus?
+
+
+==========================================================
+SUMMARY: 76 UNIQUE NEW EXPERIMENTS + 22 ORIGINAL = 98 TOTAL
+All purely offline on saved activations — zero additional GPU runs.
+Data needed: latent_thoughts.pt, latent_per_layer.pt,
+             prompt_hidden.pt, kv_latent.pt, text_outputs.json,
+             metadata.json, wa_matrix.pt
+==========================================================
