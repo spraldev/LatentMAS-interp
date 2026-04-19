@@ -1,13 +1,11 @@
 LATENTMAS INTERPRETABILITY EXPERIMENTS — CONSERVATIVELY DEDUPLICATED
 =====================================================================
-Total unique experiments: 29
+Total unique experiments: 23
 [OBS] = pure observation on saved activations, no extra runs needed
 [INT] = requires new forward passes / intervention runs
 [OBS+INT] = core analysis is OBS, some follow-ups need INT
 
 GENUINE MERGES MADE (only where ideas are nearly identical):
-- Hidden Deception (WELU) + Steganographic Collusion (WELU) → Exp 4
-  (same question, Grok version just adds "coordinated" framing)
 - Faithfulness Gap (WELU) + Faithfulness Gap (Safety track) → Exp 8
   (literally the same experiment named twice)
 - Monosemanticity/disentanglement (SPRAL) + Monosemanticity Collapse (WELU) → Exp 20
@@ -130,45 +128,6 @@ WHAT TO ANALYZE:
 - Test non-locality: does Agent A's Round 1 latent thought predict
   Agent B's Round 3 internal state, across many rounds?
 
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 4: Hidden Deception and Steganographic Collusion
-[OBS+INT]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Invisible Collusion: Detecting Deceptive and Misaligned Reasoning
-Embedded in Latent Thoughts That Produce Correct Text Outputs"
-
-RESEARCH QUESTION:
-Can agents embed misleading or misaligned reasoning within their latent
-thoughts that produces correct final answers but is detectable only
-through activation patterns, probes, or similarity metrics — never
-through text inspection? Can coordinated steganographic deception
-emerge in pure latent space?
-
-BACKGROUND:
-Steganographic deception in LLMs is a known safety concern: models may
-"think one thing, say another." LatentMAS makes this more dangerous
-because the latent channel is never decoded to text by default,
-creating a hidden cognitive layer invisible to standard oversight.
-This is distinct from the Faithfulness Gap (Exp 8) which measures
-accidental divergence — this experiment looks for strategic or
-systematic deception.
-
-WHAT TO ANALYZE:
-- [OBS] On examples where the model reaches the right answer via a
-  provably wrong reasoning path, check if latent thoughts encode the
-  correct path that was abandoned
-- [OBS] Train probes to detect "reasoning inconsistency" between
-  latent steps and final outputs
-- [INT] Deliberately steer one agent toward deceptive reasoning using
-  steering vectors; measure whether probes on other agents' working
-  memory can detect this before it surfaces in text
-- [INT] Test whether deception can be coordinated across agents through
-  latent channel without appearing in any text output
-- Key metric: detection lead time — how many rounds before text output
-  does the latent signal reveal deception?
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -415,108 +374,6 @@ WHAT TO ANALYZE:
 - Identify MLP neurons that activate specifically on cross-agent input
 - Map the full collaboration circuit end-to-end
 
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 12: Latent Trojan Attacks — Poisoning the Working Memory
-[INT]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Latent Trojans: Can One Malicious Agent Poison the Shared Working
-Memory with Triggers Invisible to Human Observers?"
-
-RESEARCH QUESTION:
-Can one malicious agent embed a latent trigger into the shared working
-memory that causes the next agent to hallucinate or leak data — while
-producing outputs that appear completely normal to human oversight?
-
-BACKGROUND:
-Trojan attacks on individual LLMs are well-studied, but LatentMAS
-creates a new attack surface: the shared latent working memory. Because
-the latent channel is never decoded to text by default, a poisoned
-latent thought could persist across rounds, infecting downstream agents
-without any visible sign in text outputs. This would prove that latent
-collaboration requires a "Latent Firewall" — a new safety requirement.
-
-WHAT TO ANALYZE:
-- [INT] Craft adversarial latent thought vectors that, when injected
-  into the working memory, cause specific downstream failure modes
-- Measure how far the poison propagates across rounds
-- Test whether the trigger is detectable by probes on the working
-  memory (can a firewall be built?)
-- Compare to text-based MAS poisoning attacks — is latent poisoning
-  harder or easier to detect?
-- Test persistence: does the trigger survive multiple rounds of
-  legitimate collaboration?
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 13: Robustness to Targeted Interventions
-[INT]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Breaking Latent Collaboration: Which Interventions Destroy Multi-Agent
-Reasoning Fastest and What Do They Reveal About Mechanisms?"
-
-RESEARCH QUESTION:
-How robust is LatentMAS collaboration to targeted interventions (noise,
-steering vectors, feature ablation) in the latent thoughts or KV
-memory? Which interventions break performance fastest, and what does
-the order of degradation reveal about the underlying mechanisms?
-
-BACKGROUND:
-Robustness analysis is a standard mechanistic interpretability tool —
-you learn about a system by breaking it systematically. For LatentMAS,
-the order in which capabilities degrade under different interventions
-reveals which aspects of the latent representation are most critical
-and most fragile.
-
-WHAT TO ANALYZE:
-- Apply Gaussian noise at different magnitudes to latent thoughts and
-  measure performance degradation curve
-- Apply targeted steering vectors (e.g., push toward "uncertainty" or
-  "wrong answer" direction) and measure impact
-- Ablate specific feature directions identified from other experiments
-  (e.g., top singular values of W_a) and measure which capabilities
-  break first
-- Compare intervention impact at different rounds — is Round 1 more
-  fragile than Round 3?
-- Rank interventions by performance damage per unit of perturbation
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 14: Heterogeneous Expert Agent Fusion
-[OBS]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Emergent Fusion Features: How Heterogeneous Expert Agents Integrate
-Their Latent Representations in Shared Working Memory"
-
-RESEARCH QUESTION:
-In hierarchical LatentMAS with domain-expert agents (e.g., a math
-expert + a language expert + a summarizer), how do latent
-representations from heterogeneous agents integrate in shared memory?
-Are there emergent "fusion" features in the working memory that do not
-appear in any individual agent's latent thoughts?
-
-BACKGROUND:
-When agents with different specializations collaborate, the shared
-working memory must somehow reconcile their different representational
-geometries. This may produce genuinely novel features — representations
-that encode the combination of two experts' knowledge in a way that
-neither expert encodes alone. This would be strong evidence that latent
-collaboration produces emergent cognitive artifacts.
-
-WHAT TO ANALYZE:
-- Run hierarchical LatentMAS with agents fine-tuned on different
-  domains; save all individual and shared latent thoughts
-- Train probes to detect "fusion features" — directions in the shared
-  memory that are not predictable from any single agent's thoughts
-- Measure the representational geometry of the shared memory vs.
-  individual agent memories (are they interpolations or genuinely new?)
-- Compare to single-agent and homogeneous-agent baselines
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -984,78 +841,6 @@ WHAT TO ANALYZE:
 - Identify which activation dimensions oscillate most strongly
 
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 28: Latent Niche Construction — Emergent Theory of Mind
-[OBS]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Latent Niche Construction: Do Agents Prepare the Shared Memory for
-Their Collaborator's Specific Weaknesses?"
-
-RESEARCH QUESTION:
-Do agents "prepare" the shared memory for the next agent by encoding
-information in the specific format or emphasis that the downstream
-agent needs — i.e., if Agent A knows Agent B is "bad at math," does
-Agent A change its latent encoding to be more "math-heavy"? This would
-be emergent theory of mind in pure latent space.
-
-BACKGROUND:
-Niche construction in biology refers to organisms modifying their
-environment to make it easier to survive. The cognitive analogue: agents
-that model their collaborator's capabilities and tailor their latent
-communication accordingly. This would require agents to have an implicit
-model of their collaborator's latent representations — a form of
-perspective-taking or theory of mind that was never explicitly trained.
-
-WHAT TO ANALYZE:
-- Compare Agent A's latent thoughts when paired with a strong vs.
-  weak Agent B — do they differ systematically?
-- Probe Agent A's latent thoughts for features that encode properties
-  of Agent B (e.g., "Agent B is unreliable on math")
-- Measure whether Agent A's encoding style shifts to compensate for
-  Agent B's known weaknesses
-- Test on heterogeneous agent pairs (different fine-tuning, different
-  sizes) where one agent has a clear capability gap
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPERIMENT 29: Latent Compression as Regularizer — The Bottleneck Effect
-[INT]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PAPER TITLE:
-"Occam's Latent Channel: Does Communication Bandwidth Constraint
-Suppress Hallucination in Multi-Agent Reasoning?"
-
-RESEARCH QUESTION:
-Does forcing agents to communicate through a narrow latent bottleneck
-(small m, fewer latent tokens) act as a regularizer that filters out
-hallucinations — making agents "smarter by saying less"? Is there a
-Latent Shannon Limit below which collaboration collapses into noise?
-
-BACKGROUND:
-The information bottleneck principle says compression can improve
-generalization by stripping irrelevant variation. If LatentMAS latent
-thoughts are compressed harder (smaller m), agents may be forced to
-transmit only the most task-critical information — discarding
-hallucinated or noise content. This would mean the tight latent channel
-is not a limitation but a feature, with direct implications for
-LatentMAS architecture design.
-
-WHAT TO ANALYZE:
-- Run LatentMAS with varying m (latent token count): m = 1, 4, 16, 64
-- Measure: task accuracy, hallucination rate, faithfulness of decoded
-  latent thoughts to final answers
-- Plot the accuracy-vs-m curve — is there a sweet spot where
-  compression helps before it hurts?
-- Measure entropy of latent thoughts at each m — does compression
-  force higher-quality information selection?
-- Compare hallucination rates between fat (high m) and thin (low m)
-  channels across task types
-- Identify the collapse point: the minimum m below which collaboration
-  degrades to chance
-
 
 =====================================================================
 SUMMARY TABLE
@@ -1066,7 +851,6 @@ SUMMARY TABLE
 1  | The Latent Editor (W_a SVD)       | Mech       | No
 2  | Emergent Private Vocabulary       | Repr       | No
 3  | Cross-Agent Mind-Reading          | Probing    | No
-4  | Hidden Deception / Collusion      | Safety     | Partial (INT ext)
 5  | Information Compression           | InfoTh     | No
 6  | Information Propagation & Decay   | Dynamics   | No
 7  | Layer-Specific Contributions      | Mech       | No
@@ -1074,9 +858,6 @@ SUMMARY TABLE
 9  | Uncertainty Encoding              | Probing    | No
 10 | Emergent Role Specialization      | Repr       | No
 11 | Cross-Agent Induction Heads       | Mech       | No
-12 | Latent Trojan Attacks             | Safety     | Yes (INT only)
-13 | Robustness to Interventions       | Safety     | Yes (INT only)
-14 | Heterogeneous Expert Fusion       | Repr       | No*
 15 | Flocking and Herding Dynamics     | Physics    | No
 16 | Latent Entanglement               | Physics    | No
 17 | Evolutionary Selection            | Bio        | No
@@ -1090,15 +871,8 @@ SUMMARY TABLE
 25 | Attractor Theory & Entropy        | Physics    | No
 26 | Manifold Alignment / Topology     | Geo        | No
 27 | Resonance & Synchronization       | Physics    | No
-28 | Latent Niche Construction         | Bio        | No*
-29 | Compression as Regularizer        | InfoTh     | Yes (vary m)
 
-*Exp 14 and 28 need heterogeneous/paired agent setups but not extra
- runs per se — just a different experimental configuration at run time.
-
-Pure observation (zero extra runs):  1-11, 15-27
-Partial intervention:                4
-New run configurations needed:       12, 13, 14*, 28*, 29
+Pure observation (zero extra runs):  1-3, 5-11, 15-27
 
 =====================================================================
 RECOMMENDED STARTING POINT:
