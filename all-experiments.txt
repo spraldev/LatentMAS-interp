@@ -819,7 +819,7 @@ that encodes the correct direction — that was suppressed by consensus?
 
 
 ==========================================================
-SUMMARY: 76 UNIQUE NEW EXPERIMENTS + 22 ORIGINAL = 98 TOTAL
+SUMMARY: 72 UNIQUE NEW EXPERIMENTS + 22 ORIGINAL = 94 TOTAL
 All purely offline on saved activations — zero additional GPU runs.
 Data needed: latent_thoughts.pt, latent_per_layer.pt,
              prompt_hidden.pt, kv_latent.pt, text_outputs.json,
