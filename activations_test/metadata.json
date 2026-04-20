@@ -1,0 +1,23 @@
+{
+  "model_name": "Qwen/Qwen3-4B",
+  "tasks": [
+    "gsm8k",
+    "arc_challenge",
+    "mbppplus"
+  ],
+  "max_samples_per_task": 5,
+  "latent_steps": 4,
+  "prompt": "sequential",
+  "seed": 42,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "max_new_tokens": 2048,
+  "latent_space_realign": true,
+  "think": false,
+  "save_attention": false,
+  "save_all_layer_hidden": true,
+  "save_kv_latent_only": true,
+  "save_kv_full": false,
+  "prompt_hidden_last": 64,
+  "started_at": "2026-04-19T00:32:13"
+}

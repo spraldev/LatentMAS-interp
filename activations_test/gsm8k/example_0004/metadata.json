@@ -1,0 +1,16 @@
+{
+  "question": "Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, containing seeds, mealworms and vegetables to help keep them healthy.  She gives the chickens their feed in three separate meals. In the morning, she gives her flock of chickens 15 cups of feed.  In the afternoon, she gives her chickens another 25 cups of feed.  How many cups of feed does she need to give her chickens in the final meal of the day if the size of Wendi's flock is 20 chickens?",
+  "gold": "20",
+  "prediction": "20",
+  "raw_prediction": "<think>\nOkay, let's tackle this problem. So, Wendi feeds her chickens three times a day. Each chicken gets 3 cups total, but split into three meals. The morning feed is 15 cups, afternoon is 25 cups. We need to find out the final meal's amount, given there are 20 chickens.\n\nFirst, I need to figure out how much each chicken eats in a day. The problem says each chicken gets 3 cups total. So, 20 chickens would need 20 * 3 = 60 cups per day. Then, subtract the morning and afternoon feeds. Morning is 15, afternoon is 25, so 15 + 25 = 40. Subtract that from 60, which leaves 20 cups for the final meal. Wait, but let me check again. Each chicken gets 3 cups total, so total daily feed is 20*3=60. Morning and afternoon are 15+25=40. So final meal is 60-40=20. That seems right. But wait, maybe the problem is trying to trick me? Like, maybe the 15 and 25 are per chicken? No, the problem says \"In the morning, she gives her flock of chickens 15 cups of feed. In the afternoon, another 25 cups.\" So those are total for the flock. So total per day is 15+25+final. Which equals 60. So final is 60-15-25=20. So the answer should be 20 cups.\n</think>\n\nTo determine the amount of feed needed for the final meal, follow these steps:\n\n1. **Calculate total daily feed required**:  \n   Each of the 20 chickens receives 3 cups of feed per day.  \n   Total daily feed = $ 20 \\text{ chickens} \\times 3 \\text{ cups/chicken} = 60 \\text{ cups} $.\n\n2. **Sum the morning and afternoon feed**:  \n   Morning: 15 cups, Afternoon: 25 cups.  \n   Total for morning and afternoon = $ 15 + 25 = 40 \\text{ cups} $.\n\n3. **Subtract from total daily feed to find the final meal**:  \n   Final meal = $ 60 - 40 = 20 \\text{ cups} $.\n\n\\boxed{20}",
+  "correct": true,
+  "num_latent_agents": 3,
+  "agents": [
+    "planner",
+    "critic",
+    "refiner"
+  ],
+  "latent_steps": 4,
+  "model_name": "Qwen/Qwen3-4B",
+  "task": "gsm8k"
+}

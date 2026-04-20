@@ -170,9 +170,11 @@ def score_prediction(task: str, item: Dict, final_text: str) -> Tuple[Optional[s
     if task == "mbppplus":
         pred = extract_markdown_python_block(final_text)
         gold = item.get("gold", "")
-        if pred is None:
-            return None, gold, False
-        ok, _ = run_with_timeout(pred + "\n" + gold, timeout=10)
+        if pred is None or not gold.strip() or "assert" not in gold:
+            return pred, gold, False
+        ok, err = run_with_timeout(pred + "\n" + gold, timeout=10)
+        if not ok and err:
+            log.info("    [mbpp] exec error: %s", str(err).splitlines()[-1][:160])
         return pred, gold, bool(ok)
     pred = normalize_answer(extract_gsm8k_answer(final_text))
     gold = item.get("gold", "")

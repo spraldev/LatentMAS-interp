@@ -1,0 +1,227 @@
+00:32:13 [INFO] ======================================================================
+00:32:13 [INFO] instrumented_run starting
+00:32:13 [INFO]   output_dir=activations_test  log_file=activations_test/run.log
+00:32:13 [INFO]   model=Qwen/Qwen3-4B  device=mps  tasks=['gsm8k', 'arc_challenge', 'mbppplus']
+00:32:13 [INFO]   latent_steps=4  max_samples_per_task=5  test=True
+00:32:13 [INFO] ======================================================================
+00:32:13 [INFO] [init] loading model Qwen/Qwen3-4B on mps ...
+00:32:13 [INFO] HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-4B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+00:32:13 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-4B/1cfa9a7208912126459214e8b04321603b3df60c/config.json "HTTP/1.1 200 OK"
+00:32:13 [INFO] HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-4B/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+00:32:13 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-4B/1cfa9a7208912126459214e8b04321603b3df60c/tokenizer_config.json "HTTP/1.1 200 OK"
+00:32:13 [INFO] HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-4B/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+00:32:14 [INFO] HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-4B/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+00:32:14 [INFO] HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-4B "HTTP/1.1 200 OK"
+00:32:14 [INFO] HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-4B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+00:32:14 [WARNING] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+00:32:14 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-4B/1cfa9a7208912126459214e8b04321603b3df60c/config.json "HTTP/1.1 200 OK"
+00:32:19 [INFO] HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-4B/resolve/main/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+00:32:19 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-4B/1cfa9a7208912126459214e8b04321603b3df60c/generation_config.json "HTTP/1.1 200 OK"
+00:32:25 [INFO] [init] model loaded in 12.5s
+00:32:25 [INFO] [init] W_a saved to activations_test/wa_matrix.pt
+00:32:26 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/gsm8k/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+00:32:26 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/openai/gsm8k/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+00:32:26 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/openai/gsm8k/740312add88f781978c0658806c59bc2815b9866/README.md "HTTP/1.1 200 OK"
+00:32:26 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/gsm8k.py "HTTP/1.1 307 Temporary Redirect"
+00:32:26 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/openai/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/gsm8k.py "HTTP/1.1 404 Not Found"
+00:32:26 [INFO] HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/gsm8k/gsm8k.py "HTTP/1.1 404 Not Found"
+00:32:26 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/gsm8k/revision/740312add88f781978c0658806c59bc2815b9866 "HTTP/1.1 307 Temporary Redirect"
+00:32:27 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/openai/gsm8k/revision/740312add88f781978c0658806c59bc2815b9866 "HTTP/1.1 200 OK"
+00:32:27 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/.huggingface.yaml "HTTP/1.1 307 Temporary Redirect"
+00:32:27 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/openai/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/.huggingface.yaml "HTTP/1.1 404 Not Found"
+00:32:27 [INFO] HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=gsm8k "HTTP/1.1 404 Not Found"
+00:32:27 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/gsm8k/tree/740312add88f781978c0658806c59bc2815b9866/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+00:32:27 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/openai/gsm8k/tree/740312add88f781978c0658806c59bc2815b9866/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+00:32:27 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/gsm8k/tree/740312add88f781978c0658806c59bc2815b9866?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+00:32:27 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/openai/gsm8k/tree/740312add88f781978c0658806c59bc2815b9866?recursive=false&expand=false "HTTP/1.1 200 OK"
+00:32:28 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/dataset_infos.json "HTTP/1.1 307 Temporary Redirect"
+00:32:28 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/openai/gsm8k/resolve/740312add88f781978c0658806c59bc2815b9866/dataset_infos.json "HTTP/1.1 404 Not Found"
+00:32:28 [INFO] [task=gsm8k] 5 examples
+00:32:28 [INFO] [example] dir=example_0000  q_preview='Janet’s ducks lay 16 eggs per day. She eats three for breakfast every morning an'
+00:32:28 [INFO]   [agent=planner] prompt_tokens=155 past_kv=0
+00:32:29 [INFO]     completed 4 latent steps in 1.58s (last_hidden_norm=120.599)
+00:32:29 [INFO]   [agent=critic] prompt_tokens=196 past_kv=159
+00:32:30 [INFO]     completed 4 latent steps in 0.62s (last_hidden_norm=176.789)
+00:32:30 [INFO]   [agent=refiner] prompt_tokens=182 past_kv=359
+00:32:30 [INFO]     completed 4 latent steps in 0.59s (last_hidden_norm=175.636)
+00:32:30 [INFO]   [agent=judger] prompt_tokens=178 past_kv=545
+00:33:00 [INFO]     judger generated 348 tokens in 29.98s
+00:33:00 [INFO]     judger output preview: "<think>\nOkay, let's see. I need to figure out how much Janet makes each day at the farmers' market from selling duck eggs. Let me start by breaking down the inf"
+00:33:00 [INFO]   [score] pred='18' gold='18' correct=True
+00:33:00 [INFO]   [done] example_0000 in 32.78s  size=4.99MB
+00:33:00 [INFO] [example] dir=example_0001  q_preview='A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bol'
+00:33:00 [INFO]   [agent=planner] prompt_tokens=117 past_kv=0
+00:33:01 [INFO]     completed 4 latent steps in 0.50s (last_hidden_norm=140.419)
+00:33:01 [INFO]   [agent=critic] prompt_tokens=158 past_kv=121
+00:33:02 [INFO]     completed 4 latent steps in 0.56s (last_hidden_norm=163.996)
+00:33:02 [INFO]   [agent=refiner] prompt_tokens=144 past_kv=283
+00:33:02 [INFO]     completed 4 latent steps in 0.58s (last_hidden_norm=177.507)
+00:33:02 [INFO]   [agent=judger] prompt_tokens=140 past_kv=431
+00:33:24 [INFO]     judger generated 285 tokens in 21.51s
+00:33:24 [INFO]     judger output preview: "<think>\nOkay, let's tackle this problem. The question is about figuring out the total number of bolts needed for a robe that uses 2 bolts of blue fiber and half"
+00:33:24 [INFO]   [score] pred='3' gold='3' correct=True
+00:33:24 [INFO]   [done] example_0001 in 23.16s  size=4.98MB
+00:33:24 [INFO] [example] dir=example_0002  q_preview='Josh decides to try flipping a house.  He buys a house for $80,000 and then puts'
+00:33:24 [INFO]   [agent=planner] prompt_tokens=148 past_kv=0
+00:33:24 [INFO]     completed 4 latent steps in 0.54s (last_hidden_norm=119.892)
+00:33:24 [INFO]   [agent=critic] prompt_tokens=189 past_kv=152
+00:33:25 [INFO]     completed 4 latent steps in 0.60s (last_hidden_norm=154.149)
+00:33:25 [INFO]   [agent=refiner] prompt_tokens=175 past_kv=345
+00:33:25 [INFO]     completed 4 latent steps in 0.59s (last_hidden_norm=173.683)
+00:33:25 [INFO]   [agent=judger] prompt_tokens=171 past_kv=524
+00:35:05 [INFO]     judger generated 1098 tokens in 100.07s
+00:35:05 [INFO]     judger output preview: "<think>\nOkay, let's tackle this problem step by step. So, Josh is flipping a house. He bought it for $80,000 and spent $50,000 on repairs. The repairs increased"
+00:35:05 [INFO]   [score] pred='70000' gold='70000' correct=True
+00:35:06 [INFO]   [done] example_0002 in 101.89s  size=4.99MB
+00:35:06 [INFO] [example] dir=example_0003  q_preview='James decides to run 3 sprints 3 times a week.  He runs 60 meters each sprint.  '
+00:35:06 [INFO]   [agent=planner] prompt_tokens=126 past_kv=0
+00:35:07 [INFO]     completed 4 latent steps in 1.17s (last_hidden_norm=139.301)
+00:35:07 [INFO]   [agent=critic] prompt_tokens=167 past_kv=130
+00:35:08 [INFO]     completed 4 latent steps in 0.85s (last_hidden_norm=179.212)
+00:35:08 [INFO]   [agent=refiner] prompt_tokens=153 past_kv=301
+00:35:08 [INFO]     completed 4 latent steps in 0.72s (last_hidden_norm=180.817)
+00:35:08 [INFO]   [agent=judger] prompt_tokens=149 past_kv=458
+00:35:45 [INFO]     judger generated 390 tokens in 36.61s
+00:35:45 [INFO]     judger output preview: "<think>\nOkay, let's tackle this problem. So, James runs 3 sprints three times a week. Each sprint is 60 meters. We need to find out how many meters he runs in t"
+00:35:45 [INFO]   [score] pred='540' gold='540' correct=True
+00:35:45 [INFO]   [done] example_0003 in 39.38s  size=4.98MB
+00:35:45 [INFO] [example] dir=example_0004  q_preview='Every day, Wendi feeds each of her chickens three cups of mixed chicken feed, co'
+00:35:45 [INFO]   [agent=planner] prompt_tokens=202 past_kv=0
+00:35:46 [INFO]     completed 4 latent steps in 1.12s (last_hidden_norm=126.934)
+00:35:46 [INFO]   [agent=critic] prompt_tokens=243 past_kv=206
+00:35:47 [INFO]     completed 4 latent steps in 0.87s (last_hidden_norm=176.647)
+00:35:47 [INFO]   [agent=refiner] prompt_tokens=229 past_kv=453
+00:35:48 [INFO]     completed 4 latent steps in 0.86s (last_hidden_norm=174.014)
+00:35:48 [INFO]   [agent=judger] prompt_tokens=225 past_kv=686
+00:36:42 [INFO]     judger generated 530 tokens in 54.49s
+00:36:42 [INFO]     judger output preview: "<think>\nOkay, let's tackle this problem. So, Wendi feeds her chickens three times a day. Each chicken gets 3 cups total, but split into three meals. The morning"
+00:36:42 [INFO]   [score] pred='20' gold='20' correct=True
+00:36:42 [INFO]   [done] example_0004 in 57.37s  size=4.99MB
+00:36:43 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/allenai/ai2_arc/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+00:36:43 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/allenai/ai2_arc/210d026faf9955653af8916fad021475a3f00453/README.md "HTTP/1.1 200 OK"
+00:36:43 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/allenai/ai2_arc/resolve/210d026faf9955653af8916fad021475a3f00453/ai2_arc.py "HTTP/1.1 404 Not Found"
+00:36:43 [INFO] HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/allenai/ai2_arc/allenai/ai2_arc.py "HTTP/1.1 404 Not Found"
+00:36:43 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/allenai/ai2_arc/revision/210d026faf9955653af8916fad021475a3f00453 "HTTP/1.1 200 OK"
+00:36:43 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/allenai/ai2_arc/resolve/210d026faf9955653af8916fad021475a3f00453/.huggingface.yaml "HTTP/1.1 404 Not Found"
+00:36:43 [INFO] HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=allenai/ai2_arc "HTTP/1.1 200 OK"
+00:36:43 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/allenai/ai2_arc/tree/210d026faf9955653af8916fad021475a3f00453/ARC-Challenge?recursive=true&expand=false "HTTP/1.1 200 OK"
+00:36:44 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/allenai/ai2_arc/tree/210d026faf9955653af8916fad021475a3f00453?recursive=false&expand=false "HTTP/1.1 200 OK"
+00:36:44 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/allenai/ai2_arc/resolve/210d026faf9955653af8916fad021475a3f00453/dataset_infos.json "HTTP/1.1 404 Not Found"
+00:36:44 [INFO] [task=arc_challenge] 5 examples
+00:36:44 [INFO] [example] dir=example_0000  q_preview='An astronomer observes that a planet rotates faster after a meteorite impact. Wh'
+00:36:44 [INFO]   [agent=planner] prompt_tokens=153 past_kv=0
+00:36:45 [INFO]     completed 4 latent steps in 0.92s (last_hidden_norm=157.548)
+00:36:45 [INFO]   [agent=critic] prompt_tokens=194 past_kv=157
+00:36:45 [INFO]     completed 4 latent steps in 0.68s (last_hidden_norm=182.810)
+00:36:45 [INFO]   [agent=refiner] prompt_tokens=180 past_kv=355
+00:36:46 [INFO]     completed 4 latent steps in 0.62s (last_hidden_norm=179.409)
+00:36:46 [INFO]   [agent=judger] prompt_tokens=205 past_kv=539
+00:37:40 [INFO]     judger generated 575 tokens in 53.62s
+00:37:40 [INFO]     judger output preview: "<think>\nOkay, let's tackle this question. So, the problem is about a planet that's rotating faster after a meteorite impact, and we need to figure out the most "
+00:37:40 [INFO]   [score] pred='c' gold='c' correct=True
+00:37:40 [INFO]   [done] example_0000 in 55.86s  size=4.99MB
+00:37:40 [INFO] [example] dir=example_0001  q_preview='A group of engineers wanted to know how different building designs would respond'
+00:37:40 [INFO]   [agent=planner] prompt_tokens=168 past_kv=0
+00:37:41 [INFO]     completed 4 latent steps in 0.86s (last_hidden_norm=147.106)
+00:37:41 [INFO]   [agent=critic] prompt_tokens=209 past_kv=172
+00:37:41 [INFO]     completed 4 latent steps in 0.76s (last_hidden_norm=178.888)
+00:37:41 [INFO]   [agent=refiner] prompt_tokens=195 past_kv=385
+00:37:42 [INFO]     completed 4 latent steps in 0.80s (last_hidden_norm=182.372)
+00:37:42 [INFO]   [agent=judger] prompt_tokens=220 past_kv=584
+00:38:08 [INFO]     judger generated 283 tokens in 25.97s
+00:38:08 [INFO]     judger output preview: "<think>\nOkay, let's tackle this question. So, the engineers are testing different building designs to see how they respond during an earthquake. The question is"
+00:38:08 [INFO]   [score] pred='b' gold='b' correct=True
+00:38:08 [INFO]   [done] example_0001 in 28.42s  size=4.99MB
+00:38:08 [INFO] [example] dir=example_0002  q_preview='The end result in the process of photosynthesis is the production of sugar and o'
+00:38:08 [INFO]   [agent=planner] prompt_tokens=160 past_kv=0
+00:38:09 [INFO]     completed 4 latent steps in 0.84s (last_hidden_norm=144.637)
+00:38:09 [INFO]   [agent=critic] prompt_tokens=201 past_kv=164
+00:38:10 [INFO]     completed 4 latent steps in 0.75s (last_hidden_norm=177.007)
+00:38:10 [INFO]   [agent=refiner] prompt_tokens=187 past_kv=369
+00:38:10 [INFO]     completed 4 latent steps in 0.74s (last_hidden_norm=179.304)
+00:38:10 [INFO]   [agent=judger] prompt_tokens=212 past_kv=560
+00:39:01 [INFO]     judger generated 545 tokens in 50.29s
+00:39:01 [INFO]     judger output preview: "<think>\nOkay, let's tackle this question about photosynthesis. The question is asking which step signals the beginning of photosynthesis. The options are a, b, "
+00:39:01 [INFO]   [score] pred='c' gold='c' correct=True
+00:39:01 [INFO]   [done] example_0002 in 52.66s  size=4.99MB
+00:39:01 [INFO] [example] dir=example_0003  q_preview='A physicist wants to determine the speed a car must reach to jump over a ramp. T'
+00:39:01 [INFO]   [agent=planner] prompt_tokens=178 past_kv=0
+00:39:03 [INFO]     completed 4 latent steps in 1.87s (last_hidden_norm=138.047)
+00:39:03 [INFO]   [agent=critic] prompt_tokens=219 past_kv=182
+00:39:04 [INFO]     completed 4 latent steps in 0.98s (last_hidden_norm=140.975)
+00:45:53 [INFO]   [agent=refiner] prompt_tokens=205 past_kv=405
+00:46:01 [INFO]     completed 4 latent steps in 417.26s (last_hidden_norm=177.250)
+00:46:01 [INFO]   [agent=judger] prompt_tokens=230 past_kv=614
+00:46:30 [INFO]     judger generated 341 tokens in 28.94s
+00:46:30 [INFO]     judger output preview: "<think>\nOkay, let's tackle this question. So, the physicist is trying to figure out the speed a car needs to jump over a ramp. They did three trials, and in tri"
+00:46:30 [INFO]   [score] pred='d' gold='d' correct=True
+00:46:30 [INFO]   [done] example_0003 in 449.11s  size=4.99MB
+00:46:30 [INFO] [example] dir=example_0004  q_preview='An astronaut drops a 1.0 kg object and a 5.0 kg object on the Moon. Both objects'
+00:46:30 [INFO]   [agent=planner] prompt_tokens=197 past_kv=0
+00:46:31 [INFO]     completed 4 latent steps in 1.20s (last_hidden_norm=167.453)
+00:46:31 [INFO]   [agent=critic] prompt_tokens=238 past_kv=201
+00:46:32 [INFO]     completed 4 latent steps in 0.71s (last_hidden_norm=173.834)
+00:46:32 [INFO]   [agent=refiner] prompt_tokens=224 past_kv=443
+00:46:32 [INFO]     completed 4 latent steps in 0.68s (last_hidden_norm=172.175)
+00:46:32 [INFO]   [agent=judger] prompt_tokens=249 past_kv=671
+00:49:03 [INFO]     judger generated 1037 tokens in 150.73s
+00:49:03 [INFO]     judger output preview: "<think>\nOkay, let's tackle this physics problem. So, the question is about an astronaut dropping two objects on the Moon—one is 1.0 kg and the other is 5.0 kg. "
+00:49:03 [INFO]   [score] pred='d' gold='d' correct=True
+00:49:03 [INFO]   [done] example_0004 in 153.59s  size=4.99MB
+00:49:04 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/evalplus/mbppplus/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+00:49:04 [INFO] HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/evalplus/mbppplus/b2d74c91837c3f2a20c1299ae98133cbe7cfa077/README.md "HTTP/1.1 200 OK"
+00:49:04 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/evalplus/mbppplus/resolve/b2d74c91837c3f2a20c1299ae98133cbe7cfa077/mbppplus.py "HTTP/1.1 404 Not Found"
+00:49:04 [INFO] HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/evalplus/mbppplus/evalplus/mbppplus.py "HTTP/1.1 404 Not Found"
+00:49:04 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/evalplus/mbppplus/revision/b2d74c91837c3f2a20c1299ae98133cbe7cfa077 "HTTP/1.1 200 OK"
+00:49:04 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/evalplus/mbppplus/resolve/b2d74c91837c3f2a20c1299ae98133cbe7cfa077/.huggingface.yaml "HTTP/1.1 404 Not Found"
+00:49:05 [INFO] HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=evalplus/mbppplus "HTTP/1.1 200 OK"
+00:49:05 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/evalplus/mbppplus/tree/b2d74c91837c3f2a20c1299ae98133cbe7cfa077/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+00:49:05 [INFO] HTTP Request: GET https://huggingface.co/api/datasets/evalplus/mbppplus/tree/b2d74c91837c3f2a20c1299ae98133cbe7cfa077?recursive=false&expand=false "HTTP/1.1 200 OK"
+00:49:05 [INFO] HTTP Request: HEAD https://huggingface.co/datasets/evalplus/mbppplus/resolve/b2d74c91837c3f2a20c1299ae98133cbe7cfa077/dataset_infos.json "HTTP/1.1 404 Not Found"
+00:49:05 [INFO] [task=mbppplus] 5 examples
+00:49:05 [INFO] [example] dir=example_0000  q_preview='Please provide a self-contained Python script that solves the following problem '
+00:49:05 [INFO]   [agent=planner] prompt_tokens=262 past_kv=0
+00:49:07 [INFO]     completed 4 latent steps in 1.64s (last_hidden_norm=157.448)
+00:49:07 [INFO]   [agent=critic] prompt_tokens=303 past_kv=266
+00:49:08 [INFO]     completed 4 latent steps in 0.81s (last_hidden_norm=176.852)
+00:49:08 [INFO]   [agent=refiner] prompt_tokens=289 past_kv=573
+00:49:09 [INFO]     completed 4 latent steps in 0.96s (last_hidden_norm=174.644)
+00:49:09 [INFO]   [agent=judger] prompt_tokens=335 past_kv=866
+00:50:25 [INFO]     judger generated 466 tokens in 76.37s
+00:50:25 [INFO]     judger output preview: '<think>\nOkay, I need to write a Python function called similar_elements that takes two tuples as input and returns their shared elements as a set. The test case'
+00:50:43 [ERROR] [error] example 0 (mbppplus) failed: Can't get local object 'run_with_timeout.<locals>.worker'
+Traceback (most recent call last):
+  File "/Users/spral/Documents/code/LatentMAS-interp/instrumented_run.py", line 773, in main
+    meta = runner.run_and_capture(item, ex_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/spral/Documents/code/LatentMAS-interp/.venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/spral/Documents/code/LatentMAS-interp/instrumented_run.py", line 514, in run_and_capture
+    pred, gold, ok = score_prediction(self.args.task_current, item, final_text)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/spral/Documents/code/LatentMAS-interp/instrumented_run.py", line 223, in score_prediction
+    ok, _ = run_with_timeout(pred + "\n" + gold, timeout=10)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/spral/Documents/code/LatentMAS-interp/utils.py", line 74, in run_with_timeout
+    p.start()
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/process.py", line 121, in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/context.py", line 289, in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/popen_spawn_posix.py", line 32, in __init__
+    super().__init__(process_obj)
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/popen_fork.py", line 19, in __init__
+    self._launch(process_obj)
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/popen_spawn_posix.py", line 47, in _launch
+    reduction.dump(process_obj, fp)
+  File "/Users/spral/.local/share/uv/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/multiprocessing/reduction.py", line 60, in dump
+    ForkingPickler(file, protocol).dump(obj)
+AttributeError: Can't get local object 'run_with_timeout.<locals>.worker'
+00:50:43 [INFO] [example] dir=example_0001  q_preview='Please provide a self-contained Python script that solves the following problem '
+00:51:05 [INFO]   [agent=planner] prompt_tokens=172 past_kv=0

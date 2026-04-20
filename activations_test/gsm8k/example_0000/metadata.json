@@ -1,0 +1,16 @@
+{
+  "question": "Janet’s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?",
+  "gold": "18",
+  "prediction": "18",
+  "raw_prediction": "<think>\nOkay, let's see. I need to figure out how much Janet makes each day at the farmers' market from selling duck eggs. Let me start by breaking down the information given.\n\nFirst, the ducks lay 16 eggs per day. That's the total number of eggs she starts with each morning. Then, she eats three eggs every morning for breakfast. So, I should subtract those three from the total. Then, she uses four eggs to bake muffins for her friends each day. So, another subtraction for those four eggs. The remaining eggs after these two uses are what she sells at the market.\n\nWait, let me make sure I got that right. The problem says she eats three every morning and bakes muffins with four every day. So both of these are daily expenses from the eggs. So, total eggs used per day would be 3 + 4 = 7 eggs. Therefore, the remainder would be 16 - 7 = 9 eggs. Then, she sells each of those remaining eggs for $2. So, 9 eggs times $2 is $18. So, the answer should be $18.\n\nBut let me check again. Maybe I should calculate the remaining eggs first. Starting with 16, subtract 3 for breakfast, that's 13. Then subtract 4 for the muffins, that's 9. Then 9 times 2 is indeed 18. Yeah, that seems right. I don't think I missed anything here. The key is to subtract both the eggs she eats and the ones used for muffins first, then multiply by the price per egg.\n</think>\n\n\\boxed{18}",
+  "correct": true,
+  "num_latent_agents": 3,
+  "agents": [
+    "planner",
+    "critic",
+    "refiner"
+  ],
+  "latent_steps": 4,
+  "model_name": "Qwen/Qwen3-4B",
+  "task": "gsm8k"
+}

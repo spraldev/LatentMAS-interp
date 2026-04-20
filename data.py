@@ -165,8 +165,11 @@ Your answer will be tested on test cases like:
 {item["test_list"][2]}
 """
 
+        test_list = list(item.get("test_list", []))
+        test_imports = "\n".join(item.get("test_imports", []) or [])
+        asserts = "\n".join(test_list)
+        gold = (test_imports + "\n" + asserts).strip() + "\n"
         answer = str(item["test"])
-        gold = answer
         yield {
             "question": question,
             "solution": answer,
