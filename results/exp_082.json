@@ -1,0 +1,17 @@
+{
+  "id": 82,
+  "name": "Shapley-like agent attribution",
+  "question": "Marginal contribution of each agent to predicted correctness",
+  "metrics": {
+    "marginal_auc_loss": {
+      "agent_0": 0.007503246150992404,
+      "agent_1": 0.002378964941569306,
+      "agent_2": 0.0038165460953440977
+    },
+    "auc_full": 0.6602485624188462
+  },
+  "score": 0.030012984603969617,
+  "finding": "Per-agent leave-one-out AUC drop: agent_0=+0.008, agent_1=+0.002, agent_2=+0.004",
+  "notes": "",
+  "status": "ok"
+}

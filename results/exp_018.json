@@ -1,0 +1,37 @@
+{
+  "id": 18,
+  "name": "Symbiotic vs parasitic exchanges",
+  "question": "Directional benefit between agent pairs",
+  "metrics": {
+    "pairs": {
+      "0->1": {
+        "mean_cos": 0.2914355320978304,
+        "mean_norm_change": 1.6535746908630244e-05
+      },
+      "0->2": {
+        "mean_cos": 0.3969246943397461,
+        "mean_norm_change": -1.0535834917391185e-05
+      },
+      "1->0": {
+        "mean_cos": 0.20393159601996896,
+        "mean_norm_change": -2.229940400866326e-05
+      },
+      "1->2": {
+        "mean_cos": 0.41686533984365376,
+        "mean_norm_change": -1.0535834917391185e-05
+      },
+      "2->0": {
+        "mean_cos": 0.20342449221458606,
+        "mean_norm_change": -2.229940400866326e-05
+      },
+      "2->1": {
+        "mean_cos": 0.3135288028670468,
+        "mean_norm_change": 1.6535746908630244e-05
+      }
+    }
+  },
+  "score": 0.5,
+  "finding": "Pairwise directional exchange stats recorded.",
+  "notes": "",
+  "status": "ok"
+}

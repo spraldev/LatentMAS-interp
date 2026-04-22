@@ -1,0 +1,13 @@
+{
+  "id": 21,
+  "name": "Hebbian strengthening",
+  "question": "Do patterns that co-fire consistently across rounds get stronger?",
+  "metrics": {
+    "mean_norm_growth": -5.432702437246917e-06,
+    "pos_growth_frac": 0.49129172714078373
+  },
+  "score": 4.944856300426181e-06,
+  "finding": "Norm grows 49.1% of the time.",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,21 @@
+{
+  "id": 95,
+  "name": "Semantic drift across tasks",
+  "question": "Same concept representation drifts by task?",
+  "metrics": {
+    "per_task_drift": [
+      0.24295833706855774,
+      0.12741397321224213,
+      0.20492617785930634
+    ],
+    "tasks": [
+      "mbppplus",
+      "arc_challenge",
+      "gsm8k"
+    ]
+  },
+  "score": 0.019176616271336874,
+  "finding": "Pairwise task-centroid distance mean 0.192.",
+  "notes": "",
+  "status": "ok"
+}

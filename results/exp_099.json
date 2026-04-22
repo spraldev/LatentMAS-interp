@@ -1,0 +1,34 @@
+{
+  "id": 99,
+  "name": "Agent-level responsibility",
+  "question": "Which agent/round introduces the error?",
+  "metrics": {
+    "gap_matrix": [
+      [
+        -0.0004671812057495117,
+        0.004578143358230591,
+        0.05650337040424347,
+        0.16322727501392365
+      ],
+      [
+        0.0019345581531524658,
+        0.007227778434753418,
+        0.05106396973133087,
+        0.23052899539470673
+      ],
+      [
+        0.005482107400894165,
+        0.009672313928604126,
+        0.0519004762172699,
+        0.17592303454875946
+      ]
+    ],
+    "blame_agent": 1,
+    "blame_round": 3,
+    "max_abs_gap": 0.23052899539470673
+  },
+  "score": 0.46105799078941345,
+  "finding": "Largest correct-vs-wrong projection gap at agent 1 round 3.",
+  "notes": "",
+  "status": "ok"
+}

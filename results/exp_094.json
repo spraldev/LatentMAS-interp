@@ -1,0 +1,13 @@
+{
+  "id": 94,
+  "name": "Zipf law in latent patterns",
+  "question": "Do cluster frequencies follow 1/rank?",
+  "metrics": {
+    "log_log_slope": -0.5615417238550707,
+    "n_clusters": 128
+  },
+  "score": 0.5615417238550707,
+  "finding": "Frequency-rank slope -0.56 (Zipf slope \u2248 -1).",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,14 @@
+{
+  "id": 105,
+  "name": "Minority report \u2014 dissent under consensus",
+  "question": "When all agents agree but answer is wrong, is there a hidden dissent axis?",
+  "metrics": {
+    "axis_norm": 0.17447984218597412,
+    "n_hi_wrong": 49,
+    "n_hi_right": 296
+  },
+  "score": 0.01744798421859741,
+  "finding": "Hidden-dissent axis norm 0.174.",
+  "notes": "",
+  "status": "ok"
+}

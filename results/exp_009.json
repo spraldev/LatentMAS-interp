@@ -1,0 +1,14 @@
+{
+  "id": 9,
+  "name": "Uncertainty Encoding",
+  "question": "Do latent-thought norms correlate with correctness better than text?",
+  "metrics": {
+    "auc_norm_vs_correct": 0.5597848265627898,
+    "auc_variance_vs_correct": 0.35628825820812465,
+    "pearson_norm_correct": 0.07394820161880829
+  },
+  "score": 0.2874234835837507,
+  "finding": "Latent norm AUC vs correctness=0.560; variance AUC=0.356.",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,14 @@
+{
+  "id": 71,
+  "name": "Mirror neurons",
+  "question": "Does agent B mirror agent A's latent direction?",
+  "metrics": {
+    "real": 0.9323741804446122,
+    "shuf": 0.9310730331089396,
+    "excess": 0.0013011473356725478
+  },
+  "score": 0.005204589342690191,
+  "finding": "Mirroring excess +0.001.",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,30 @@
+{
+  "id": 65,
+  "name": "GRN-like interaction topology",
+  "question": "Motif counts in the interaction graph",
+  "metrics": {
+    "edge_matrix": [
+      [
+        0.0,
+        0.2914355320978304,
+        0.3969246943397461
+      ],
+      [
+        0.20393159601996896,
+        0.0,
+        0.41686533984365376
+      ],
+      [
+        0.20342449221458606,
+        0.3135288028670468,
+        0.0
+      ]
+    ],
+    "feed_forward_triangles": 0,
+    "bidirectional_pairs": 1
+  },
+  "score": 0.0,
+  "finding": "0 feed-forward triangles, 1 bidirectional pairs.",
+  "notes": "",
+  "status": "ok"
+}

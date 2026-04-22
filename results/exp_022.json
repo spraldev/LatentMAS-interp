@@ -1,0 +1,28 @@
+{
+  "id": 22,
+  "name": "Predator-prey dynamics",
+  "question": "Asymmetric extraction between agents",
+  "metrics": {
+    "predation_matrix": [
+      [
+        0.0,
+        -0.029826990953214387,
+        0.06699077948383865
+      ],
+      [
+        -0.006066462086374573,
+        0.0,
+        0.07325055342745795
+      ],
+      [
+        -0.004745893978907293,
+        -0.02624119388724984,
+        0.0
+      ]
+    ]
+  },
+  "score": 0.07325055342745795,
+  "finding": "Max |predation| signal 0.073.",
+  "notes": "",
+  "status": "ok"
+}

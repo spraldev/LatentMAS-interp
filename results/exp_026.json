@@ -1,0 +1,13 @@
+{
+  "id": 26,
+  "name": "Universal Conceptual Geometry (W_a manifold)",
+  "question": "Does W_a preserve relational / manifold structure?",
+  "metrics": {
+    "distance_pearson": 0.9853073125370083,
+    "n": 1000
+  },
+  "score": 0.9853073125370083,
+  "finding": "Pre\u2194post pairwise-distance correlation r=0.985 (\u2192 preserved geometry).",
+  "notes": "",
+  "status": "ok"
+}

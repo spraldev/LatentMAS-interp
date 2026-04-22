@@ -1,0 +1,21 @@
+{
+  "id": 55,
+  "name": "Percolation threshold",
+  "question": "Masking dims until accuracy proxy collapses",
+  "metrics": {
+    "auc_by_drop": {
+      "0.0": 0.6602485624188462,
+      "0.2": 0.6598172880727138,
+      "0.4": 0.6580365423854573,
+      "0.6": 0.6657716564644778,
+      "0.8": 0.6712808384344278,
+      "0.9": 0.6263309219068819,
+      "0.95": 0.6475421999629011
+    },
+    "percolation_threshold": null
+  },
+  "score": 0.0,
+  "finding": "Percolation threshold \u2248 None.",
+  "notes": "",
+  "status": "ok"
+}

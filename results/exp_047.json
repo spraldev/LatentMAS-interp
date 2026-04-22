@@ -1,0 +1,13 @@
+{
+  "id": 47,
+  "name": "Geodesics in concept space",
+  "question": "Do trajectories follow direct paths?",
+  "metrics": {
+    "straightness_mean": 0.3546279966831207,
+    "straightness_std": 0.04555059224367142
+  },
+  "score": 0.3546279966831207,
+  "finding": "Trajectory straightness 0.355 (1=geodesic).",
+  "notes": "",
+  "status": "ok"
+}

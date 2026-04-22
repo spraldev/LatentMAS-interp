@@ -1,0 +1,10 @@
+{
+  "id": 36,
+  "name": "Prompt vs latent alignment",
+  "question": "How aligned are prompt_hidden and latent_thoughts representations?",
+  "metrics": {},
+  "score": 0.0,
+  "finding": "no data",
+  "notes": "",
+  "status": "skipped"
+}

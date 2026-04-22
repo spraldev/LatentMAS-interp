@@ -1,0 +1,12 @@
+{
+  "id": 70,
+  "name": "Prediction-error / surprise",
+  "question": "Large agent disagreement \u2192 corrective update?",
+  "metrics": {
+    "pearson_surprise_correction": 0.3678627380554352
+  },
+  "score": 0.7357254761108704,
+  "finding": "Surprise\u2194correction pearson r=+0.368.",
+  "notes": "",
+  "status": "ok"
+}

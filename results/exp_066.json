@@ -1,0 +1,17 @@
+{
+  "id": 66,
+  "name": "Preferential adoption",
+  "question": "Do some agents get imitated more?",
+  "metrics": {
+    "per_agent_pull": [
+      0.9256038805267115,
+      0.9655503719742309,
+      0.0
+    ],
+    "std": 0.44604755434627635
+  },
+  "score": 1.0,
+  "finding": "Pull variance across agents 0.446.",
+  "notes": "",
+  "status": "ok"
+}

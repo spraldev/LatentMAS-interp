@@ -1,0 +1,14 @@
+{
+  "id": 37,
+  "name": "Task Identity Decodable",
+  "question": "Can we decode task from latent thought alone?",
+  "metrics": {
+    "accuracy": 0.8888888888888888,
+    "n_classes": 3,
+    "chance": 0.3333333333333333
+  },
+  "score": 0.8333333333333333,
+  "finding": "Task-decoding accuracy 0.889 (chance 0.333).",
+  "notes": "",
+  "status": "ok"
+}
