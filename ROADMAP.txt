@@ -1,0 +1,884 @@
+NEURIPS 2026 ROADMAP — LATENTMAS-INTERP
+CONSOLIDATION FROM 94 EXPERIMENTS → 15 RIGOROUS EXPERIMENTS
+Generated: 2026-04-24
+========================================================================
+
+THIS DOCUMENT IS HARSH ON PURPOSE. NeurIPS 2026 acceptance rate is ~26%.
+The current codebase has zero publishable results. Every single number in
+results/ is invalid. Read this document as if it is a reviewer rejection
+letter — because it will be unless you fix everything below.
+
+========================================================================
+PART 0: PREREQUISITES — NOTHING ELSE MATTERS UNTIL THESE ARE DONE
+========================================================================
+
+PREREQUISITE P1: Fix the MBPP+ multiprocessing crash
+-----------------------------------------------------
+FILE: instrumented_run.py
+BUG: `run_with_timeout` uses a nested `worker` function. On macOS/Python
+3.12, multiprocessing cannot pickle local closures, causing:
+  AttributeError: Can't get local object 'run_with_timeout.<locals>.worker'
+FIX: Move the worker function to module-level scope and pass all required
+state as explicit arguments. Do not use a lambda or nested def.
+CONSEQUENCE OF NOT FIXING: All MBPP+ examples silently produce no
+activations. You currently have ZERO code generation examples. Any paper
+claim about "3 tasks" is a lie.
+
+PREREQUISITE P2: Run the full pipeline to completion
+-----------------------------------------------------
+FILE: kaggle_run.ipynb
+CURRENT STATE: Only 5 examples per task (15 total) were saved to
+activations_test/. The notebook was never run to completion.
+REQUIRED: 500 examples per task × 3 tasks = 1,500 examples minimum.
+Statistical power analysis: for the probing experiments (linear classifiers
+with ~3 classes), you need N≥300 per class for 80% power at α=0.05 with
+d=0.5. 500/task is the floor, not a comfortable margin.
+CONSEQUENCE OF NOT FIXING: Every number in this roadmap is still invalid.
+N=15 produces AUC confidence intervals spanning [0.3, 0.8] — you cannot
+make any statistical claim.
+
+PREREQUISITE P3: Collect TextMAS and single-agent baselines in the same run
+----------------------------------------------------------------------------
+FILES: methods/text_mas.py (exists but was never instrumented),
+       methods/latent_mas.py (instrumented)
+REQUIRED: For every LatentMAS activation you save, also save:
+  (a) Single-agent (Qwen3-4B, no collaboration): baseline_single_agent/
+  (b) TextMAS (same 3-agent structure, text communication): baseline_text_mas/
+  (c) Random W_a (replace W_a with a random orthogonal matrix of same shape):
+      baseline_random_wa/
+WITHOUT THESE THREE BASELINES, you cannot attribute a single finding to
+latent communication specifically. "Latent thoughts decode task identity
+at 88.9%" is a meaningless statement unless you also show that a single
+Qwen3-4B run does NOT decode task identity at that rate at the same layer.
+The paper's entire mechanistic argument collapses without this comparison.
+
+PREREQUISITE P4: Save the correct activations for causal experiments
+--------------------------------------------------------------------
+REQUIRED ADDITIONS to instrumented_run.py:
+  (a) Save pre-W_a and post-W_a hidden states separately and explicitly
+      labeled (currently they exist but are stored inconsistently)
+  (b) Save the logit-lens projection of each latent thought through the
+      language model head — this gives you vocabulary-space interpretations
+      of latent thoughts and enables the faithfulness gap experiment
+  (c) Save the per-example task difficulty proxy: number of reasoning steps
+      in the gold solution (for GSM8K: count equations; ARC: always 1;
+      MBPP+: count function calls in gold solution)
+
+========================================================================
+PART 1: THE 15 EXPERIMENTS
+========================================================================
+
+All 94 existing experiments collapse into 15 below. The mapping from
+old experiment numbers is given in each entry. Experiments not mentioned
+in any mapping are cut entirely — they are either duplicate, unimplementable
+with integrity, or not load-bearing for a mechanistic interpretability paper.
+
+------------------------------------------------------------------------
+EXP A: W_a MECHANISM — IS W_A DOING ANYTHING?
+(Consolidates: 1, 26, 30, 31, 32, 33)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: W_a is trained via ridge regression and may be
+functioning as a near-identity. If true, this is the most important
+mechanistic finding: latent communication works NOT because W_a performs
+sophisticated semantic transformation but despite W_a being trivial.
+
+REQUIRED MEASUREMENTS (all four must be reported together):
+  A1. SVD of W_a: full singular value spectrum, not just effective rank.
+      Report: (i) fraction of singular values within 5% of 1.0,
+              (ii) fraction of variance explained by top-10 singular vectors,
+              (iii) condition number κ = σ_max / σ_min
+  A2. Identity ablation: replace W_a with I (identity matrix) in post-hoc
+      simulation. For each example, compute predicted agent B hidden state
+      under W_a vs. under I. Measure: cosine similarity between the two
+      predictions, and whether answer-decodability (from Exp D) changes.
+      This is the critical causal test. If cosine similarity > 0.99 or
+      answer-decodability does not change, W_a ≈ identity.
+  A3. Fixed-point vectors: compute W_a v = v solutions (eigenvectors with
+      eigenvalue ≈ 1). Project all latent thoughts onto top-10 fixed-point
+      directions. Report: do correct examples have higher projection onto
+      fixed-point directions than incorrect examples? p-value via permutation.
+  A4. Layer-analogue: compute CKA between W_a's row space and each
+      transformer layer's weight matrix. Report which layer W_a most
+      resembles. CRITICAL: exclude layer 0 (embedding) from the ranking
+      because CKA=1.0 at layer 0 is a trivial embedding-space artifact.
+  A5. Manifold alignment (Exp 26): after applying W_a, does the relational
+      structure between concept vectors (pairwise cosine similarity matrix)
+      in agent A's space correlate with the same matrix in agent B's space?
+      Compute Spearman r between the two flattened pairwise similarity
+      matrices (Procrustes-free). High r = W_a preserves manifold topology.
+      Compare against random-W_a baseline.
+
+BASELINES REQUIRED FOR EVERY MEASUREMENT: Repeat A1-A4 with:
+  - Random orthogonal W_a (baseline_random_wa/)
+  - TextMAS W_a (which should be undefined — the absence of W_a in TextMAS
+    is itself a baseline data point)
+
+STATISTICAL REQUIREMENTS:
+  - For A2: paired t-test on cosine similarities across N=1500 examples,
+    report Cohen's d, 95% CI
+  - For A3: permutation test with 1000 shuffles, report p-value
+  - For A4: bootstrap CI on CKA values (200 bootstrap samples)
+
+PAPER FRAMING: If W_a ≈ identity, the paper title is: "The Alignment Matrix
+Is Trivial: Latent Communication in LatentMAS Does Not Require Semantic
+Transformation of Hidden States." This is a publishable null result — it
+falsifies an assumption in the original LatentMAS paper.
+
+EXPERIMENT TO CUT FROM OLD LIST: Exp 32 as implemented (CKA=1.0 at layer 0
+is an artifact). Exp 31 as implemented (near-full rank is correct but
+requires the identity ablation to be meaningful).
+
+------------------------------------------------------------------------
+EXP B: CAUSAL ACTIVATION PATCHING — THE ONLY MECHANISM PROOF
+(Consolidates: 79, 86, 91, 99; adds new implementation)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Mechanistic interpretability requires causality.
+Every other experiment in this paper is correlational. This is the one
+experiment that establishes mechanism. Without it, you cannot use the
+word "mechanistic" anywhere in the paper.
+
+REQUIRED IMPLEMENTATION:
+  B1. Path patching: for a "clean" example (correct answer) and a
+      "corrupted" example (incorrect answer, same task), patch the clean
+      example's agent-i, round-m hidden state into the corrupted example's
+      forward pass. Measure: does the corrupted example's final answer
+      probability change toward the correct answer?
+      This requires re-running the model for each patch, NOT offline analysis
+      of saved activations. You must add a patching mode to instrumented_run.py.
+  B2. Identify the "critical rotation": for failed examples, find the
+      specific agent and round where patching with the correct answer's
+      activations first recovers the correct answer. This localizes the
+      failure.
+  B3. Error propagation: for examples where agent 1 introduces an error,
+      measure how many subsequent agents' hidden states are corrupted
+      (cosine distance to the "clean" trajectory > threshold). This tests
+      whether errors propagate or are corrected.
+
+NOTE: This experiment requires additional GPU computation — it is NOT
+purely offline. Plan for ~5 patching pairs × 100 examples × 3 tasks = 1500
+forward passes. Roughly 2-3 hours on a T4. This is non-negotiable for a
+mechanistic claim.
+
+STATISTICAL REQUIREMENTS:
+  - B1: paired Wilcoxon signed-rank test on answer probability before/after
+    patching, with Bonferroni correction for multiple agent/round pairs
+  - B2: Cohen's κ agreement between two annotators on failure localization
+    (one annotator = the automatic patch; one = manual review of 50 examples)
+  - B3: permutation test, 1000 shuffles
+
+------------------------------------------------------------------------
+EXP C: TASK-DOMAIN GEOMETRY — LINEAR PROBING WITH REAL N
+(Consolidates: 2, 37, 34, 95, 97, 101)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Latent thoughts from different task domains
+(math, science, code) are linearly separable in activation space, and
+this separability is specific to multi-agent latent communication (not
+present in single-agent baselines at the same layer/position).
+
+REQUIRED MEASUREMENTS:
+  C1. Train a 3-way linear SVM on post-W_a hidden states to classify
+      GSM8K vs. ARC-Challenge vs. MBPP+ from latent thoughts alone.
+      Train/test split: 70/30, stratified. Report: accuracy, macro-F1,
+      confusion matrix. Use N=500/task.
+  C2. Repeat C1 on single-agent baseline (baseline_single_agent/) at the
+      same transformer layer. If single-agent accuracy is comparable to
+      LatentMAS accuracy, the multi-agent latent communication is not
+      doing anything special for task encoding.
+  C3. Repeat C1 on TextMAS baseline. If TextMAS accuracy is comparable,
+      the finding is about multi-agent structure, not the latent channel.
+  C4. Per-agent and per-round breakdown: does task decodability increase
+      from agent 1→3 and round 1→4? A monotonic increase would suggest
+      progressive task specialization.
+  C5. Cross-task cluster visualization: UMAP projection of all 1500 latent
+      thoughts colored by (task, agent, round, correctness). Include
+      this as a figure — it is the most compelling visual for the paper.
+  C6. Private latent vocabulary (Exp 2): cluster all latent thoughts
+      (k-means, k=50) and measure cluster consistency — does the same
+      example produce the same cluster assignment across agents and runs?
+      Report adjusted Rand index of cluster assignments vs. task label.
+      Consistent cross-agent clusters = emergent shared vocabulary.
+
+STATISTICAL REQUIREMENTS:
+  - C1/C2/C3: McNemar's test to compare classifier accuracies across
+    conditions (LatentMAS vs. SingleAgent, LatentMAS vs. TextMAS)
+  - C4: Cochran-Armitage trend test for monotonic increase
+  - Report 95% CI on all accuracy values via bootstrapping (1000 samples)
+
+WHAT TO CUT: Exp 97 (identical to Exp 37, literally), Exp 34 (subsumed),
+Exp 95 (subsumed), Exp 101 (subsumed). The code-switching framing is
+unnecessary complexity for the same measurement.
+
+------------------------------------------------------------------------
+EXP D: CORRECT vs. INCORRECT TRAJECTORY GEOMETRY
+(Consolidates: 39, 40, 24, 9, 44, 52)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Correct and incorrect reasoning trajectories in
+latent space are linearly separable, and the separation emerges
+progressively across agents and rounds — enabling early failure prediction.
+
+REQUIRED MEASUREMENTS:
+  D1. For each (agent, round) position, train a logistic regression on
+      post-W_a hidden states to predict final correctness. Report AUC
+      with 95% CI (bootstrap). Show AUC as a heatmap: rows=agent, cols=round.
+      The question: at which (agent, round) does AUC first exceed 0.7?
+  D2. Compare D1 AUC values against single-agent baseline at matched layers.
+      The claim: multi-agent latent communication encodes correctness
+      earlier than a single agent would.
+  D3. Fisher information per dimension: rank all D=2048 (or whatever D is)
+      dimensions by |F_i| = |E[grad log p(correct|h_i)]|. Report top-20
+      dimensions and whether they overlap with the task-identity directions
+      from Exp C (orthogonality or overlap is mechanistically meaningful).
+  D5. Semantic direction inventory (Exp 39): use contrastive pairs to
+      identify 5 specific named directions: (i) increasing confidence
+      (correct round 1 → correct round 4), (ii) error correction (wrong
+      round 1 → correct round 4), (iii) task difficulty (easy vs. hard
+      examples), (iv) agent disagreement (high vs. low pairwise cosine
+      distance), (v) answer commitment (early vs. late convergence).
+      For each direction: report cosine consistency across tasks and
+      whether the direction is orthogonal to task-identity direction from C.
+  D4. Intrinsic dimensionality of correct vs. incorrect clouds: use TwoNN
+      estimator (Facco et al. 2017, NOT participation ratio which is
+      PCA-dependent). Report mean ± std for correct and incorrect subsets
+      separately. A lower-dimensional correct manifold = simpler, more
+      structured reasoning.
+
+STATISTICAL REQUIREMENTS:
+  - D1: DeLong test for AUC comparison across (agent, round) pairs
+  - D2: permutation test, compare LatentMAS peak AUC vs. single-agent AUC
+  - D3: FDR correction (Benjamini-Hochberg) for 2048 simultaneous tests
+  - D4: Mann-Whitney U test for dimensionality difference, report rank-biserial r
+
+------------------------------------------------------------------------
+EXP E: ROLE SPECIALIZATION — DO AGENTS DEVELOP DISTINCT FUNCTIONS?
+(Consolidates: 10, 71, 80, 38, 63, 67)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Agents in LatentMAS develop stable, distinct
+representational roles (not just positional differences), and this
+specialization is absent in TextMAS where roles are defined by explicit
+text-based role assignment.
+
+REQUIRED MEASUREMENTS:
+  E1. Within-agent vs. cross-agent cosine similarity: for each pair of
+      agents (i,j), compute mean cosine similarity of their latent thoughts
+      across all examples. Expected: within-agent similarity > cross-agent
+      similarity. Report the ratio. Compare ratio for LatentMAS vs. TextMAS.
+  E2. Agent identity classifier: train a 3-way linear classifier to identify
+      which agent produced a given latent thought (with position labels
+      removed from features). If accuracy >> 33%, agents have distinct
+      representational signatures. Breakdown by task domain.
+  E3. Anchoring effect: compute correlation between cosine(thought_agent1,
+      thought_agentK) across examples, for K=2,3. Does agent 1's thought
+      predict agent 3's thought more than agent 2's thought does? This
+      tests first-mover dominance.
+  E4. Layer-wise role emergence: using latent_per_layer, at which
+      transformer layer does agent identity first become classifiable (AUC
+      > 0.7)? This reveals where in the forward pass role differentiation
+      emerges.
+  E5. Mirror neuron dynamics (Exp 71): when agent B processes agent A's
+      latent thought, does agent B's resulting hidden state at round m+1
+      show higher cosine similarity to agent A's round-m thought than to
+      a random other agent's thought? This "mirroring" score = cosine
+      similarity(h_B_{m+1}, h_A_m) - cosine similarity(h_B_{m+1}, h_C_m).
+      Report mean mirroring score ± CI. Compare correct vs. incorrect
+      examples — does higher mirroring predict better understanding?
+
+CRITICAL: E1-E4 must all be repeated on TextMAS baseline. If TextMAS
+shows the same role differentiation as LatentMAS (which it should, since
+roles are explicitly labeled in text prompts), then LatentMAS's
+differentiation is not emergent — it is inherited from the prompt structure.
+This would be an important negative finding.
+
+STATISTICAL REQUIREMENTS: Same as Exp C. McNemar's test for classifier
+comparisons, 95% CI via bootstrap on all similarity measurements.
+
+------------------------------------------------------------------------
+EXP F: INFORMATION PROPAGATION ACROSS ROUNDS
+(Consolidates: 6, 41, 42, 46, 84)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Latent communication is information-theoretically
+efficient — it transmits more task-relevant bits per token than text
+communication — and the rate of mutual information decay between rounds
+predicts final accuracy.
+
+REQUIRED MEASUREMENTS:
+  F1. Mutual information decay curve: estimate I(h_t; h_{t+k}) for k=1,2,3
+      using MINE (Mutual Information Neural Estimation, Belghazi et al. 2018)
+      or the kNN estimator (Kraskov et al. 2004). Do NOT use binning or
+      Gaussian approximations — they fail in high-dimensional space.
+      Report the half-life (lag k at which MI drops to 50% of I(h_0; h_1)).
+  F2. Split by correctness: does the MI half-life differ between correct
+      and incorrect examples? A longer half-life on correct examples would
+      confirm that "holding onto early context" predicts success.
+  F3. Compare MI(LatentMAS round t → round t+1) vs. MI(TextMAS round t →
+      round t+1). This measures whether latent communication is more
+      informationally coherent than text communication.
+  F4. Rate-distortion curve: project each latent thought onto top-k PCA
+      components (k ∈ {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, D}).
+      For each k, measure answer-decodability AUC (from Exp D). Plot AUC
+      vs. k. The "knee" of the curve is the minimum viable bandwidth.
+
+WHAT NOT TO DO:
+  - Do not use gzip as a proxy for Kolmogorov complexity (Exp 45). After
+    PCA aggregation, all vectors have the same compression ratio up to
+    numerical noise. This is meaningless.
+  - Do not fit diffusion laws to 4 time points (Exp 54). You need at least
+    10 time points for a power law fit with any validity.
+  - Do not claim "channel capacity in bits" without specifying the coding
+    model — the term is meaningless without it.
+
+STATISTICAL REQUIREMENTS:
+  - F1: bootstrap CI on MI estimates (200 bootstrap samples)
+  - F2: Mann-Whitney U test, report rank-biserial r and 95% CI
+  - F3: paired t-test across examples, report Cohen's d
+
+------------------------------------------------------------------------
+EXP G: GROUPTHINK vs. DIVERSITY — WHEN AGREEMENT IS WRONG
+(Consolidates: 15, 25, 77, 78, 105, 53)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Premature latent convergence (all agents agreeing
+early) predicts wrong answers more than divergence, and there exists a
+detectable dissent signal in the converged-wrong examples that is
+systematically suppressed.
+
+REQUIRED MEASUREMENTS:
+  G1. Convergence metric: for each example and round, compute the mean
+      pairwise cosine similarity of all agent latent thoughts. Call this
+      the "flocking coefficient" F(t). Report F(t) distribution separately
+      for correct and incorrect examples at each round.
+  G2. Test: does high F at round 1 predict final incorrectness?
+      ROC-AUC of F(round=1) as a predictor of final_incorrect. This is
+      the "premature groupthink" test.
+  G3. Minority report: among examples where F(final round) > 0.9 AND
+      the answer is wrong, identify the "dissenting dimension" — the
+      dimension of one agent's thought that most strongly predicts the
+      correct answer despite the consensus. Report: what fraction of
+      converged-wrong examples have a recoverable dissent signal?
+  G4. Wisdom of crowds: does the centroid of all agent latent thoughts at
+      the final round produce higher answer-decodability AUC than any
+      single agent's thought alone? This tests whether aggregation is
+      valuable over individual prediction.
+  G5. Attractor convergence (Exp 25): compute the trajectory of mean
+      pairwise cosine distance across rounds 1→4. Does it monotonically
+      decrease (attractor-like convergence) or oscillate? Report the
+      fraction of examples that show monotonic convergence, separately
+      for correct and incorrect examples. Correct examples should converge
+      more cleanly to an attractor than incorrect examples.
+
+BASELINES: Repeat G1-G4 on TextMAS. In TextMAS, agents communicate in
+text and "convergence" would be measured by semantic text similarity. The
+claim is that LatentMAS convergence dynamics differ structurally.
+
+STATISTICAL REQUIREMENTS:
+  - G2: DeLong test for AUC, permutation test for null hypothesis
+    "F(round=1) is not predictive of final accuracy"
+  - G3: exact binomial test for "fraction with recoverable dissent signal"
+    against null = 50%
+  - G4: DeLong test comparing single-agent AUC vs. centroid AUC
+
+------------------------------------------------------------------------
+EXP H: FAITHFULNESS GAP — DOES LATENT SAY SOMETHING DIFFERENT FROM TEXT?
+(Consolidates: 8, 98, 19)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: There exists a systematic gap between what the
+latent thoughts "say" (decoded via the language model head) and what the
+final text output says, and this gap predicts reasoning failures — making
+it an alignment-relevant finding.
+
+CRITICAL: Exp 8 as currently implemented is broken. It does a string
+containment check on empty strings (agents produce no text in latent mode).
+The correct implementation requires the logit-lens.
+
+REQUIRED IMPLEMENTATION:
+  H1. Logit-lens decoding of latent thoughts: for each latent thought
+      h ∈ R^D, compute the logit-lens prediction as:
+        p(v | h) = softmax(LM_head(LayerNorm(h)))
+      where LM_head is the unembedding matrix and LayerNorm is the final
+      layer norm. This requires saving the model weights alongside activations.
+      Add this to Prerequisite P4 above.
+  H2. Top-1 logit-lens prediction per latent thought: extract the argmax
+      token. Does it correspond to a numerical answer, a reasoning step,
+      or irrelevant vocabulary? Report frequency distribution by task.
+  H3. Faithfulness gap score: for each example, compute cosine distance
+      between the logit-lens prediction direction at the final latent
+      thought and the direction of the correct-answer token in vocabulary
+      space. Examples with high distance = latent thoughts "pointing away"
+      from the correct answer even when the final text output is correct.
+  H4. Hallucination precursor: on ARC-Challenge examples where the model
+      chooses the wrong answer, does the logit-lens prediction at round 1
+      (before any collaboration) already point toward the wrong answer?
+      If so, the error is introduced at the first agent, not through
+      collaboration.
+
+STATISTICAL REQUIREMENTS:
+  - H3: correlation between faithfulness gap score and final incorrectness,
+    Spearman r with 95% CI
+  - H4: paired Wilcoxon test: logit-lens similarity to correct answer at
+    round 1 for correct vs. incorrect final examples
+  - Report effect sizes throughout — p-values alone are insufficient for
+    NeurIPS reviewers
+
+------------------------------------------------------------------------
+EXP I: ERROR ATTRIBUTION — WHICH AGENT IS RESPONSIBLE FOR FAILURES?
+(Consolidates: 24, 99, 62, 70, 75)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Reasoning failures in LatentMAS can be localized
+to a specific agent and round in latent space — and the distribution of
+failure locus (first agent vs. last agent vs. mid-round) reveals whether
+the failure mode is "bad initialization," "failure to correct," or
+"final-step error."
+
+REQUIRED MEASUREMENTS:
+  I1. Error introduction score: for each agent i and round m, compute:
+        EI(i, m) = max(0, dist(h_{i,m}, correct_manifold) -
+                       dist(h_{i,m-1}, correct_manifold))
+      where correct_manifold is the centroid of correct-example latents
+      and dist is cosine distance. EI > 0 means agent (i,m) moved AWAY
+      from the correct manifold. The agent/round with max EI is "blamed."
+  I2. Distribution of blame: across all 1500 failed examples, histogram of
+      which (agent, round) receives max EI. Is blame concentrated at agent 1
+      (bad initialization) or at late agents (failure to correct)?
+  I3. Error contagion speed: once an error is introduced (high EI event),
+      how many subsequent agent thoughts show elevated distance to the
+      correct manifold? Fit an exponential decay model to the contagion.
+  I4. Confirmation bias test: given an agent's latent direction at round 1,
+      compute how much each subsequent round reinforces that direction
+      (positive cosine shift) vs. contradicts it (negative cosine shift),
+      separately for correct and incorrect initial directions. If incorrect
+      initial directions are reinforced as often as correct ones, you have
+      latent confirmation bias.
+
+BASELINES:
+  - Repeat I1-I4 on TextMAS: in text-based MAS, the error introduction
+    moment should be visible in the text and corroborated by the latent
+    measure. Use this as validation of the metric.
+
+STATISTICAL REQUIREMENTS:
+  - I2: chi-squared test for uniform distribution of blame across agents
+  - I3: bootstrap CI on exponential decay constant
+  - I4: paired t-test, separately for correct vs. incorrect initial direction
+    subsets; report interaction effect
+
+------------------------------------------------------------------------
+EXP J: UNCERTAINTY ENCODING — DO LATENT THOUGHTS KNOW WHAT THEY DON'T KNOW?
+(Consolidates: 9, 74, 72, 83)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Latent thoughts encode an intrinsic uncertainty
+signal that predicts final correctness better than the model's own text-
+based confidence expressions — a finding with direct alignment implications.
+
+REQUIRED MEASUREMENTS:
+  J1. Uncertainty direction: use contrastive pairs (correct vs. incorrect
+      examples, matched by task and difficulty) to identify the linear
+      direction in latent space that separates them. Call this the
+      "confidence direction" c.
+  J2. Confidence score per example: project each example's final-round
+      mean latent thought onto c. Report AUC of confidence score as a
+      predictor of final correctness. Compare to:
+        (a) Text-based confidence: does the model's text output contain
+            phrases like "I'm not sure" or "I think" — a simple regex proxy.
+        (b) Single-agent baseline: same confidence direction computed from
+            single-agent activations at the same layer.
+  J3. Cognitive load proxy: for GSM8K, use number of equations in gold
+      solution as difficulty. Compute correlation between latent norm and
+      difficulty. Spearman r with 95% CI. Report separately for each agent.
+  J4. "Idle agent" baseline: on the easiest examples (bottom 10% by
+      difficulty), do late agents' latent thoughts collapse to a lower-
+      variance pattern than on hard examples? This tests for a default-mode
+      analog — if true, agents are "less engaged" on easy tasks, which has
+      interpretability implications.
+
+STATISTICAL REQUIREMENTS:
+  - J2: DeLong test for AUC comparison across conditions (latent vs. text
+    vs. single-agent confidence)
+  - J3: permutation test for Spearman r, FDR correction across 3 agents
+  - J4: permutation test for variance difference between easy/hard subsets
+
+------------------------------------------------------------------------
+EXP K: INFORMATION REDUNDANCY AND ERROR CORRECTION
+(Consolidates: 42, 16, 85, 5)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: Agents redundantly encode task-critical information
+as an implicit error-correction mechanism, and higher redundancy predicts
+higher final accuracy — the first evidence for structured error-correcting
+codes in multi-agent LLM collaboration.
+
+REQUIRED MEASUREMENTS:
+  K1. Pairwise redundancy: for each agent pair (i,j), compute the fraction
+      of variance in agent i's thought that is predictable from agent j's
+      thought via ridge regression (R²). Report matrix of R² values.
+  K2. Redundancy vs. accuracy: across examples, does mean pairwise R²
+      correlate with final correctness? Spearman r with 95% CI.
+  K3. Complementarity score: 1 - (mean pairwise R²). Does the orthogonal
+      (non-redundant) component of each agent's thought add independent
+      predictive information for final correctness above and beyond
+      redundant information?
+  K4. Compare LatentMAS redundancy structure vs. TextMAS: is latent
+      communication MORE or LESS redundant than text-based communication?
+      A NeurIPS-worthy finding: "Latent communication is higher bandwidth
+      AND higher redundancy than text communication."
+
+STATISTICAL REQUIREMENTS:
+  - K1: bootstrap CI on all R² values (200 samples)
+  - K2: permutation test for Spearman r
+  - K3: partial correlation controlling for per-agent mean accuracy
+
+------------------------------------------------------------------------
+EXP L: RATE-DISTORTION AND MINIMUM VIABLE BANDWIDTH
+(Consolidates: 43, 35, 55, 31)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: There is a critical information bottleneck in
+latent communication — a minimum number of active dimensions required
+for LatentMAS to outperform single-agent reasoning — and this bottleneck
+is at a surprisingly small k, suggesting latent communication is sparse
+and efficient.
+
+REQUIRED MEASUREMENTS:
+  L1. Rate-distortion curve: for k ∈ {1, 2, 4, 8, 16, 32, 64, 128, 256,
+      512, D}, project all latent thoughts onto top-k PCA components of
+      the correct-example cloud. For each k, measure:
+        (a) Answer-decodability AUC (from Exp D)
+        (b) Task-identity accuracy (from Exp C)
+        (c) Agent-identity accuracy (from Exp E)
+      Plot all three vs. k on the same figure. Identify the "knee."
+  L2. Dead dimensions: compute per-dimension variance across all 1500
+      examples. Report what fraction of dimensions have variance < 0.01
+      times the maximum variance. Are the dead dimensions the same across
+      tasks, or task-specific?
+  L3. Compression ablation: set the bottom-k% of dimensions (by variance)
+      to zero in post-hoc simulation. At what threshold does answer-
+      decodability AUC drop below 0.6? This is the "percolation threshold."
+  L4. Compare to TextMAS: compute the equivalent "effective dimensionality"
+      of TextMAS latent representations (at the same transformer layer).
+      Does LatentMAS use more or fewer effective dimensions than TextMAS?
+      This answers: is latent communication sparser than text communication?
+
+STATISTICAL REQUIREMENTS:
+  - L1: 95% CI on all AUC values at each k (bootstrap 200 samples)
+  - L3: bootstrap CI on percolation threshold estimate
+  - Report exact (k, AUC) values at the knee point in the paper
+
+------------------------------------------------------------------------
+EXP M: W_a ABLATION — DOES LATENTMAS NEED W_a AT ALL?
+(This is a new experiment not in the original list — it is required)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: W_a is a trained component of LatentMAS. If Exp A
+shows W_a ≈ identity, then replacing W_a with the identity should not
+hurt performance. This must be tested EMPIRICALLY, not just analytically,
+because even near-identity W_a may preserve important small-scale structure.
+
+REQUIRED IMPLEMENTATION:
+  NOTE: This experiment requires running the model, not just analyzing
+  saved activations. Add a flag to instrumented_run.py: --wa_mode
+  [trained | identity | random_orthogonal | zero].
+
+  M1. Run LatentMAS with W_a = I (identity) on 100 examples per task.
+      Report final accuracy vs. standard LatentMAS.
+  M2. Run LatentMAS with W_a = random orthogonal matrix (same shape).
+      Report final accuracy.
+  M3. Run LatentMAS with W_a = zero matrix (no information transfer).
+      Report final accuracy. This should be equivalent to single-agent.
+  M4. For each W_a mode, compute the convergence rate (Exp G flocking
+      coefficient over rounds). Does identity-W_a produce different
+      convergence dynamics than trained-W_a?
+
+  If identity-W_a and trained-W_a produce similar accuracy (within 2%):
+    - This is a major finding: W_a is unnecessary, and a simpler version
+      of LatentMAS (no W_a training required) performs comparably.
+    - This strengthens the mechanistic story: the benefit of LatentMAS is
+      the multi-round latent communication structure, not W_a's learned
+      transformation.
+
+STATISTICAL REQUIREMENTS:
+  - M1/M2/M3 vs. standard: McNemar's test on per-example correctness
+  - Report accuracy ± 95% Wilson CI for all conditions
+  - Power analysis: 100 examples/task gives ~50% power at α=0.05 for a
+    5% accuracy difference. You need 200 examples/task for 80% power.
+    Use 200 examples for this experiment.
+
+------------------------------------------------------------------------
+EXP N: SYCOPHANCY AND MINORITY SUPPRESSION
+(Consolidates: 100, 81, 23, 75, 77)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: When a dominant agent is wrong, subsequent agents
+show latent-space alignment with the wrong answer (sycophancy), and this
+effect is measurable as a direction in latent space — an alignment-relevant
+finding.
+
+REQUIRED MEASUREMENTS:
+  N1. Dominance score: for each agent pair (i, j) with i < j, compute
+      how much of agent j's thought is predictable from agent i's thought
+      (ridge regression R² from Exp K). The agent with the highest mean
+      R² over all subsequent agents is the "dominant agent."
+  N2. Sycophancy test: among examples where the dominant agent is wrong
+      (predicts wrong answer direction), compute how often subsequent agents
+      shift TOWARD the dominant agent's direction vs. away. Expected under
+      null: 50%. Report the fraction and test against null.
+  N3. Minority suppression: among examples where one agent's thought
+      points most strongly toward the correct answer (highest cosine
+      similarity to correct manifold) but is in the minority, measure
+      whether the final answer aligns with that minority thought or with
+      the majority. Report precision/recall for minority-correct retrieval.
+  N4. Sycophancy direction: use contrastive pairs (examples where minority
+      is correct and suppressed vs. examples where minority is correct and
+      amplified) to fit a linear "sycophancy direction" in latent space.
+      Project all examples onto this direction and report AUC for predicting
+      final incorrectness.
+
+BASELINE: Repeat N1-N4 for TextMAS. In text-based MAS, sycophancy would
+manifest as text agreement; the claim is that latent sycophancy is a
+distinct phenomenon.
+
+STATISTICAL REQUIREMENTS:
+  - N2: exact binomial test against p=0.5
+  - N3: precision/recall with 95% CI via bootstrap
+  - N4: DeLong test for AUC
+
+------------------------------------------------------------------------
+EXP O: LAYER-WISE INFORMATION ROUTING IN TRANSFORMER STACK
+(Consolidates: 36, 67, 59, 32, 69, 76)
+------------------------------------------------------------------------
+CENTRAL CLAIM TO TEST: The transformer layers of Qwen3-4B exhibit a
+structured division of labor (syntactic → semantic → abstract) in the
+context of multi-agent latent communication, and W_a bridges the
+communication at a specific "level of abstraction" identifiable from
+the layer where it maximally aligns.
+
+REQUIRED MEASUREMENTS (using latent_per_layer [A, m, L+1, D]):
+  O1. Layer-wise answer decodability: train a logistic regression at each
+      of the L+1 layers on the per-layer hidden states. Report AUC per
+      layer, per agent, per round. Expected: U-shape or monotonic increase.
+  O2. Layer-wise task identity: same as O1 but for task (math/science/code).
+      Expected: early layers encode surface features (task identity), late
+      layers encode abstract reasoning (answer).
+  O3. CKA between adjacent layers: compute CKA(layer_k, layer_{k+1}) for
+      k=0..L-1. Low CKA indicates a "representational transition" between
+      layers. Report the layer with the steepest transition.
+  O4. W_a bridge layer: repeat the CKA comparison between W_a's output
+      space and each layer's representation, with layer 0 EXCLUDED.
+      Report which layer W_a's transformation most resembles, i.e., the
+      layer that W_a "jumps to" in Agent B's space.
+  O5. Episodic vs. semantic subspace: compute CKA between prompt_hidden
+      (episodic context) and latent_thoughts (working memory) per layer.
+      Does the alignment between prompt_hidden and latent_thoughts peak at
+      early layers (surface features shared) or late layers (abstract
+      structure shared)?
+
+NOTE: With 1500 examples × 3 agents × 4 rounds × 37 layers = 666,000
+vectors, you cannot load everything at once. Process layer by layer.
+
+STATISTICAL REQUIREMENTS:
+  - O1/O2: bootstrap CI on per-layer AUC; FDR correction over 37 layers
+  - O3: Fisher z-test for CKA differences between adjacent layers
+  - O4: rank the layers by CKA with W_a; report top-3 with bootstrap CI
+
+========================================================================
+PART 2: EXPERIMENTS FROM THE ORIGINAL 94 THAT ARE CUT ENTIRELY
+========================================================================
+
+The following experiments are cut. Not because the ideas are bad, but
+because either (a) the implementation cannot be made rigorous with the
+available data, (b) they duplicate another experiment, or (c) they require
+theoretical machinery that is inappropriate for this paper's scope.
+
+CUT: Exp 48 (Persistent Homology) — the gzip/union-find implementation
+     is not TDA. A real giotto-tda implementation would require 1500 ×
+     (3 agents × 4 rounds) = 18,000 point Vietoris-Rips complexes at
+     multiple scales. This is a paper in itself; do not include a proxy.
+
+CUT: Exp 49 (Fractal Dimension) — arc length is not fractal dimension.
+     With 4 time steps, no fractal analysis is possible.
+
+CUT: Exp 50 (Voronoi), Exp 51 (Curvature), Exp 47 (Geodesics) —
+     all three require a well-characterized manifold. With D=2048 and
+     N=1500, manifold estimation is unreliable. These are speculative.
+
+CUT: Exp 53 (Phase Transitions) — subsampling agents from 3 to 1 gives
+     you 3 data points. A phase transition from 3 data points is not
+     detectable.
+
+CUT: Exp 54 (Diffusion Dynamics) — 4 time steps is insufficient for any
+     diffusion law. The physics framing is misleading.
+
+CUT: Exp 55 (Percolation) — subsumed by Exp L (rate-distortion) which
+     measures the same thing (critical fraction of active dimensions) more
+     rigorously.
+
+CUT: Exp 56 (Spin Glass), Exp 57 (Maxwell's Demon) — these require
+     energy functions and detailed balance conditions that don't apply
+     to transformer hidden states. The analogy is decorative.
+
+CUT: Exp 59 (Renormalization Group) — RG flow requires a recursion relation
+     between scales. The layer-coarsening interpretation is a metaphor, not
+     a measurement.
+
+CUT: Exps 17, 18, 21, 22, 61, 62, 63, 64, 65, 66 (entire biology track
+     except Exp K's redundancy measurement) — transfer entropy can be
+     measured (Exps 90, 93) but the biology framings add interpretive
+     overhead that reviewers will not accept. Include the actual measurements
+     under Exp K and Exp F.
+
+CUT: Exps 82, 91 (Shapley, node removal) — identical implementation and
+     near-identical output. Subsumed by Exp I (error attribution) which
+     is more precise.
+
+CUT: Exp 45 (Kolmogorov gzip) — see Exp F for the reasoning.
+
+CUT: Exp 94 (Zipf's Law) — Zipf's law requires a vocabulary with a natural
+     frequency ordering. Clustering 1500 activation vectors into k-means
+     bins and calling the bin frequencies a "vocabulary" is not linguistics.
+     The rank-frequency plot will follow Zipf only if k is tuned post-hoc,
+     which is circular. No mechanistic insight is added.
+
+CUT: Exp 96 (Compositionality) — linearly decomposing "complex thoughts"
+     into "simpler primitives" requires a compositional benchmark: pairs of
+     examples where the complex example is a known combination of two simpler
+     ones. GSM8K, ARC-Challenge, and MBPP+ do not provide this annotation.
+     The experiment cannot be done honestly with available data.
+
+CUT: Exp 97 (Code-Switching) — literally calls exp_037. This is not an
+     experiment, it is a copy-paste error.
+
+CUT: Exps 86, 87, 88, 89 (chemistry track) — rate constants and entropy
+     of mixing are non-standard framings of measurements already covered
+     in Exp F (information propagation) and Exp G (convergence). The
+     chemistry language will confuse reviewers.
+
+CUT: Exps 92, 93 (power law, clustering coefficient) — network motif
+     analysis requires a temporal sequence that 4 rounds cannot establish
+     with statistical reliability. Exp 90 (transfer entropy graph): include
+     the directed transfer entropy graph as a supplementary figure only —
+     it is a descriptive visualization, not a statistical result.
+
+CUT: Exp 103 (Turing completeness), Exp 105 (Minority Report standalone)
+     — Turing completeness from activation statistics is not provable.
+     Minority report is subsumed by Exp N.
+
+CUT: Exps 68, 73, 76, 102 (Miller's law, sleep consolidation, binding,
+     cocktail party) — these require computational models of working memory
+     capacity that are beyond the scope of this activation analysis. Include
+     only if you add a dedicated cognitive science section which is out of
+     scope for NeurIPS ML track.
+
+========================================================================
+PART 3: STATISTICAL AND METHODOLOGICAL STANDARDS — NON-NEGOTIABLE
+========================================================================
+
+Every experiment in this paper must satisfy ALL of the following:
+
+MINIMUM SAMPLE SIZE: N=500 per task (1,500 total). For subgroup analyses
+(correct vs. incorrect), report n_correct and n_incorrect per task.
+If any subgroup has N < 50, do NOT make statistical claims about it.
+
+CONFIDENCE INTERVALS: Every single number in the paper must have a 95% CI.
+No exceptions. Use bootstrap (1000 samples) for AUC/accuracy; use analytic
+CIs for Pearson/Spearman r.
+
+MULTIPLE COMPARISONS: Any experiment testing >1 hypothesis (e.g., per-layer
+AUC across 37 layers) must apply FDR correction (Benjamini-Hochberg).
+Report both uncorrected and corrected p-values.
+
+EFFECT SIZES: Report Cohen's d (for means), rank-biserial r (for
+Mann-Whitney), or AUC (for classification) alongside all p-values.
+"p < 0.05" alone is not a result — a Cohen's d of 0.05 is not meaningful
+even if p < 0.001 at N=1500.
+
+BASELINES FOR EVERY EXPERIMENT:
+  (1) LatentMAS (trained W_a, full pipeline)
+  (2) LatentMAS with identity W_a (from Exp M)
+  (3) TextMAS (text-based multi-agent, same prompt structure)
+  (4) Single-agent (Qwen3-4B, no collaboration)
+  Any claim about latent communication must be supported by comparison
+  against ALL FOUR conditions.
+
+REPRODUCIBILITY: All random seeds must be fixed and reported. Run each
+experiment with 3 different seeds and report mean ± std across seeds.
+
+NO PHYSICS/BIOLOGY ANALOGIES IN RESULTS SECTIONS: Analogies (flocking,
+Hebbian, diffusion) are acceptable in the introduction as intuition pumps.
+They are not acceptable as result descriptions. Write results as:
+"Agent pair cosine similarity increases by 0.12 (95% CI [0.09, 0.15],
+p < 0.001) from round 1 to round 4" not "agents exhibit flocking dynamics."
+
+========================================================================
+PART 4: TIMELINE
+========================================================================
+
+WEEK 1-2: Prerequisites
+  - Fix MBPP+ multiprocessing bug (P1)
+  - Add TextMAS and single-agent instrumentation (P3)
+  - Add logit-lens saving (P4)
+  - Verify pipeline end-to-end on 10 examples before full run
+
+WEEK 3-4: Data collection
+  - Run full pipeline: 500 examples × 3 tasks × 4 conditions = 6,000 examples
+  - Monitor for silent failures (check metadata.json counts daily)
+  - Spot-check activation tensors for shape correctness
+
+WEEK 5-6: Exp M (W_a ablation) and Exp B (activation patching)
+  - These require model access — do them before you lose GPU budget
+  - Target: 200 examples × 3 tasks × 4 W_a conditions
+
+WEEK 7-8: Offline experiments A, C, D, E (mechanistic core)
+  - These use only saved activations
+  - Prioritize in order: D (trajectory geometry), C (task probing),
+    E (role specialization), A (W_a analysis)
+
+WEEK 9-10: Offline experiments F, G, H, I, J (information theory + safety)
+  - MINE implementation for mutual information (F) is the highest risk
+    item — start early, it is technically complex
+
+WEEK 11-12: Offline experiments K, L, N, O (redundancy, bandwidth, social)
+  - These build on results from weeks 7-10
+
+WEEK 13: Full statistical audit
+  - Verify all N values are correct
+  - Verify all CI computations
+  - Run all experiments with 3 seeds
+  - Check for data leakage in all train/test splits
+
+WEEK 14-15: Writing
+  - NeurIPS 2026 submission deadline: approximately May 2026
+  - Do not start writing until all 15 experiments are complete with CIs
+
+NeurIPS 2026 abstract submission: typically mid-May 2026.
+Full paper deadline: typically end of May 2026.
+You have approximately 5 weeks from 2026-04-24 to complete data collection,
+experimentation, and writing. This timeline is extremely tight.
+The prerequisites (P1-P4) must be completed by 2026-04-30.
+
+========================================================================
+PART 5: WHAT A PASSING NEURIPS SUBMISSION LOOKS LIKE
+========================================================================
+
+A paper that will receive scores of 6-7-7 (borderline accept) from NeurIPS
+reviewers needs ALL of the following. Check each box before submission:
+
+[ ] N >= 500 per task across 3 tasks (1500 total)
+[ ] At least 3 tasks including code generation (MBPP+ must work)
+[ ] 4 conditions: LatentMAS, TextMAS, SingleAgent, LatentMAS+IdentityW_a
+[ ] At least 1 causal experiment (Exp B, activation patching)
+[ ] 95% CI on every number in the paper
+[ ] FDR correction wherever >5 hypotheses are tested simultaneously
+[ ] Effect sizes reported alongside p-values
+[ ] No misleading terminology (no "persistent homology" without real TDA,
+    no "fractal dimension" without box counting or similar)
+[ ] A clearly falsifiable central claim in the abstract
+[ ] A result that contradicts your prior hypothesis and is followed up
+    (Exp A's W_a ≈ identity finding is the best candidate)
+[ ] Reproducibility: all seeds reported, results stable across 3 seeds
+[ ] Code and activations released on HuggingFace or GitHub
+
+A paper that will be desk-rejected or scored 2-3 from all reviewers:
+  - Any number computed from N < 50
+  - Missing baselines for ANY central claim
+  - Physics/biology framing as scientific claims rather than analogies
+  - Duplicate experiments
+  - Experiments that claim to implement X but actually compute Y
+  - No causal evidence
+
+The current codebase falls entirely in the second category.
+This roadmap, if executed completely, puts it solidly in the first.
+
+========================================================================
+END OF ROADMAP
+========================================================================
