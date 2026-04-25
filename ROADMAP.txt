@@ -1,9 +1,9 @@
-NEURIPS 2026 ROADMAP — LATENTMAS-INTERP
+ 2026 ROADMAP — LATENTMAS-INTERP
 CONSOLIDATION FROM 94 EXPERIMENTS → 15 RIGOROUS EXPERIMENTS
 Generated: 2026-04-24
 ========================================================================
 
-THIS DOCUMENT IS HARSH ON PURPOSE. NeurIPS 2026 acceptance rate is ~26%.
+THIS DOCUMENT IS HARSH ON PURPOSE. 2026 acceptance rate is ~26%.
 The current codebase has zero publishable results. Every single number in
 results/ is invalid. Read this document as if it is a reviewer rejection
 letter — because it will be unless you fix everything below.
