@@ -9,6 +9,228 @@ results/ is invalid. Read this document as if it is a reviewer rejection
 letter — because it will be unless you fix everything below.
 
 ========================================================================
+FATAL ERRORS — WILL CAUSE NEURIPS REJECTION IF UNADDRESSED
+========================================================================
+
+These issues recur across prior revisions of this document and remain
+unresolved. They are listed here, at the top, because they must be fixed
+before any other work begins. They are cheap to fix. There is no excuse
+for submitting with any of these open.
+
+FATAL 1: MISSING COT BASELINE (highest rejection risk)
+-------------------------------------------------------
+The single-agent compute-matched baseline is specified as "12 latent steps,
+1 agent." That is not a standard single-agent baseline — it is LatentMAS
+with one agent and 3× normal latent depth. A single agent running 12
+sequential latent steps with no role refresh and no fresh context will
+degrade due to representation drift. That degradation makes LatentMAS look
+better than it is. A reviewer will ask: "did you compare against
+single-agent CoT at matched token budget?" The answer is currently no.
+FIX: Add a standard single-agent CoT baseline at matched generation budget.
+Specifically: run Qwen3-4B with a chain-of-thought prompt and allow it to
+generate up to the same number of tokens that LatentMAS generates in total
+across all agents. This is the baseline every reader will construct in their
+head when evaluating Table 1. Not running it is the single largest rejection
+risk in the paper.
+COST: ~2h GPU (single agent, same 500ex, standard generate call).
+Add it as condition 13 in the Part 5 checklist.
+
+FATAL 2: EXP B PAIR COUNT IS INSUFFICIENT
+------------------------------------------
+The document specifies 10 pairs/task (30 total) for Exp B and pre-registers
+it as "directional causal evidence." Pre-registering low power does not
+immunize you — a skeptical reviewer will read "30 pairs, 40% power" and
+conclude the causal claim is unsupported. The mechanistic claim is the
+paper's central contribution. If the only causal experiment has 40% power,
+the paper cannot be called a mechanistic interpretability paper.
+FIX: Run 25 pairs/task (75 total). At d=0.5, 25 pairs/task gives ~65%
+power per task; pooled across 3 tasks (with the task as a blocking
+factor in the Wilcoxon), power exceeds 80%. The NOTE block in Exp B also
+contains an internal contradiction — it says "12 sites × 100 pairs × 3
+tasks" but the header says 10 pairs. Fix both simultaneously.
+COST: ~2h additional GPU beyond the current Exp B budget.
+Update all pair-count references in Exp B to 25/task (75 total).
+
+FATAL 3: NO PRE-REGISTERED MINIMUM EFFECT SIZE FOR HEADLINE CLAIM
+------------------------------------------------------------------
+The document says "if LatentMAS doesn't beat Best-of-N, the latent
+communication story collapses" but never defines what "beat" means
+numerically. A 1.5pp difference at N=500/task is within CI and
+interpretable as noise. Without a pre-registered threshold, soft results
+become reviewer arguments you cannot win after the fact.
+FIX: Register this threshold NOW, in the roadmap, before running any
+experiment:
+  MINIMUM EFFECT: LatentMAS must beat compute-matched Best-of-N by ≥3pp
+  on at least 2 of 3 tasks, at p<0.01 (McNemar's test, one-tailed).
+  If this threshold is not met, the paper must be reframed as a mechanistic
+  analysis of a system that does NOT outperform strong baselines — which is
+  still publishable as a negative result, but requires a different abstract.
+  Do not wait until week 11 to make this call.
+The threshold is recorded here:
+  HEADLINE THRESHOLD (locked 2026-04-27):
+    LatentMAS vs. Best-of-N: ≥3pp on ≥2/3 tasks, McNemar p<0.01.
+    LatentMAS vs. CoT single-agent (FATAL 1): ≥2pp on ≥2/3 tasks, p<0.05.
+  If neither threshold is met, pivot to negative-result framing before week 8.
+
+FATAL 4: STEGANOGRAPHY CLAIM HAS NO GROUNDING EXPERIMENT
+---------------------------------------------------------
+Part 4B lists "inter-agent latent channels are a steganography risk" as
+the third CODI differentiation pillar. A reviewer reading the abstract's
+safety framing will look for the experiment that demonstrates this. There
+is none. Claiming safety relevance without a supporting result is a
+credibility hit that poisons the entire paper.
+FIX: Either drop steganography from the abstract entirely (cleanest option),
+OR designate one existing experiment as the steganography-grounding result
+and make the connection explicit. The most natural candidate is Exp H
+(faithfulness gap): if latent thoughts encode information that is not
+reflected in the final text output, that IS a form of covert coordination.
+Reframe H4 as: "does the latent channel encode information that the final
+text output does not disclose?" That is the steganography claim, grounded
+in a real measurement. If H4 comes back positive, the safety framing is
+earned. If it does not, drop the framing.
+ACTION: Add the steganography-grounding framing to Exp H4 now. Do not put
+it in the abstract until H4 results are in hand.
+
+CLEANUP 5: INTERNAL CONTRADICTIONS IN EXP B NOTE BLOCK
+--------------------------------------------------------
+The Exp B header specifies 10 pairs/task. The NOTE block says "12 sites ×
+100 pairs × 3 tasks = 3,600 forward passes" and "budget 4-6 hours on a
+4090." These numbers do not match. Fix both when addressing FATAL 2.
+At 25 pairs/task: 12 sites × 25 pairs × 3 tasks = 900 base forward passes,
+compounding to ~4,500 with path patching overhead. Budget 3-4 hours on a
+4090 (faster with flash attention from OPT 6 in Part -1).
+
+CLEANUP 6: SEED CONTRADICTION BETWEEN PART 0B AND PART 3
+----------------------------------------------------------
+Part 0B says "3-seed runs are scoped to L/M/Q only." Part 3 says
+"single-seed throughout." These contradict. Resolution: Part 3 is correct —
+single-seed throughout, with the 3-seed rebuttal option held in reserve.
+Remove the "3-seed runs scoped to L/M/Q" language from Part 0B entirely.
+
+CLEANUP 7: PCA BASIS IN EXP L IS RANK-DEGENERATE
+-------------------------------------------------
+The current spec pools Bucket-1 examples only from the discovery split for
+the L1 PCA. At N=200 discovery split and Bucket-1 ≈ 15%, that is ~30 × 3
+agents × 4 rounds = 360 vectors in D=2048. 360 < 2048 — the basis is
+bounded by sample size, not signal. After residualization (which further
+reduces effective rank), this is worse. The fix: pool all discovery-split
+examples (not just Bucket-1) for the PCA basis, then EVALUATE the resulting
+subspace on Bucket-1 examples only. The subspace should be identified from
+the full collaboration signal, not restricted to the rare subset where it
+works best (that is circular). At 200 × 3 × 4 = 2400 vectors, the basis
+is full-rank in D=2048 after residualization. Update L1 Method A accordingly.
+
+========================================================================
+PART -1: GPU TIME OPTIMIZATIONS — APPLY BEFORE STARTING DATA COLLECTION
+========================================================================
+
+The original PART 4 timeline estimates ~38h of data collection GPU time.
+The following optimizations bring that to ~23-26h with no loss of rigor.
+Apply all of them before launching any full run.
+
+OPT 1: BATCH NO-TRANSFER WITH THE MAIN LATENTMAS RUN (~1h saved)
+-----------------------------------------------------------------
+LatentMAS (condition 1) and no-transfer (condition 7) differ by a single
+flag: whether cross-agent hidden states are passed. Add a --also_run_no_transfer
+flag to instrumented_run.py that, for each example, runs both conditions in
+the same job without reloading the model. The model stays loaded; you only
+run the forward passes twice per example with different W_a routing.
+HOW: After capturing activations for the normal LatentMAS pass, re-run
+the latent loop for that example with cross-agent KV transfer disabled
+(each agent sees only its own prior latent steps). Save to a parallel
+baseline_no_transfer/ subdirectory. The extra cost is ~1 forward pass per
+latent step per example — cheap compared to a full model reload (~30min).
+SAVES: ~1h (eliminates the separate condition-7 job queue).
+
+OPT 2: REDUCE SPECTRUM-PRESERVING RANDOM W_a TO 200 EXAMPLES (~5h saved)
+--------------------------------------------------------------------------
+The original plan runs baseline_random_wa_spectrum/ at N=500/task (~8h,
+same as full LatentMAS). This baseline is a directional control, not a
+headline result. Reduce it to N=200/task (same as TextMAS and KV-shuffled).
+Add a --max_samples flag override per-condition or simply pass --max_samples 200
+when launching the spectrum random W_a job.
+JUSTIFICATION: For the comparison "trained W_a beats spectrum-matched random"
+(which establishes that W_a directions matter, not just its capacity), 200
+examples/task gives McNemar's test power >80% for a 5pp accuracy difference —
+sufficient for a directional claim. Only the headline LatentMAS accuracy
+number needs N=500 for tight CIs.
+NEW ESTIMATE: ~3h instead of ~8h. Saves ~5h.
+
+OPT 3: RUN EXP M AT 100 EXAMPLES FIRST, SCALE TO 200 ONLY IF NEEDED (~1.5h saved)
+-----------------------------------------------------------------------------------
+The ROADMAP says 200ex/task for Exp M for 80% power. But if the W_a=identity
+vs. trained W_a accuracy gap is large (>10pp), 100ex/task is sufficient
+for a McNemar's test to reach p<0.05. Start Exp M at 100ex/task (~1.5h).
+Inspect the results. Only scale to 200ex/task if the gap is <5pp and the
+test is not yet significant.
+ADD TO instrumented_run.py: a --wa_mode flag (trained | identity |
+random_orthogonal | zero) so Exp M conditions can be launched as separate
+jobs with a single flag change rather than modifying code.
+SAVES: ~1.5h if the effect is large (likely, since W_a≈identity is a
+strong prior based on Exp A analysis).
+
+OPT 4: OVERLAP EXP B PATCHING WITH DATA COLLECTION (~saves wall-clock, not GPU)
+---------------------------------------------------------------------------------
+Exp B (activation patching) requires new patching infrastructure in
+instrumented_run.py that does not exist yet. Building it in week 1-2 means
+you can start Exp B immediately after the main data collection ends in
+week 3-4, rather than discovering in week 5 that the infrastructure is missing.
+This does not reduce GPU hours but reduces calendar time by ~1 week.
+ACTION: In week 1, add a --patch_mode flag to instrumented_run.py that
+accepts a pairs JSON file and runs the clean→corrupted patching loop.
+The pairs file format: [{"clean": "gsm8k/example_0042", "corrupted":
+"gsm8k/example_0017"}, ...]. Build it alongside P1-P4, not after.
+
+OPT 5: MERGE KV-BLOCKED AND KV-SHUFFLED INTO ONE JOB (~saves ~30min overhead)
+-------------------------------------------------------------------------------
+KV-blocked and KV-shuffled use the same modified forward pass infrastructure
+(intercept the KV cache before injection into the next agent). Implement
+both as modes in a single --kv_mode flag (blocked | shuffled) and add
+--also_run_kv_shuffled to run both in one job.
+Both conditions are at 200ex/task, so the total compute is unchanged.
+What you save is job queue overhead (~30min) and a second model reload.
+HOW: In the KV-blocked pass, save the per-example KV caches. In the
+KV-shuffled pass, reuse those saved caches to substitute another example's
+KV (same task, prompt token length ±5 tokens; skip if no match within
+window, log skip rate, widen to ±10 if >20% skipped).
+
+OPT 6: ENABLE FLASH ATTENTION + BF16 AT MODEL LOAD (~20-40% throughput gain)
+------------------------------------------------------------------------------
+In models.py ModelWrapper.__init__, change the HF model load to:
+    self.model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        torch_dtype=torch.bfloat16,
+        attn_implementation="flash_attention_2",
+    )
+flash_attention_2 requires the flash-attn package (pip install flash-attn).
+On a 4090 with Qwen3-4B, this alone gives 20-40% faster forward passes
+with no accuracy change. BF16 (not FP16) is correct for Qwen3 — the model
+was trained in BF16 and FP16 introduces numerical instability in the large
+attention scores.
+PREREQUISITE: pip install flash-attn --no-build-isolation
+If flash-attn is not available (e.g., on a T4 with older CUDA), fall back
+gracefully: wrap the attn_implementation arg in a try/except and log a
+warning. The model still runs in BF16 without flash attention.
+EFFECT ON ESTIMATES: Apply a 0.7x multiplier to all GPU time estimates
+once flash attention is confirmed working. The ~38h baseline becomes ~27h,
+and with OPT 1-3 (~7.5h reduction), total is ~20-22h.
+
+REVISED GPU TIME ESTIMATES (with all optimizations applied):
+  Condition                                    Original    Optimized
+  LatentMAS (full N=500/task)                  ~8h         ~6h (flash attn)
+  SingleAgent compute-matched (sampled)        ~3h         ~2h
+  Self-consistency                             ~3h         ~2h
+  Best-of-N                                    ~3h         ~2h
+  LatentMAS + spectrum random W_a              ~8h         ~2h (200ex + flash)
+  KV-blocked + KV-shuffled (merged job)        ~5h         ~3.5h
+  No-transfer (merged with LatentMAS)          ~1h         ~0h (free with OPT 1)
+  TextMAS (200ex/task)                         ~3h         ~2h
+  Exp M W_a ablations (100ex first)            ~3h         ~1.5h
+  Greedy single-agent bucketing (200ex)        ~1h         ~0.7h
+  ---------------------------------------------------------------
+  GRAND TOTAL                                  ~38h        ~23-24h
+
+========================================================================
 PART 0: PREREQUISITES — NOTHING ELSE MATTERS UNTIL THESE ARE DONE
 ========================================================================
 
@@ -200,9 +422,10 @@ BUCKET SEED STABILITY — DISCLOSED LIMITATION (no extra GPU required):
 Bucket assignment uses one seed of compute-matched single-agent. At
 temperature > 0, single-agent correctness is seed-dependent — ~5% of
 examples may flip bucket assignments across seeds (Bucket 1 ↔ Bucket 3,
-Bucket 2 ↔ Bucket 3). Since 3-seed runs are scoped to L/M/Q only, all
-other experiments (C/D/E/F/G/H/I/J/K/N/O) use single-seed bucketing
-and carry this noise.
+Bucket 2 ↔ Bucket 3). All experiments use single-seed bucketing (see
+Part 3 REPRODUCIBILITY). A 3-seed rebuttal check is held in reserve
+if reviewers specifically request it (50 examples, 3 seeds, run in rebuttal
+period — not pre-committed in the paper).
 MITIGATION (free): run single-agent at temperature=0 (greedy decode) for
 bucketing purposes only. Greedy bucketing is deterministic and eliminates
 seed-induced bucket flipping. This is a decoding-mode flag change, not a
@@ -364,14 +587,12 @@ REQUIRED IMPLEMENTATION:
         - same answer format (numeric, multiple choice, etc.)
         - nearest-neighbor in prompt embedding space (use any sentence
           encoder — all-MiniLM-L6-v2 is fine)
-      NOTE ON PAIR COUNT: target 10 pairs per task (30 total). This is
-      pilot-scale causal evidence — pre-register it as such. Within-task
+      NOTE ON PAIR COUNT: target 25 pairs per task (75 total). Within-task
       only (GSM8K↔GSM8K), difficulty-decile matching relaxed to ±2 deciles,
-      NN matching on prompt embedding. At 10 pairs per task the Wilcoxon
-      test in B1 has low power (~40% at d=0.5), so frame B as directional
-      causal evidence, not a definitive effect size. This still satisfies
-      "at least 1 causal experiment" for the NeurIPS checklist and saves
-      ~2h vs. targeting 15–25 pairs. Report actual pair count per task.
+      NN matching on prompt embedding. At 25 pairs per task the Wilcoxon
+      test in B1 has ~65% power at d=0.5; pooled across 3 tasks (task as
+      blocking factor) power exceeds 80%. This is the minimum for a
+      credible mechanistic claim. Report actual pair count per task.
       Run B per-task, report task-stratified results, do not aggregate.
       CRITICAL BUCKET PAIRING: clean must be Bucket 1 (collab right,
       single wrong) and corrupted must be Bucket 2 (collab wrong, single
@@ -393,11 +614,12 @@ REQUIRED IMPLEMENTATION:
 NOTE: This experiment requires additional GPU computation — it is NOT
 purely offline. The real compute is larger than it looks: you must sweep
 all 3 agents × 4 rounds = 12 patch sites per pair, not just 5. That
-gives 12 sites × 100 pairs × 3 tasks = 3,600 forward passes minimum,
+gives 12 sites × 25 pairs × 3 tasks = 900 forward passes minimum,
 and path patching (which re-runs the full forward pass per site) compounds
-this to ~18,000 forward passes. Budget 4-6 hours on a 4090, not 2-3.
-Start this experiment early — it requires new patching infrastructure in
-instrumented_run.py that does not exist yet.
+this to ~4,500 forward passes. Budget 3-4 hours on a 4090 (faster with
+flash attention, see Part -1 OPT 6). Start this experiment early —
+it requires new patching infrastructure in instrumented_run.py that does
+not exist yet (see Part -1 OPT 4 for build instructions).
 
 STATISTICAL REQUIREMENTS:
   - B1: paired Wilcoxon signed-rank test on answer probability before/after
@@ -802,12 +1024,16 @@ a direct intervention, not a proxy.
 
 REQUIRED MEASUREMENTS:
   L1. Subspace identification — TWO methods (compare both):
-      Method A (PCA): PCA on W_a outputs from Bucket 1 examples (discovery
-        split), pooled across all agents and rounds (e.g., 90 examples ×
-        3 agents × 4 rounds = 1080 vectors). DO NOT run PCA on per-example
-        vectors only (~30 Bucket-1 examples in discovery split) — PCA on
-        30 vectors in D=2048 is rank-degenerate and the elbow is an artifact
-        of sample size, not signal.
+      Method A (PCA): PCA on W_a outputs from ALL discovery-split examples
+        (not Bucket-1 only), pooled across all agents and rounds (200
+        examples × 3 agents × 4 rounds = 2400 vectors). DO NOT restrict to
+        Bucket-1 examples for the PCA basis — at ~15% Bucket-1 rate, that
+        yields only ~30 × 3 × 4 = 360 vectors in D=2048, which is
+        rank-degenerate and produces an elbow that is an artifact of sample
+        size, not signal. Identify the subspace on the full collaboration
+        signal; evaluate it on Bucket-1 examples only (see L2/L3 below).
+        Restricting the PCA to Bucket-1 is circular: you would be finding the
+        subspace that explains variance in the cases where it worked best.
         RESIDUALIZATION REQUIRED BEFORE POOLING: pooled vectors contain
         variance from agent identity, round position, AND example identity —
         all of which are larger effects than the collaboration signal you want.
@@ -1272,13 +1498,14 @@ WEEK 1-2: Prerequisites
 WEEK 3-4: Data collection
   - Main data collection — conditions at full N=500/task:
       1. LatentMAS (trained W_a)                          ~8h
-      2. SingleAgent compute-matched (sampled)            ~3h
+      2. SingleAgent compute-matched latent (sampled)     ~3h
       3. Self-consistency                                 ~3h
       4. Best-of-N                                        ~3h
-      5. LatentMAS + spectrum-preserving random W_a       ~8h
-      6. KV-blocked                                       ~3h
-      7. No-transfer (flag change on condition 1)         ~1h
-    Subtotal full-N: ~29h
+      5. SingleAgent CoT at matched token budget          ~2h  ← FATAL 1 fix
+      6. LatentMAS + spectrum-preserving random W_a       ~8h
+      7. KV-blocked                                       ~3h
+      8. No-transfer (flag change on condition 1)         ~1h
+    Subtotal full-N: ~31h
 
   - Reduced-N conditions (200 examples/task):
       8. TextMAS (token-matched)                          ~3h
@@ -1393,24 +1620,28 @@ reviewers needs ALL of the following. Check each box before submission:
 
 [ ] N >= 500 per task across 3 tasks (1500 total)
 [ ] At least 3 tasks including code generation (MBPP+ must work)
-[ ] 12 baseline conditions collected and reported:
+[ ] 13 baseline conditions collected and reported:
       Full N=500/task:
         1. LatentMAS (trained W_a, full pipeline)
-        2. SingleAgent compute-matched (sampled, headline accuracy)
-        3. SingleAgent compute-matched (greedy, bucketing only)
+        2. SingleAgent compute-matched latent (sampled, headline accuracy)
+        3. SingleAgent compute-matched latent (greedy, bucketing only)
         4. Self-consistency
         5. Best-of-N
-        6. LatentMAS + spectrum-preserving random W_a (SVD, keep Σ)
-        7. KV-blocked
-        8. No-transfer (P3e)
+        6. SingleAgent CoT at matched token budget (FATAL 1 fix)          ~2h
+        7. LatentMAS + spectrum-preserving random W_a (SVD, keep Σ)
+        8. KV-blocked
+        9. No-transfer (P3e)
       Reduced N=200/task:
-        9. TextMAS (text-based, token-matched)
-        10. KV-shuffled (length-matched per P3d spec)
-        11. LatentMAS + random orthogonal W_a  (Exp M budget)
-        12. LatentMAS + zero W_a               (Exp M budget)
+        10. TextMAS (text-based, token-matched)
+        11. KV-shuffled (length-matched per P3d spec)
+        12. LatentMAS + random orthogonal W_a  (Exp M budget)
+        13. LatentMAS + zero W_a               (Exp M budget)
     Note: LatentMAS + identity W_a is Exp M condition 1, not a separate
     baseline run — it is collected as part of Exp M's 200-example sweep.
     Self-refine CUT — subsumed by self-consistency + best-of-N.
+[ ] Headline threshold pre-registered (FATAL 3): LatentMAS beats Best-of-N
+    by ≥3pp on ≥2/3 tasks (McNemar p<0.01); beats CoT by ≥2pp on ≥2/3
+    tasks (p<0.05). If not met, pivot to negative-result framing before week 8.
 [ ] KV-shuffled spec: same task, same prompt token length ±5 tokens;
     document how length mismatches are handled (truncate to shorter, log count)
 [ ] Spectrum-preserving W_a randomization run (not just orthogonal random)
