@@ -35,21 +35,23 @@ risk in the paper.
 COST: ~2h GPU (single agent, same 500ex, standard generate call).
 Add it as condition 13 in the Part 5 checklist.
 
-FATAL 2: EXP B PAIR COUNT IS INSUFFICIENT
-------------------------------------------
-The document specifies 10 pairs/task (30 total) for Exp B and pre-registers
-it as "directional causal evidence." Pre-registering low power does not
-immunize you — a skeptical reviewer will read "30 pairs, 40% power" and
-conclude the causal claim is unsupported. The mechanistic claim is the
-paper's central contribution. If the only causal experiment has 40% power,
-the paper cannot be called a mechanistic interpretability paper.
-FIX: Run 25 pairs/task (75 total). At d=0.5, 25 pairs/task gives ~65%
-power per task; pooled across 3 tasks (with the task as a blocking
-factor in the Wilcoxon), power exceeds 80%. The NOTE block in Exp B also
-contains an internal contradiction — it says "12 sites × 100 pairs × 3
-tasks" but the header says 10 pairs. Fix both simultaneously.
-COST: ~2h additional GPU beyond the current Exp B budget.
-Update all pair-count references in Exp B to 25/task (75 total).
+FATAL 2: EXP B PATCHING DESIGN IS BROKEN + SAMPLE SIZE IS INSUFFICIENT
+------------------------------------------------------------------------
+(a) DESIGN FLAW (2026-04-28): The original spec patched Bucket-1 latent
+states into Bucket-2 examples (different problems, NN-matched). This is
+uninterpretable — if patching fails you cannot distinguish "wrong mechanism"
+from "semantically incompatible examples"; if it works, reviewers ask whether
+you injected answer-encoded information from the donor.
+FIX: Switch to same-example clean/corrupt patching. Clean run = vanilla
+LatentMAS. Corrupt run = same example with W_a removed or KV blocked.
+Patch one latent site from clean into corrupted; measure recovery of the
+same example's correct-answer logit. This eliminates the donor confound
+entirely. See Exp B spec below for full design.
+
+(b) SAMPLE SIZE: 10 examples/task (30 total) gives ~40% power at d=0.5.
+FIX: Use 25 examples/task (75 total). Power: ~65% per task, >80% pooled
+across 3 tasks with task as blocking factor in the Wilcoxon.
+COST: ~2h additional GPU beyond the original Exp B budget.
 
 FATAL 3: NO PRE-REGISTERED MINIMUM EFFECT SIZE FOR HEADLINE CLAIM
 ------------------------------------------------------------------
@@ -571,45 +573,66 @@ Every other experiment in this paper is correlational. This is the one
 experiment that establishes mechanism. Without it, you cannot use the
 word "mechanistic" anywhere in the paper.
 
+PATCHING DESIGN — SAME-EXAMPLE CLEAN/CORRUPT (REVISED 2026-04-28):
+  The previous spec used Bucket-1 → Bucket-2 cross-example patching
+  (inject the latent state from a "clean" example into a different
+  "corrupted" example, nearest-neighbor matched). This design is broken:
+  the clean and corrupted examples are different problems with different
+  correct answers. If patching fails, you cannot distinguish "mechanism
+  is wrong" from "examples are semantically incompatible." If patching
+  works, reviewers will ask whether you injected answer-encoded information
+  from the donor example. Either outcome is uninterpretable.
+
+  CORRECT DESIGN: same-example clean/corrupt patching.
+    clean run:    same example under vanilla LatentMAS (full W_a + KV)
+    corrupt run:  same example under one of:
+                    (a) W_a replaced with identity / zero / random
+                    (b) cross-agent KV transfer blocked (KV-blocked)
+                    (c) cross-agent KV shuffled (KV-shuffled)
+    patch:        restore one latent site (agent i, round m) from the clean
+                  forward pass into the corrupted forward pass
+    metric:       recovery of the SAME example's correct-answer logit/
+                  probability, measured after the final agent
+
+  This is clean because the ground truth is fixed (same example), the
+  counterfactual is mechanistically defined (one intervention on W_a or KV),
+  and recovery means the restored latent state carries the information that
+  the corruption stripped. There is no donor-example confound.
+
+  NOTE ON PAIR COUNT: 25 examples/task (75 total). Each example is its own
+  "pair" (clean run vs. corrupt run). At 25 examples/task the Wilcoxon
+  test has ~65% power at d=0.5; pooled across 3 tasks power exceeds 80%.
+  This is the minimum for a credible mechanistic claim. Report actual
+  count per task. Run B per-task, report task-stratified results.
+
+  EXAMPLE SELECTION: use Bucket 1 examples (collab right, single wrong)
+  from the validation split. Bucket 1 examples are where the communication
+  channel actually matters — these are the cases where LatentMAS succeeds
+  and single-agent fails, so patching into the corrupted version should
+  show the largest recovery effect. If Bucket 1 has fewer than 25 examples
+  per task, extend to Bucket 3 (both right) as a robustness check.
+
+  OPTIONAL EXPLORATORY: cross-example matched-pair patching (original
+  Bucket-1 → Bucket-2 design) can be included as an appendix/exploratory
+  analysis but must NOT be described as "the mechanism proof." Label it
+  explicitly as exploratory with known confounds.
+
 REQUIRED IMPLEMENTATION:
-  B1. Path patching: for a "clean" example (correct answer) and a
-      "corrupted" example (incorrect answer, same task), patch the clean
-      example's agent-i, round-m hidden state into the corrupted example's
-      forward pass. Measure: does the corrupted example's final answer
-      probability change toward the correct answer?
+  B1. Path patching (same-example): for each selected example, run both
+      the clean pass and the corrupted pass (one corruption mode at a time).
+      Sweep all 3 agents × 4 rounds = 12 patch sites per example.
+      Measure: does the corrupted example's final correct-answer probability
+      recover toward the clean-pass probability when the clean site is
+      restored?
       This requires re-running the model for each patch, NOT offline analysis
-      of saved activations. You must add a patching mode to instrumented_run.py.
-      MATCHED-PAIR REQUIREMENT (#4 paper-killer): patching an unrelated
-      example's activations into another example is uninterpretable — if
-      the patch fails, you don't know if it's because the mechanism is wrong
-      or because the examples are incompatible. Pairs MUST be matched on:
-        - same task (GSM8K↔GSM8K only, never cross-task)
-        - same answer format (numeric, multiple choice, etc.)
-        - nearest-neighbor in prompt embedding space (use any sentence
-          encoder — all-MiniLM-L6-v2 is fine)
-      NOTE ON PAIR COUNT: target 25 pairs per task (75 total). Within-task
-      only (GSM8K↔GSM8K), difficulty-decile matching relaxed to ±2 deciles,
-      NN matching on prompt embedding. At 25 pairs per task the Wilcoxon
-      test in B1 has ~65% power at d=0.5; pooled across 3 tasks (task as
-      blocking factor) power exceeds 80%. This is the minimum for a
-      credible mechanistic claim. Report actual pair count per task.
-      Run B per-task, report task-stratified results, do not aggregate.
-      CRITICAL BUCKET PAIRING: clean must be Bucket 1 (collab right,
-      single wrong) and corrupted must be Bucket 2 (collab wrong, single
-      right). This is the only pairing that tests the communication channel.
-      Patching Bucket 1 → Bucket 1 (winner into winner) tests nothing —
-      both examples already succeeded. Patching Bucket 3 → Bucket 4 tests
-      the base model, not collaboration. The question is: can patching the
-      Bucket 1 example's latent state into the Bucket 2 example recover
-      the correct answer? That is the causal test.
-  B2. Identify the "critical rotation": for failed examples, find the
-      specific agent and round where patching with the correct answer's
-      activations first recovers the correct answer. This localizes the
-      failure.
-  B3. Error propagation: for examples where agent 1 introduces an error,
-      measure how many subsequent agents' hidden states are corrupted
-      (cosine distance to the "clean" trajectory > threshold). This tests
-      whether errors propagate or are corrected.
+      of saved activations. Add a patching mode to instrumented_run.py.
+  B2. Identify the "critical site": find the specific agent and round where
+      patching the clean activation first recovers the correct answer. This
+      localizes where in the latent exchange the information is carried.
+  B3. Error propagation: for corrupted runs, measure how many subsequent
+      agents' hidden states diverge from the clean trajectory (cosine
+      distance > threshold). Tests whether the corruption propagates forward
+      or is self-corrected.
 
 NOTE: This experiment requires additional GPU computation — it is NOT
 purely offline. The real compute is larger than it looks: you must sweep
