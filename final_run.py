@@ -1678,7 +1678,7 @@ def main() -> None:
     log.info("[init] loaded in %.1fs", time.time() - t0)
 
     cfg = CaptureConfig(
-        save_attention=args.save_attention,
+        save_attention=True,
         save_all_layer_hidden=not args.no_layer_hidden,
         save_kv_latent_only=not args.no_kv_latent,
         save_kv_full=args.save_kv_full,
