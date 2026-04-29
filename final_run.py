@@ -191,7 +191,7 @@ class InstrumentedLatentMAS:
         """Build prompt for a given role and return (text, input_ids, attention_mask)."""
         from prompts import build_agent_message_sequential_latent_mas
         messages = build_agent_message_sequential_latent_mas(
-            role=role, question=question, context="", args=self.args
+            role=role, question=question, context="", method="latent_mas", args=self.args
         )
         prompt_text, input_ids, attention_mask, _ = self.mw.prepare_chat_input(
             messages, add_generation_prompt=True
