@@ -714,7 +714,6 @@ class LatentMASCondition:
                     pad_token_id=mw.tokenizer.pad_token_id,
                     return_dict_in_generate=True,
                     past_key_values=past_kv_local,
-                    cache_position=cache_position,
                 )
                 gen_ids = gen_out.sequences[0, input_ids.shape[-1]:]
                 final_text = mw.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
@@ -922,7 +921,6 @@ class TopkGatedLatentMASCondition(LatentMASCondition):
                     temperature=runner.temperature, top_p=runner.top_p,
                     do_sample=True, pad_token_id=mw.tokenizer.pad_token_id,
                     return_dict_in_generate=True, past_key_values=past_kv,
-                    cache_position=cache_position,
                 )
                 gen_ids = gen_out.sequences[0, input_ids.shape[-1]:]
                 final_text = mw.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
@@ -1318,7 +1316,7 @@ class ActivationPatchingRunner:
                     temperature=self.args.temperature, top_p=self.args.top_p,
                     do_sample=True, pad_token_id=mw.tokenizer.pad_token_id,
                     return_dict_in_generate=True,
-                    past_key_values=past_local, cache_position=cache_position,
+                    past_key_values=past_local,
                 )
                 gen_ids = gen_out.sequences[0, input_ids.shape[-1]:]
                 final_text = mw.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
