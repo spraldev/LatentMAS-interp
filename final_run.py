@@ -90,21 +90,143 @@ import torch
 from tqdm import tqdm
 
 from data import load_arc_challenge, load_gsm8k, load_mbppplus
-from instrumented_run import (
-    CaptureConfig,
-    InstrumentedLatentMAS,
-    dir_size_bytes,
-    fmt_bytes,
-    kv_to_legacy,
-    setup_logging,
-    slice_kv_positions,
-    to_fp16_cpu,
-)
+# ============================================================
+# Inlined from instrumented_run (not committed to repo)
+# ============================================================
+
+@dataclass
+class CaptureConfig:
+    save_attention: bool = False
+    save_all_layer_hidden: bool = True
+    save_kv_latent_only: bool = True
+    save_kv_full: bool = False
+    save_prompt_hidden_last: int = 64
+    decode_latent_topk: int = 5
+    storage_warn_gb: float = 18.0
+
+
+def to_fp16_cpu(t: torch.Tensor) -> torch.Tensor:
+    return t.detach().to(device="cpu", dtype=torch.float16)
+
+
+def kv_to_legacy(past_kv):
+    """Normalise past_key_values to list-of-(k,v) tuples regardless of
+    whether it's a HF DynamicCache object or the legacy tuple-of-tuples."""
+    if past_kv is None:
+        return None
+    if isinstance(past_kv, (list, tuple)):
+        return list(past_kv)
+    # HF Cache object (transformers >= 4.38)
+    if hasattr(past_kv, "key_cache") and hasattr(past_kv, "value_cache"):
+        return list(zip(past_kv.key_cache, past_kv.value_cache))
+    return None
+
+
+def slice_kv_positions(past_kv, start: int, end: int):
+    """Return a list of (k[:, :, start:end, :], v[:, :, start:end, :]) per layer."""
+    legacy = kv_to_legacy(past_kv)
+    if legacy is None:
+        return []
+    result = []
+    for k, v in legacy:
+        result.append((
+            k[..., start:end, :].detach().to(device="cpu", dtype=torch.float16),
+            v[..., start:end, :].detach().to(device="cpu", dtype=torch.float16),
+        ))
+    return result
+
+
+def dir_size_bytes(path: Path) -> int:
+    return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
+
+
+def fmt_bytes(n: int) -> str:
+    for unit in ("B", "KB", "MB", "GB"):
+        if n < 1024:
+            return f"{n:.1f}{unit}"
+        n /= 1024
+    return f"{n:.1f}TB"
+
+
+def setup_logging(log_file: Path, level: str = "INFO") -> None:
+    fmt = "%(asctime)s %(levelname)s %(name)s — %(message)s"
+    handlers = [logging.StreamHandler()]
+    try:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        handlers.append(logging.FileHandler(log_file))
+    except Exception:
+        pass
+    logging.basicConfig(level=getattr(logging, level.upper(), logging.INFO),
+                        format=fmt, handlers=handlers, force=True)
+
+
+class InstrumentedLatentMAS:
+    """Minimal orchestrator: builds prompts, runs the latent loop, saves W_a.
+    The actual forward pass with KV interventions is handled by
+    LatentMASCondition; this class exists to hold config and helpers."""
+
+    def __init__(
+        self,
+        mw,
+        *,
+        latent_steps: int = 4,
+        judger_max_new_tokens: int = 512,
+        temperature: float = 0.6,
+        top_p: float = 0.95,
+        args=None,
+        cfg: Optional["CaptureConfig"] = None,
+        agents: Optional[List] = None,
+    ):
+        from methods import default_agents as _default_agents
+        self.mw = mw
+        self.latent_steps = latent_steps
+        self.judger_max_new_tokens = judger_max_new_tokens
+        self.temperature = temperature
+        self.top_p = top_p
+        self.args = args
+        self.cfg = cfg or CaptureConfig()
+        self.agents = agents if agents is not None else _default_agents()
+
+    def _build_prompt(self, role: str, question: str):
+        """Build prompt for a given role and return (text, input_ids, attention_mask)."""
+        from prompts import build_agent_message_sequential_latent_mas
+        messages = build_agent_message_sequential_latent_mas(
+            role=role, question=question, context="", args=self.args
+        )
+        prompt_text, input_ids, attention_mask, _ = self.mw.prepare_chat_input(
+            messages, add_generation_prompt=True
+        )
+        return prompt_text, input_ids, attention_mask
+
+    def _decode_latent_topk(self, hidden: torch.Tensor, k: int) -> List[Tuple[str, float]]:
+        """Project hidden state through lm_head and return top-k (token, prob) pairs."""
+        try:
+            model = getattr(self.mw, "HF_model", self.mw.model)
+            lm_head = model.get_output_embeddings()
+            with torch.no_grad():
+                logits = lm_head(hidden.to(lm_head.weight.device).unsqueeze(0).float())
+                probs = torch.softmax(logits[0], dim=-1)
+                topk = torch.topk(probs, k)
+            tokens = self.mw.tokenizer.convert_ids_to_tokens(topk.indices.tolist())
+            return [(t, float(p)) for t, p in zip(tokens, topk.values.tolist())]
+        except Exception:
+            return []
+
+    def save_wa(self, path: Path) -> None:
+        """Save the trained W_a matrix to disk."""
+        try:
+            model = getattr(self.mw, "HF_model", self.mw.model)
+            self.mw._ensure_latent_realign_matrix(model, self.mw.device, self.args)
+            key = id(model)
+            if key in self.mw._latent_realign_matrices:
+                W, target_norm = self.mw._latent_realign_matrices[key]
+                torch.save({"W_a": W.cpu(), "target_norm": target_norm.cpu()}, path)
+                log.info("[wa] saved W_a %s to %s", tuple(W.shape), path)
+        except Exception as e:
+            log.warning("[wa] could not save W_a: %s", e)
 from methods import Agent, default_agents
 from models import ModelWrapper, _past_length
 from prompts import (
-    build_agent_message_hierarchical_latent_mas,
-    build_agent_message_sequential_latent_mas,
     build_agent_messages_single_agent,
     build_agent_messages_sequential_text_mas,
 )
@@ -1599,7 +1721,6 @@ def main() -> None:
     p.add_argument("--think", action="store_true")
     p.add_argument("--latent_space_realign", action="store_true")
     p.add_argument("--no_layer_hidden", action="store_true")
-    p.add_argument("--save_attention", action="store_true")
     p.add_argument("--save_kv_full", action="store_true")
     p.add_argument("--no_kv_latent", action="store_true")
     p.add_argument("--prompt_hidden_last", type=int, default=64)
