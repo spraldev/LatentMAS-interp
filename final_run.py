@@ -703,13 +703,14 @@ class LatentMASCondition:
                     cur_past_len, cur_past_len + input_ids.shape[-1],
                     dtype=torch.long, device=device,
                 )
+                _do_sample = getattr(runner.args, "do_sample", True)
                 gen_out = mw.model.generate(
                     input_ids=input_ids,
                     attention_mask=gen_mask,
                     max_new_tokens=runner.judger_max_new_tokens,
-                    temperature=runner.temperature,
-                    top_p=runner.top_p,
-                    do_sample=True,
+                    temperature=(runner.temperature if _do_sample else 1.0),
+                    top_p=(runner.top_p if _do_sample else 1.0),
+                    do_sample=_do_sample,
                     pad_token_id=mw.tokenizer.pad_token_id,
                     return_dict_in_generate=True,
                     past_key_values=past_kv_local,
@@ -1501,6 +1502,8 @@ def run_condition(
                 local_args.latent_steps = spec.extras["latent_steps_override"]
             if spec.extras.get("temperature_override") is not None:
                 local_args.temperature = spec.extras["temperature_override"]
+            if spec.extras.get("do_sample_override") is not None:
+                local_args.do_sample = spec.extras["do_sample_override"]
             agents_override = _resolve_agents(spec.extras)
             cond = LatentMASCondition(
                 mw, local_args, cfg,
