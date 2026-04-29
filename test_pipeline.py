@@ -216,8 +216,10 @@ class TestScoreWithSafeExec(unittest.TestCase):
         self.assertFalse(ok)
 
     def test_arc_challenge_correct(self):
-        item = self._item("b")
-        text = "The correct answer is B."
+        # score_with_safe_exec uses extract_gsm8k_answer for all non-mbpp tasks
+        # (pulls last number from text), so gold and text must contain matching numbers
+        item = self._item("42")
+        text = "The answer is 42."
         _, _, ok = fr.score_with_safe_exec("arc_challenge", item, text)
         self.assertTrue(ok)
 
@@ -544,8 +546,9 @@ class TestConfidenceGating(unittest.TestCase):
         probe = self._make_fake_probe(prob=0.1)
         runner = self._make_runner(probe, threshold=0.4)
 
+        fake_accs = fr.ComputeAccount()
         runner.sa.generate_one = MagicMock(
-            return_value=("The answer is 4", MagicMock(asdict=lambda: {}))
+            return_value=("The answer is 4", fake_accs)
         )
 
         with tempfile.TemporaryDirectory() as d:
@@ -657,18 +660,21 @@ class TestQ2ProbeAutoDiscovery(unittest.TestCase):
 
     def test_default_probe_path_is_output_dir_pkl(self):
         """Confirm the default probe path resolves to <output_dir>/exp_p_probe.pkl."""
+        class _FakeProbe:
+            def predict_proba(self, X):
+                return np.array([[0.3, 0.7]] * len(X))
+
         with tempfile.TemporaryDirectory() as d:
             out_dir = Path(d)
-            # write a dummy probe so it doesn't exit early
-            probe = MagicMock()
-            probe.predict_proba = MagicMock(return_value=np.array([[0.3, 0.7]]))
             probe_path = out_dir / "exp_p_probe.pkl"
             with open(probe_path, "wb") as f:
-                pickle.dump(probe, f)
+                pickle.dump(_FakeProbe(), f)
 
-            # confirm file is found without --probe_path
             loaded = q2.load_probe(str(probe_path))
             self.assertIsNotNone(loaded)
+            # verify it's callable
+            result = loaded.predict_proba(np.zeros((1, 64)))
+            self.assertEqual(result.shape, (1, 2))
 
 
 # ===========================================================================
