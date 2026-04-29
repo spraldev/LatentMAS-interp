@@ -73,6 +73,10 @@ def _patch_heavy_imports():
     utils_stub.set_seed = lambda s: random.seed(s)
     utils_stub.extract_gold = lambda s: s.split("####")[-1].strip() if "####" in s else s
     utils_stub.normalize_answer = lambda s: s.strip().lower()
+    utils_stub.extract_gsm8k_answer = lambda s: (s.split("####")[-1].strip() if "####" in s else "")
+    utils_stub.extract_markdown_python_block = lambda s: (
+        s.split("```python")[-1].split("```")[0].strip() if "```python" in s else None
+    )
     sys.modules.setdefault("utils", utils_stub)
 
     # data.py
@@ -91,6 +95,8 @@ def _patch_heavy_imports():
     # prompts.py
     prompts_stub = _make_stub_module("prompts")
     prompts_stub.build_agent_message_sequential_latent_mas = MagicMock(return_value=[])
+    prompts_stub.build_agent_messages_single_agent = MagicMock(return_value=[])
+    prompts_stub.build_agent_messages_sequential_text_mas = MagicMock(return_value=[])
     sys.modules.setdefault("prompts", prompts_stub)
 
     # tqdm
