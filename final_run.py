@@ -150,14 +150,24 @@ def fmt_bytes(n: int) -> str:
 
 def setup_logging(log_file: Path, level: str = "INFO") -> None:
     fmt = "%(asctime)s %(levelname)s %(name)s — %(message)s"
-    handlers = [logging.StreamHandler()]
+    handlers = [logging.StreamHandler(sys.stdout)]   # Always log to console
+
     try:
         log_file.parent.mkdir(parents=True, exist_ok=True)
-        handlers.append(logging.FileHandler(log_file))
-    except Exception:
-        pass
-    logging.basicConfig(level=getattr(logging, level.upper(), logging.INFO),
-                        format=fmt, handlers=handlers, force=True)
+        # Try to add file handler, but don't crash if quota is hit
+        file_handler = logging.FileHandler(log_file)
+        handlers.append(file_handler)
+        log.info("Logging to both console and %s", log_file)
+    except Exception as e:
+        log.warning("Could not create log file %s (quota/disk issue): %s. Logging to console only.", 
+                   log_file, e)
+
+    logging.basicConfig(
+        level=getattr(logging, level.upper(), logging.INFO),
+        format=fmt, 
+        handlers=handlers, 
+        force=True
+    )
 
 
 class InstrumentedLatentMAS:
