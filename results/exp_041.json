@@ -1,0 +1,12 @@
+{
+  "id": 41,
+  "name": "Channel capacity of latent comm",
+  "question": "Empirical bits/token through the inter-agent latent channel.",
+  "metrics": {
+    "mi_bits_per_token": 4.0007676900229825
+  },
+  "score": 0.1250239903132182,
+  "finding": "Gaussian MI proxy \u2248 4.00 bits/token.",
+  "notes": "",
+  "status": "ok"
+}

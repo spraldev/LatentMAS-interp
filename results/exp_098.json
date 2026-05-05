@@ -1,0 +1,12 @@
+{
+  "id": 98,
+  "name": "Latent hallucination signature",
+  "question": "Geometric signature of hallucinations",
+  "metrics": {
+    "auc_var_vs_wrong": 0.6437117417918754
+  },
+  "score": 0.2874234835837508,
+  "finding": "Latent variance AUC vs hallucination proxy 0.644.",
+  "notes": "",
+  "status": "ok"
+}

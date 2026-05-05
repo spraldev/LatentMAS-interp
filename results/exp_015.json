@@ -1,0 +1,14 @@
+{
+  "id": 15,
+  "name": "Flocking in thought space",
+  "question": "Alignment / cohesion / separation across agents",
+  "metrics": {
+    "alignment": 0.7739321133091804,
+    "cohesion": 0.38479720698385694,
+    "separation": 0.48775921691430757
+  },
+  "score": 0.7739321133091804,
+  "finding": "align=0.774, cohesion=0.38, sep=0.49.",
+  "notes": "",
+  "status": "ok"
+}

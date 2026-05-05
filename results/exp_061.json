@@ -1,0 +1,13 @@
+{
+  "id": 61,
+  "name": "Quorum sensing threshold",
+  "question": "Minimum agent consensus before answer crystallises",
+  "metrics": {
+    "auc_final_consensus_vs_correct": 0.4830550918196995,
+    "median_cos": 0.4994968523581823
+  },
+  "score": 0.033889816360600955,
+  "finding": "Final-round consensus AUC vs correct=0.483.",
+  "notes": "",
+  "status": "ok"
+}

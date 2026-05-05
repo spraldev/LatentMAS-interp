@@ -1,0 +1,18 @@
+{
+  "id": 54,
+  "name": "Diffusion dynamics",
+  "question": "Does concept spread follow Fickian diffusion?",
+  "metrics": {
+    "var_per_step": [
+      0.055688172578811646,
+      0.18649904429912567,
+      0.30983424186706543,
+      0.6285033226013184
+    ],
+    "log_log_slope": 1.6912103543914017
+  },
+  "score": 1.0,
+  "finding": "var \u221d t^1.69 (Fickian if \u22481).",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,13 @@
+{
+  "id": 88,
+  "name": "Reaction kinetics",
+  "question": "Rate of concept transfer between agents",
+  "metrics": {
+    "mean_rate": -0.19993554936219776,
+    "std_rate": 0.046123713675822624
+  },
+  "score": 0.799742197448791,
+  "finding": "Mean transfer rate -0.200 per round.",
+  "notes": "",
+  "status": "ok"
+}

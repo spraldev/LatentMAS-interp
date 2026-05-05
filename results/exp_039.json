@@ -1,0 +1,17 @@
+{
+  "id": 39,
+  "name": "Semantic Direction Inventory",
+  "question": "Are there consistent 'semantic axes' in latent space?",
+  "metrics": {
+    "per_task_correct_axis_cosine": {
+      "arc_challenge": -0.021783778443932533,
+      "gsm8k": -0.19602183997631073,
+      "mbppplus": 0.8485429883003235
+    },
+    "mean_stability": 0.21024578996002674
+  },
+  "score": 0.21024578996002674,
+  "finding": "'Correctness' semantic axis cross-task stability 0.210.",
+  "notes": "",
+  "status": "ok"
+}

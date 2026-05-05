@@ -1,0 +1,16 @@
+{
+  "id": 86,
+  "name": "Catalytic agents",
+  "question": "Which agent's presence lowers 'activation energy' for others?",
+  "metrics": {
+    "catalytic_gain": {
+      "agent_0": 0.020319303338171224,
+      "agent_1": 0.01741654571843254,
+      "agent_2": 0.02284293899561851
+    }
+  },
+  "score": 0.09137175598247405,
+  "finding": "Catalytic \u0394acc: agent_0=+0.020, agent_1=+0.017, agent_2=+0.023",
+  "notes": "",
+  "status": "ok"
+}

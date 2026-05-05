@@ -1,0 +1,13 @@
+{
+  "id": 83,
+  "name": "Information asymmetry",
+  "question": "Does prompt-hidden entropy predict latent quality?",
+  "metrics": {
+    "pearson_promptH_latentNorm": 0.06470122195688668,
+    "n": 360
+  },
+  "score": 0.12940244391377337,
+  "finding": "Prompt-entropy \u2194 latent-norm pearson +0.065.",
+  "notes": "",
+  "status": "ok"
+}

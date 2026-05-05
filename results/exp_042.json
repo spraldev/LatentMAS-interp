@@ -1,0 +1,13 @@
+{
+  "id": 42,
+  "name": "Redundancy coding across agents",
+  "question": "How much is the same info encoded by multiple agents?",
+  "metrics": {
+    "mean_pairwise_cos": 0.7739326333114359,
+    "redundancy_correct_pearson": -0.08982382483947972
+  },
+  "score": 0.3592952993579189,
+  "finding": "Cross-agent redundancy r=0.774; pearson(redundancy, correct)=-0.090.",
+  "notes": "",
+  "status": "ok"
+}

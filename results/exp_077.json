@@ -1,0 +1,12 @@
+{
+  "id": 77,
+  "name": "Groupthink detector",
+  "question": "Does early convergence predict wrong answers?",
+  "metrics": {
+    "auc_early_consensus_vs_failure": 0.6549063253570766
+  },
+  "score": 0.3098126507141532,
+  "finding": "Early-round consensus AUC vs failure = 0.655 (>0.5 = groupthink evidence).",
+  "notes": "",
+  "status": "ok"
+}

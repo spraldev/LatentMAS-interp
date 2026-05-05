@@ -1,0 +1,12 @@
+{
+  "id": 96,
+  "name": "Compositionality",
+  "question": "Do multi-step thoughts = sums of simpler primitives?",
+  "metrics": {
+    "mean_cos_pred_vs_last": 0.5437820215637867
+  },
+  "score": 0.5437820215637867,
+  "finding": "Composed-mean\u2194last cosine 0.544.",
+  "notes": "",
+  "status": "ok"
+}

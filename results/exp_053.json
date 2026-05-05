@@ -1,0 +1,26 @@
+{
+  "id": 53,
+  "name": "Phase transitions in collaboration",
+  "question": "Does coherence jump past a critical agent count?",
+  "metrics": {
+    "coherence_curve": [
+      {
+        "k": 1,
+        "coh": 1.0000000005190535
+      },
+      {
+        "k": 2,
+        "coh": 0.9453200019668945
+      },
+      {
+        "k": 3,
+        "coh": 0.921272540328926
+      }
+    ],
+    "max_jump": -0.024047461637968448
+  },
+  "score": 0.0,
+  "finding": "Coherence vs #agents max step -0.024.",
+  "notes": "",
+  "status": "ok"
+}

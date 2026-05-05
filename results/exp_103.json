@@ -1,0 +1,10 @@
+{
+  "id": 103,
+  "name": "Turing-completeness / expressiveness",
+  "question": "Evidence of recursive / compositional structure",
+  "metrics": {},
+  "score": 0.0,
+  "finding": "error: operands could not be broadcast together with shapes (2560,2560) (3,3) ",
+  "notes": "",
+  "status": "error"
+}

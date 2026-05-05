@@ -1,0 +1,18 @@
+{
+  "id": 23,
+  "name": "Bargaining / power asymmetries",
+  "question": "Does one agent dominate shared memory direction?",
+  "metrics": {
+    "win_fraction_per_agent": [
+      0.05660377358490566,
+      0.26995645863570394,
+      0.6734397677793904
+    ],
+    "most_dominant": 2,
+    "dominance": 0.6734397677793904
+  },
+  "score": 0.5101596516690856,
+  "finding": "Agent 2 dominates 67.3% of the time.",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,17 @@
+{
+  "id": 2,
+  "name": "Emergent Private Latent Vocabulary",
+  "question": "Do agents re-use a consistent set of latent activation patterns?",
+  "metrics": {
+    "k": 64,
+    "entropy": 3.9957300645657305,
+    "max_entropy": 4.1588830833596715,
+    "reuse_ratio": 0.03923000852001379,
+    "n_common_clusters": 43,
+    "largest_cluster_frac": 0.042150459603289794
+  },
+  "score": 0.03923000852001379,
+  "finding": "Latent thoughts cluster into 43 common 'words' (reuse ratio 0.039). Evidence for private vocabulary.",
+  "notes": "",
+  "status": "ok"
+}

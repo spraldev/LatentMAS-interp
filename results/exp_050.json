@@ -1,0 +1,17 @@
+{
+  "id": 50,
+  "name": "Voronoi partitioning",
+  "question": "Do agents partition space into balanced cells?",
+  "metrics": {
+    "cell_fracs": [
+      0.3264997581035317,
+      0.17525399129172714,
+      0.49824625060474115
+    ],
+    "balance": 0.8680504560906017
+  },
+  "score": 0.8680504560906017,
+  "finding": "Voronoi balance 0.868 (1=equal).",
+  "notes": "",
+  "status": "ok"
+}

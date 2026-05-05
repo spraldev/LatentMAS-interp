@@ -1,0 +1,13 @@
+{
+  "id": 19,
+  "name": "Superposition of reasoning paths",
+  "question": "Does one latent encode multiple candidate answers?",
+  "metrics": {
+    "mean_PR": 2.7038291738583493,
+    "max_PR": 3.702488422393799
+  },
+  "score": 0.6759572934645873,
+  "finding": "Mean per-thought participation ratio 2.704 (of m=4).",
+  "notes": "",
+  "status": "ok"
+}

@@ -1,0 +1,13 @@
+{
+  "id": 49,
+  "name": "Fractal dimension of trajectories",
+  "question": "Box-counting dim of latent trajectory",
+  "metrics": {
+    "mean_path_len": 3.6257314682006836,
+    "std_path_len": 0.4016810357570648
+  },
+  "score": 0.11078620702028275,
+  "finding": "Path length mean=3.63 std=0.40.",
+  "notes": "",
+  "status": "ok"
+}
