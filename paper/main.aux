@@ -1,0 +1,77 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{du2023improving,liang2023encouraging,wang2023unleashing}
+\citation{turpin2023language,lyu2023faithful}
+\citation{hao2024training}
+\citation{shen2024codi}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\citation{hao2024training}
+\citation{shen2024codi}
+\citation{wei2022chain}
+\citation{du2023improving}
+\citation{liang2023encouraging,wang2023unleashing}
+\citation{wang2023selfconsistency}
+\citation{xu2024can,liu2024latent}
+\citation{alain2017understanding}
+\citation{kornblith2019similarity}
+\citation{meng2022locating,zhang2024towards}
+\citation{kraskov2004estimating}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background and related work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Background and related work}{section.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}LatentMAS and analysis pipeline}{2}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{2}{LatentMAS and analysis pipeline}{section.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}System-level results}{2}{section.4}\protected@file@percent }
+\newlabel{sec:headline}{{4}{2}{System-level results}{section.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Accuracy (\%) with Wilson 95\% confidence interval. LatentMAS is compared against single-agent and TextMAS baselines and against five mechanistic ablations: removing inter-agent transfer (No-transfer), blocking KV passing (KV-blocked), randomising the $W_a$ alignment spectrum (Random-$W_a$), replacing $W_a$ with identity (Identity-$W_a$), and the trained-$W_a$ LatentMAS (default).}}{3}{table.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:main_accuracy}{{1}{3}{Accuracy (\%) with Wilson 95\% confidence interval. LatentMAS is compared against single-agent and TextMAS baselines and against five mechanistic ablations: removing inter-agent transfer (No-transfer), blocking KV passing (KV-blocked), randomising the $W_a$ alignment spectrum (Random-$W_a$), replacing $W_a$ with identity (Identity-$W_a$), and the trained-$W_a$ LatentMAS (default)}{table.caption.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Bucket distribution comparing LatentMAS (LMAS) vs.\ matched Single-Agent (SA). B1 = LMAS correct \& SA wrong (the channel-positive set); B2 = LMAS wrong \& SA correct.}}{3}{table.caption.3}\protected@file@percent }
+\newlabel{tab:buckets}{{2}{3}{Bucket distribution comparing LatentMAS (LMAS) vs.\ matched Single-Agent (SA). B1 = LMAS correct \& SA wrong (the channel-positive set); B2 = LMAS wrong \& SA correct}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}$W_a$ is near-identity}{3}{section.5}\protected@file@percent }
+\newlabel{sec:wa}{{5}{3}{$W_a$ is near-identity}{section.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}What the channel carries}{3}{section.6}\protected@file@percent }
+\newlabel{sec:channel}{{6}{3}{What the channel carries}{section.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces $W_a$ decomposition. Trained $W_a$ vs.\ identity $W_a$ isolates whether the alignment matrix carries reasoning content beyond simply preserving the KV channel.}}{3}{table.caption.5}\protected@file@percent }
+\newlabel{tab:wa_ablation}{{3}{3}{$W_a$ decomposition. Trained $W_a$ vs.\ identity $W_a$ isolates whether the alignment matrix carries reasoning content beyond simply preserving the KV channel}{table.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Wall-clock per example. TextMAS pays a $3{-}5\times $ latency tax for token-mediated coordination; LatentMAS is comparable to a matched single-agent.}}{4}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:wallclock}{{1}{4}{Wall-clock per example. TextMAS pays a $3{-}5\times $ latency tax for token-mediated coordination; LatentMAS is comparable to a matched single-agent}{figure.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Exp M. Trained-$W_a$ and identity-$W_a$ behave identically on accuracy and dynamics; No-transfer departs sharply only on MBPP+.}}{4}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:wa_flocking}{{2}{4}{Exp M. Trained-$W_a$ and identity-$W_a$ behave identically on accuracy and dynamics; No-transfer departs sharply only on MBPP+}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}The communication subspace}{4}{section.7}\protected@file@percent }
+\newlabel{sec:subspace}{{7}{4}{The communication subspace}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Trajectories and group dynamics}{4}{section.8}\protected@file@percent }
+\newlabel{sec:dynamics}{{8}{4}{Trajectories and group dynamics}{section.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces What the channel carries: task identity is dominant; the answer is not literally encoded.}}{5}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:c_geometry}{{3}{5}{What the channel carries: task identity is dominant; the answer is not literally encoded}{figure.caption.7}{}}
+\newlabel{fig:l_subspace}{{4a}{5}{Exp L. Cumulative variance}{figure.caption.8}{}}
+\newlabel{sub@fig:l_subspace}{{a}{5}{Exp L. Cumulative variance}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Subspace, divergence, and sycophancy: the channel is rank-$\sim 70$, agents diverge over rounds, and alignment with the dominant agent weakly tracks failure.}}{5}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:dynamics}{{4}{5}{Subspace, divergence, and sycophancy: the channel is rank-$\sim 70$, agents diverge over rounds, and alignment with the dominant agent weakly tracks failure}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Failure modes, calibration, and layer routing}{5}{section.9}\protected@file@percent }
+\newlabel{sec:failure}{{9}{5}{Failure modes, calibration, and layer routing}{section.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Predicting when the channel will help}{5}{section.10}\protected@file@percent }
+\newlabel{sec:probe}{{10}{5}{Predicting when the channel will help}{section.10}{}}
+\bibstyle{plainnat}
+\bibdata{references}
+\bibcite{alain2017understanding}{{1}{2017}{{Alain and Bengio}}{{}}}
+\bibcite{du2023improving}{{2}{2024}{{Du et~al.}}{{Du, Li, Torralba, Tenenbaum, and Mordatch}}}
+\bibcite{hao2024training}{{3}{2024}{{Hao et~al.}}{{Hao, Sukhbaatar, Su, Li, Hu, Weston, and Tian}}}
+\bibcite{kornblith2019similarity}{{4}{2019}{{Kornblith et~al.}}{{Kornblith, Norouzi, Lee, and Hinton}}}
+\bibcite{kraskov2004estimating}{{5}{2004}{{Kraskov et~al.}}{{Kraskov, St{\"o}gbauer, and Grassberger}}}
+\bibcite{liang2023encouraging}{{6}{2023}{{Liang et~al.}}{{Liang, He, Jiao, Wang, Wang, Wang, Yang, Tu, and Shi}}}
+\bibcite{liu2024latent}{{7}{2024}{{Liu et~al.}}{{}}}
+\bibcite{lyu2023faithful}{{8}{2023}{{Lyu et~al.}}{{Lyu, Havaldar, Stein, Zhang, Rao, Wong, Apidianaki, and Callison-Burch}}}
+\@writefile{toc}{\contentsline {section}{\numberline {11}Discussion and limitations}{6}{section.11}\protected@file@percent }
+\newlabel{sec:discussion}{{11}{6}{Discussion and limitations}{section.11}{}}
+\bibcite{meng2022locating}{{9}{2022}{{Meng et~al.}}{{Meng, Bau, Andonian, and Belinkov}}}
+\bibcite{shen2024codi}{{10}{2024}{{Shen et~al.}}{{}}}
+\bibcite{turpin2023language}{{11}{2023}{{Turpin et~al.}}{{Turpin, Michael, Perez, and Bowman}}}
+\bibcite{wang2023selfconsistency}{{12}{2023{}}{{Wang et~al.}}{{Wang, Wei, Schuurmans, Le, Chi, Narang, Chowdhery, and Zhou}}}
+\bibcite{wang2023unleashing}{{13}{2023{}}{{Wang et~al.}}{{Wang, Mao, Wu, Ge, Wei, and Ji}}}
+\bibcite{wei2022chain}{{14}{2022}{{Wei et~al.}}{{Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le, and Zhou}}}
+\bibcite{xu2024can}{{15}{2024}{{Xu et~al.}}{{}}}
+\bibcite{zhang2024towards}{{16}{2024}{{Zhang and Nanda}}{{}}}
+\gdef \@abspage@last{7}

@@ -1,0 +1,111 @@
+\begin{thebibliography}{16}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alain and Bengio(2017)]{alain2017understanding}
+Guillaume Alain and Yoshua Bengio.
+\newblock Understanding intermediate layers using linear classifier probes.
+\newblock \emph{ICLR Workshop}, 2017.
+
+\bibitem[Du et~al.(2024)Du, Li, Torralba, Tenenbaum, and
+  Mordatch]{du2023improving}
+Yilun Du, Shuang Li, Antonio Torralba, Joshua~B Tenenbaum, and Igor Mordatch.
+\newblock Improving factuality and reasoning in language models through
+  multiagent debate.
+\newblock In \emph{ICML}, 2024.
+
+\bibitem[Hao et~al.(2024)Hao, Sukhbaatar, Su, Li, Hu, Weston, and
+  Tian]{hao2024training}
+Shibo Hao, Sainbayar Sukhbaatar, DiJia Su, Xian Li, Zhiting Hu, Jason Weston,
+  and Yuandong Tian.
+\newblock Training large language models to reason in a continuous latent
+  space.
+\newblock \emph{arXiv preprint arXiv:2412.06769}, 2024.
+
+\bibitem[Kornblith et~al.(2019)Kornblith, Norouzi, Lee, and
+  Hinton]{kornblith2019similarity}
+Simon Kornblith, Mohammad Norouzi, Honglak Lee, and Geoffrey Hinton.
+\newblock Similarity of neural network representations revisited.
+\newblock In \emph{ICML}, 2019.
+
+\bibitem[Kraskov et~al.(2004)Kraskov, St{\"o}gbauer, and
+  Grassberger]{kraskov2004estimating}
+Alexander Kraskov, Harald St{\"o}gbauer, and Peter Grassberger.
+\newblock Estimating mutual information.
+\newblock \emph{Physical Review E}, 69\penalty0 (6):\penalty0 066138, 2004.
+
+\bibitem[Liang et~al.(2023)Liang, He, Jiao, Wang, Wang, Wang, Yang, Tu, and
+  Shi]{liang2023encouraging}
+Tian Liang, Zhiwei He, Wenxiang Jiao, Xing Wang, Yan Wang, Rui Wang, Yujiu
+  Yang, Zhaopeng Tu, and Shuming Shi.
+\newblock Encouraging divergent thinking in large language models through
+  multi-agent debate.
+\newblock \emph{arXiv preprint arXiv:2305.19118}, 2023.
+
+\bibitem[Liu et~al.(2024)]{liu2024latent}
+Anonymous Liu et~al.
+\newblock Latent inter-agent communication for collaborative reasoning.
+\newblock \emph{arXiv preprint}, 2024.
+
+\bibitem[Lyu et~al.(2023)Lyu, Havaldar, Stein, Zhang, Rao, Wong, Apidianaki,
+  and Callison-Burch]{lyu2023faithful}
+Qing Lyu, Shreya Havaldar, Adam Stein, Li~Zhang, Delip Rao, Eric Wong, Marianna
+  Apidianaki, and Chris Callison-Burch.
+\newblock Faithful chain-of-thought reasoning.
+\newblock \emph{IJCNLP-AACL}, 2023.
+
+\bibitem[Meng et~al.(2022)Meng, Bau, Andonian, and Belinkov]{meng2022locating}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov.
+\newblock Locating and editing factual associations in gpt.
+\newblock \emph{NeurIPS}, 2022.
+
+\bibitem[Shen et~al.(2024)]{shen2024codi}
+Zhenyi Shen et~al.
+\newblock Codi: Continuous chain-of-thought via self-distillation.
+\newblock \emph{arXiv preprint}, 2024.
+
+\bibitem[Turpin et~al.(2023)Turpin, Michael, Perez, and
+  Bowman]{turpin2023language}
+Miles Turpin, Julian Michael, Ethan Perez, and Samuel~R. Bowman.
+\newblock Language models don't always say what they think: Unfaithful
+  explanations in chain-of-thought prompting.
+\newblock \emph{NeurIPS}, 2023.
+
+\bibitem[Wang et~al.(2023{\natexlab{a}})Wang, Wei, Schuurmans, Le, Chi, Narang,
+  Chowdhery, and Zhou]{wang2023selfconsistency}
+Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc Le, Ed~Chi, Sharan Narang,
+  Aakanksha Chowdhery, and Denny Zhou.
+\newblock Self-consistency improves chain of thought reasoning in language
+  models.
+\newblock In \emph{ICLR}, 2023{\natexlab{a}}.
+
+\bibitem[Wang et~al.(2023{\natexlab{b}})Wang, Mao, Wu, Ge, Wei, and
+  Ji]{wang2023unleashing}
+Zhenhailong Wang, Shaoguang Mao, Wenshan Wu, Tao Ge, Furu Wei, and Heng Ji.
+\newblock Unleashing the emergent cognitive synergy in large language models: A
+  task-solving agent through multi-persona self-collaboration.
+\newblock \emph{arXiv preprint arXiv:2307.05300}, 2023{\natexlab{b}}.
+
+\bibitem[Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le,
+  and Zhou]{wei2022chain}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia,
+  Ed~Chi, Quoc~V Le, and Denny Zhou.
+\newblock Chain-of-thought prompting elicits reasoning in large language
+  models.
+\newblock \emph{NeurIPS}, 2022.
+
+\bibitem[Xu et~al.(2024)]{xu2024can}
+Anonymous Xu et~al.
+\newblock Can latent multi-agent communication outperform text?
+\newblock \emph{arXiv preprint}, 2024.
+
+\bibitem[Zhang and Nanda(2024)]{zhang2024towards}
+Fred Zhang and Neel Nanda.
+\newblock Towards best practices of activation patching in language models:
+  Metrics and methods.
+\newblock \emph{ICLR}, 2024.
+
+\end{thebibliography}

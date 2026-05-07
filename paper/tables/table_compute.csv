@@ -1,0 +1,9 @@
+Condition,GSM8K,ARC-Challenge,MBPP+
+LatentMAS,379 tok / 23.0 s / 623 fwd,403 tok / 18.4 s / 551 fwd,776 tok / 44.0 s / 1222 fwd
+Single-Agent (sampled),373 tok / 20.4 s / 608 fwd,415 tok / 18.8 s / 564 fwd,826 tok / 43.5 s / 1293 fwd
+Single-Agent (greedy),379 tok / 20.4 s / 617 fwd,425 tok / 19.2 s / 581 fwd,814 tok / 42.2 s / 1277 fwd
+TextMAS,0 tok / 87.5 s / 0 fwd,0 tok / 75.7 s / 0 fwd,0 tok / 112.8 s / 0 fwd
+No-transfer,434 tok / 26.0 s / 722 fwd,502 tok / 25.8 s / 679 fwd,905 tok / 54.2 s / 1397 fwd
+KV-blocked,546 tok / 38.2 s / 888 fwd,639 tok / 37.0 s / 861 fwd,873 tok / 62.7 s / 1353 fwd
+Random-$W_a$,377 tok / 20.5 s / 616 fwd,401 tok / 18.9 s / 555 fwd,773 tok / 41.2 s / 1201 fwd
+Identity-$W_a$,355 tok / 19.9 s / 586 fwd,406 tok / 19.0 s / 563 fwd,760 tok / 39.2 s / 1183 fwd

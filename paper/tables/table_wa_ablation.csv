@@ -1,0 +1,4 @@
+Task,LatentMAS (trained $W_a$),Identity $W_a$,No transfer
+GSM8K,92.0 (n=500),91.0 (n=100),90.8 (n=500)
+ARC-Challenge,92.6 (n=500),91.0 (n=100),93.2 (n=500)
+MBPP+,73.3 (n=378),74.0 (n=100),67.5 (n=378)

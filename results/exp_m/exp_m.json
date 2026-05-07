@@ -1,0 +1,221 @@
+{
+  "gsm8k": {
+    "accuracy": {
+      "latent_mas": {
+        "n": 500,
+        "n_correct": 460,
+        "accuracy": 0.92,
+        "ci_lo": 0.8928931229079627,
+        "ci_hi": 0.9407021975260784
+      },
+      "exp_m_identity_wa": {
+        "n": 100,
+        "n_correct": 91,
+        "accuracy": 0.91,
+        "ci_lo": 0.8377362530335634,
+        "ci_hi": 0.9519280048361151
+      },
+      "no_transfer": {
+        "n": 500,
+        "n_correct": 454,
+        "accuracy": 0.908,
+        "ci_lo": 0.8794606777802376,
+        "ci_hi": 0.9303176334985452
+      }
+    },
+    "paired_vs_latent_mas": {
+      "exp_m_identity_wa": {
+        "n": 100,
+        "n_only_a_correct": 4,
+        "n_only_b_correct": 0,
+        "p_value": 0.125,
+        "odds_ratio_b_over_a": 0.0,
+        "a_accuracy": 0.95,
+        "b_accuracy": 0.91,
+        "diff_pp": -3.9999999999999925
+      },
+      "no_transfer": {
+        "n": 500,
+        "n_only_a_correct": 14,
+        "n_only_b_correct": 8,
+        "p_value": 0.28627872467041016,
+        "odds_ratio_b_over_a": 0.5714285714285714,
+        "a_accuracy": 0.92,
+        "b_accuracy": 0.908,
+        "diff_pp": -1.200000000000001
+      }
+    },
+    "M4_flocking": {
+      "latent_mas": {
+        "round_0": 0.9371451352039973,
+        "round_1": 0.8376667958498001,
+        "round_2": 0.8273004079361758,
+        "round_3": 0.4487815829987328
+      },
+      "exp_m_identity_wa": {
+        "round_0": 0.9368259491523108,
+        "round_1": 0.8377622203032175,
+        "round_2": 0.8287278345227241,
+        "round_3": 0.4609007509797812
+      },
+      "no_transfer": {
+        "round_0": 0.9768019642432532,
+        "round_1": 0.9106993372241656,
+        "round_2": 0.8240566823879877,
+        "round_3": 0.8275002686182659
+      }
+    },
+    "M5_decomposition": {
+      "no_transfer_acc": 0.908,
+      "identity_wa_acc": 0.91,
+      "trained_wa_acc": 0.92,
+      "interpretation": "If no_transfer \u2248 identity_wa: KV channel carries no info, only W_a matters. If no_transfer << identity_wa: KV content is load-bearing even with trivial W_a."
+    }
+  },
+  "arc_challenge": {
+    "accuracy": {
+      "latent_mas": {
+        "n": 500,
+        "n_correct": 463,
+        "accuracy": 0.926,
+        "ci_lo": 0.8996646988891734,
+        "ci_hi": 0.945839126122497
+      },
+      "exp_m_identity_wa": {
+        "n": 100,
+        "n_correct": 91,
+        "accuracy": 0.91,
+        "ci_lo": 0.8377362530335634,
+        "ci_hi": 0.9519280048361151
+      },
+      "no_transfer": {
+        "n": 500,
+        "n_correct": 466,
+        "accuracy": 0.932,
+        "ci_lo": 0.9064785429161282,
+        "ci_hi": 0.9509337866731715
+      }
+    },
+    "paired_vs_latent_mas": {
+      "exp_m_identity_wa": {
+        "n": 100,
+        "n_only_a_correct": 1,
+        "n_only_b_correct": 2,
+        "p_value": 1.0,
+        "odds_ratio_b_over_a": 2.0,
+        "a_accuracy": 0.9,
+        "b_accuracy": 0.91,
+        "diff_pp": 1.0000000000000009
+      },
+      "no_transfer": {
+        "n": 500,
+        "n_only_a_correct": 6,
+        "n_only_b_correct": 9,
+        "p_value": 0.6072387695312499,
+        "odds_ratio_b_over_a": 1.5,
+        "a_accuracy": 0.926,
+        "b_accuracy": 0.932,
+        "diff_pp": 0.6000000000000005
+      }
+    },
+    "M4_flocking": {
+      "latent_mas": {
+        "round_0": 0.9375035693248114,
+        "round_1": 0.8014494481682778,
+        "round_2": 0.7156143022825322,
+        "round_3": 0.6175146521131198
+      },
+      "exp_m_identity_wa": {
+        "round_0": 0.9374121177196502,
+        "round_1": 0.8024033359686533,
+        "round_2": 0.7181120925148328,
+        "round_3": 0.6084649727741878
+      },
+      "no_transfer": {
+        "round_0": 0.9765006733934085,
+        "round_1": 0.9044554920991261,
+        "round_2": 0.8155889695386093,
+        "round_3": 0.8059029689431191
+      }
+    },
+    "M5_decomposition": {
+      "no_transfer_acc": 0.932,
+      "identity_wa_acc": 0.91,
+      "trained_wa_acc": 0.926,
+      "interpretation": "If no_transfer \u2248 identity_wa: KV channel carries no info, only W_a matters. If no_transfer << identity_wa: KV content is load-bearing even with trivial W_a."
+    }
+  },
+  "mbppplus": {
+    "accuracy": {
+      "latent_mas": {
+        "n": 378,
+        "n_correct": 277,
+        "accuracy": 0.7328042328042328,
+        "ci_lo": 0.6860166275126556,
+        "ci_hi": 0.7749074834275878
+      },
+      "exp_m_identity_wa": {
+        "n": 100,
+        "n_correct": 74,
+        "accuracy": 0.74,
+        "ci_lo": 0.6462882736813838,
+        "ci_hi": 0.8159542187301354
+      },
+      "no_transfer": {
+        "n": 378,
+        "n_correct": 255,
+        "accuracy": 0.6746031746031746,
+        "ci_lo": 0.6258194097529741,
+        "ci_hi": 0.7198736734522084
+      }
+    },
+    "paired_vs_latent_mas": {
+      "exp_m_identity_wa": {
+        "n": 100,
+        "n_only_a_correct": 3,
+        "n_only_b_correct": 7,
+        "p_value": 0.34375,
+        "odds_ratio_b_over_a": 2.3333333333333335,
+        "a_accuracy": 0.7,
+        "b_accuracy": 0.74,
+        "diff_pp": 4.0000000000000036
+      },
+      "no_transfer": {
+        "n": 378,
+        "n_only_a_correct": 45,
+        "n_only_b_correct": 23,
+        "p_value": 0.01033766119369546,
+        "odds_ratio_b_over_a": 0.5111111111111111,
+        "a_accuracy": 0.7328042328042328,
+        "b_accuracy": 0.6746031746031746,
+        "diff_pp": -5.820105820105814
+      }
+    },
+    "M4_flocking": {
+      "latent_mas": {
+        "round_0": 0.9431864258646965,
+        "round_1": 0.8710789579153061,
+        "round_2": 0.8631171937162676,
+        "round_3": 0.5345231233661374
+      },
+      "exp_m_identity_wa": {
+        "round_0": 0.943162431915601,
+        "round_1": 0.8722942543029785,
+        "round_2": 0.8614934158821902,
+        "round_3": 0.5343312249332667
+      },
+      "no_transfer": {
+        "round_0": 0.9800955300529798,
+        "round_1": 0.8681590617696444,
+        "round_2": 0.808144383430481,
+        "round_3": 0.7931197565793991
+      }
+    },
+    "M5_decomposition": {
+      "no_transfer_acc": 0.6746031746031746,
+      "identity_wa_acc": 0.74,
+      "trained_wa_acc": 0.7328042328042328,
+      "interpretation": "If no_transfer \u2248 identity_wa: KV channel carries no info, only W_a matters. If no_transfer << identity_wa: KV content is load-bearing even with trivial W_a."
+    }
+  }
+}
