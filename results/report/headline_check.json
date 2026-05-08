@@ -1,0 +1,33 @@
+{
+  "vs_best_of_n": {
+    "gsm8k": {
+      "n_paired": 0,
+      "skipped": true
+    },
+    "arc_challenge": {
+      "n_paired": 0,
+      "skipped": true
+    },
+    "mbppplus": {
+      "n_paired": 0,
+      "skipped": true
+    }
+  },
+  "vs_cot": {
+    "gsm8k": {
+      "n_paired": 0,
+      "skipped": true
+    },
+    "arc_challenge": {
+      "n_paired": 0,
+      "skipped": true
+    },
+    "mbppplus": {
+      "n_paired": 0,
+      "skipped": true
+    }
+  },
+  "vs_best_of_n_tasks_pass": 0,
+  "vs_cot_tasks_pass": 0,
+  "headline_passed": false
+}

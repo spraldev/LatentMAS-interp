@@ -1,0 +1,77 @@
+{
+  "latent_mas": {
+    "gsm8k": {
+      "N1_dominance_per_agent": [
+        0.6919501267347409,
+        0.7778931118164699,
+        0.0
+      ],
+      "N1_dominant_agent": 1,
+      "N2_n_with_shift": 40,
+      "N2_mean_shift_toward_dominant": 0.26772927404381336,
+      "N2_ci": [
+        0.1783014734520111,
+        0.3367612178251147
+      ],
+      "N2_fraction_positive": 0.875,
+      "N2_binomial_p": 1.382612026645802e-06,
+      "N4_sycophancy_direction_auc": {
+        "auc": 0.6147282608695652,
+        "ci_lo": 0.5294644426128736,
+        "ci_hi": 0.6999920791262568,
+        "se": 0.043502747463342026,
+        "n_pos": 40,
+        "n_neg": 460
+      }
+    },
+    "arc_challenge": {
+      "N1_dominance_per_agent": [
+        0.7725978921516525,
+        0.8478579807754362,
+        0.0
+      ],
+      "N1_dominant_agent": 1,
+      "N2_n_with_shift": 37,
+      "N2_mean_shift_toward_dominant": 0.09647808203826079,
+      "N2_ci": [
+        0.032290582333666246,
+        0.15705803094582782
+      ],
+      "N2_fraction_positive": 0.8648648648648649,
+      "N2_binomial_p": 7.427530363202095e-06,
+      "N4_sycophancy_direction_auc": {
+        "auc": 0.6809293094390286,
+        "ci_lo": 0.5949321913082443,
+        "ci_hi": 0.766926427569813,
+        "se": 0.04387688692706535,
+        "n_pos": 37,
+        "n_neg": 463
+      }
+    },
+    "mbppplus": {
+      "N1_dominance_per_agent": [
+        0.6536024704966636,
+        0.7155015744044122,
+        0.0
+      ],
+      "N1_dominant_agent": 1,
+      "N2_n_with_shift": 101,
+      "N2_mean_shift_toward_dominant": 0.10808533935411142,
+      "N2_ci": [
+        0.06854775508146474,
+        0.1466872110538701
+      ],
+      "N2_fraction_positive": 0.7326732673267327,
+      "N2_binomial_p": 3.1798876310461662e-06,
+      "N4_sycophancy_direction_auc": {
+        "auc": 0.6103585087750653,
+        "ci_lo": 0.5432287306130019,
+        "ci_hi": 0.6774882869371286,
+        "se": 0.03425051617865149,
+        "n_pos": 101,
+        "n_neg": 277
+      }
+    }
+  },
+  "text_mas": {}
+}

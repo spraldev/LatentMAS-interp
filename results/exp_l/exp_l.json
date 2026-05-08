@@ -1,0 +1,27 @@
+{
+  "elbow_k": 69,
+  "D": 2560,
+  "n_discovery_vectors": 16536,
+  "method_A_pca_explained_var_to_k": 0.8689606189727783,
+  "method_A_top10_var": [
+    0.2685660719871521,
+    0.11731622368097305,
+    0.059088319540023804,
+    0.05744956061244011,
+    0.048094242811203,
+    0.03595251962542534,
+    0.0340239480137825,
+    0.025683162733912468,
+    0.019429637119174004,
+    0.013362886384129524
+  ],
+  "method_B_predictive": {
+    "n_selected_dims": 0,
+    "subspace_overlap_mean_singular_value": 0.11904802630240967,
+    "coef_l1_norm": 0.0
+  },
+  "L4_random_subspace_overlap_mean_sv": 0.1395485964900825,
+  "L5_dead_dim_fraction": 0.936328125,
+  "L6_text_mas_elbow_k": null,
+  "L2_topk_gated_vs_lmas": []
+}

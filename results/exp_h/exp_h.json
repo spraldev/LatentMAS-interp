@@ -1,0 +1,6 @@
+{
+  "_meta": {
+    "n_examples_with_logitlens": 0
+  },
+  "_skipped_reason": "All logitlens.json files are empty \u2014 _decode_latent_topk swallowed an exception during data collection. Re-run with logitlens decoding fixed to populate Exp H. (Other experiments are unaffected.)"
+}
