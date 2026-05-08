@@ -812,6 +812,7 @@ def _compute_topk_basis(mw: ModelWrapper, k: Optional[int] = None) -> Optional[t
 
 def _topk_project(vec: torch.Tensor, basis: torch.Tensor) -> torch.Tensor:
     """Project vec [1, D] onto the top-k subspace defined by basis [D, k]."""
+    basis = basis.to(dtype=vec.dtype, device=vec.device)
     coords = vec @ basis          # [1, k]
     return coords @ basis.T       # [1, D]
 
