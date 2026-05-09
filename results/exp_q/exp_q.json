@@ -1,5 +1,106 @@
 {
-  "gsm8k": {},
-  "arc_challenge": {},
-  "mbppplus": {}
+  "gsm8k": {
+    "topk_gated": {
+      "n_paired": 200,
+      "vs_lmas_overall": {
+        "n": 200,
+        "n_only_a_correct": 2,
+        "n_only_b_correct": 2,
+        "p_value": 1.0,
+        "odds_ratio_b_over_a": 1.0,
+        "a_accuracy": 0.93,
+        "b_accuracy": 0.93,
+        "diff_pp": 0.0
+      },
+      "vs_lmas_per_bucket": {},
+      "vs_lmas_per_difficulty": {
+        "easy": {
+          "n": 200,
+          "n_only_a_correct": 2,
+          "n_only_b_correct": 2,
+          "p_value": 1.0,
+          "odds_ratio_b_over_a": 1.0,
+          "a_accuracy": 0.93,
+          "b_accuracy": 0.93,
+          "diff_pp": 0.0
+        }
+      }
+    }
+  },
+  "arc_challenge": {
+    "topk_gated": {
+      "n_paired": 200,
+      "vs_lmas_overall": {
+        "n": 200,
+        "n_only_a_correct": 2,
+        "n_only_b_correct": 0,
+        "p_value": 0.5,
+        "odds_ratio_b_over_a": 0.0,
+        "a_accuracy": 0.915,
+        "b_accuracy": 0.905,
+        "diff_pp": -1.0000000000000009
+      },
+      "vs_lmas_per_bucket": {},
+      "vs_lmas_per_difficulty": {
+        "medium": {
+          "n": 200,
+          "n_only_a_correct": 2,
+          "n_only_b_correct": 0,
+          "p_value": 0.5,
+          "odds_ratio_b_over_a": 0.0,
+          "a_accuracy": 0.915,
+          "b_accuracy": 0.905,
+          "diff_pp": -1.0000000000000009
+        }
+      }
+    }
+  },
+  "mbppplus": {
+    "topk_gated": {
+      "n_paired": 200,
+      "vs_lmas_overall": {
+        "n": 200,
+        "n_only_a_correct": 11,
+        "n_only_b_correct": 14,
+        "p_value": 0.6900379657745361,
+        "odds_ratio_b_over_a": 1.2727272727272727,
+        "a_accuracy": 0.73,
+        "b_accuracy": 0.745,
+        "diff_pp": 1.5000000000000013
+      },
+      "vs_lmas_per_bucket": {},
+      "vs_lmas_per_difficulty": {
+        "medium": {
+          "n": 162,
+          "n_only_a_correct": 9,
+          "n_only_b_correct": 13,
+          "p_value": 0.5234670639038086,
+          "odds_ratio_b_over_a": 1.4444444444444444,
+          "a_accuracy": 0.7345679012345679,
+          "b_accuracy": 0.7592592592592593,
+          "diff_pp": 2.4691358024691357
+        },
+        "easy": {
+          "n": 26,
+          "n_only_a_correct": 1,
+          "n_only_b_correct": 1,
+          "p_value": 1.0,
+          "odds_ratio_b_over_a": 1.0,
+          "a_accuracy": 0.8461538461538461,
+          "b_accuracy": 0.8461538461538461,
+          "diff_pp": 0.0
+        },
+        "hard": {
+          "n": 12,
+          "n_only_a_correct": 1,
+          "n_only_b_correct": 0,
+          "p_value": 1.0,
+          "odds_ratio_b_over_a": 0.0,
+          "a_accuracy": 0.4166666666666667,
+          "b_accuracy": 0.3333333333333333,
+          "diff_pp": -8.333333333333337
+        }
+      }
+    }
+  }
 }

@@ -15,19 +15,28 @@
   },
   "vs_cot": {
     "gsm8k": {
-      "n_paired": 0,
-      "skipped": true
+      "n_paired": 500,
+      "lmas_acc": 0.92,
+      "other_acc": 0.908,
+      "diff_pp": 1.200000000000001,
+      "p_value": 0.34492845088243484
     },
     "arc_challenge": {
-      "n_paired": 0,
-      "skipped": true
+      "n_paired": 500,
+      "lmas_acc": 0.926,
+      "other_acc": 0.916,
+      "diff_pp": 1.0000000000000009,
+      "p_value": 0.332305908203125
     },
     "mbppplus": {
-      "n_paired": 0,
-      "skipped": true
+      "n_paired": 378,
+      "lmas_acc": 0.7328042328042328,
+      "other_acc": 0.6666666666666666,
+      "diff_pp": 6.613756613756616,
+      "p_value": 0.0030653176696087397
     }
   },
   "vs_best_of_n_tasks_pass": 0,
-  "vs_cot_tasks_pass": 0,
+  "vs_cot_tasks_pass": 1,
   "headline_passed": false
 }

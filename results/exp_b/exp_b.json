@@ -1,0 +1,273 @@
+{
+  "per_task": [
+    {
+      "task": "gsm8k",
+      "n_examples": 25,
+      "clean_accuracy": 0.92,
+      "corrupt_accuracy": 0.96,
+      "wilcoxon_clean_vs_corrupt": {
+        "statistic": 0.0,
+        "p_value": 0.31731050786291415,
+        "n": 25,
+        "median_diff": 0.0
+      },
+      "critical_agent": 0,
+      "critical_round": 0,
+      "critical_recovery_rate": 0.0,
+      "n_agents": 3,
+      "n_rounds": 4
+    },
+    {
+      "task": "arc_challenge",
+      "n_examples": 25,
+      "clean_accuracy": 0.88,
+      "corrupt_accuracy": 0.88,
+      "wilcoxon_clean_vs_corrupt": {
+        "statistic": 0.0,
+        "p_value": NaN,
+        "n": 25,
+        "median_diff": 0.0
+      },
+      "critical_agent": 0,
+      "critical_round": 0,
+      "critical_recovery_rate": 0.0,
+      "n_agents": 3,
+      "n_rounds": 4
+    },
+    {
+      "task": "mbppplus",
+      "n_examples": 25,
+      "clean_accuracy": 0.84,
+      "corrupt_accuracy": 0.92,
+      "wilcoxon_clean_vs_corrupt": {
+        "statistic": 0.0,
+        "p_value": 0.15729920705028505,
+        "n": 25,
+        "median_diff": 0.0
+      },
+      "critical_agent": 0,
+      "critical_round": 0,
+      "critical_recovery_rate": 0.0,
+      "n_agents": 3,
+      "n_rounds": 4
+    }
+  ],
+  "fdr_corrected_sites": [
+    {
+      "key": "gsm8k_a0_r0",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a0_r1",
+      "p": 0.15729920705028505,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a0_r2",
+      "p": 0.5637028616507731,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a0_r3",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a1_r0",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a1_r1",
+      "p": 0.5637028616507731,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a1_r2",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a1_r3",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a2_r0",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a2_r1",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a2_r2",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "gsm8k_a2_r3",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a0_r0",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a0_r1",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a0_r2",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a0_r3",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a1_r0",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a1_r1",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a1_r2",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a1_r3",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a2_r0",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a2_r1",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a2_r2",
+      "p": 1.0,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "arc_challenge_a2_r3",
+      "p": NaN,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a0_r0",
+      "p": 0.08326451666355039,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a0_r1",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a0_r2",
+      "p": 0.5637028616507731,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a0_r3",
+      "p": 0.5637028616507731,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a1_r0",
+      "p": 0.31731050786291415,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a1_r1",
+      "p": 0.025347318677468256,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a1_r2",
+      "p": 0.045500263896358396,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a1_r3",
+      "p": 0.5637028616507731,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a2_r0",
+      "p": 0.5637028616507731,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a2_r1",
+      "p": 0.15729920705028505,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a2_r2",
+      "p": 0.15729920705028505,
+      "q": NaN,
+      "rejected_at_q05": false
+    },
+    {
+      "key": "mbppplus_a2_r3",
+      "p": 0.08326451666355039,
+      "q": NaN,
+      "rejected_at_q05": false
+    }
+  ]
+}

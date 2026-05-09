@@ -76,10 +76,9 @@ def load_json(rel: str):
 
 
 def save(fig, name: str):
-    fig.savefig(FIG_DIR / f"{name}.pdf")
     fig.savefig(FIG_DIR / f"{name}.png")
     plt.close(fig)
-    print(f"  {name}.{{pdf,png}}")
+    print(f"  {name}.png")
 
 
 def nd(s: str) -> str:
@@ -92,23 +91,25 @@ def nd(s: str) -> str:
 
 def fig_main_accuracy():
     df = pd.read_csv(RESULTS / "report" / "accuracy.csv")
-    fig, ax = plt.subplots(figsize=(11, 4.6))
-    bar_w = 0.10
     conds = [c for c in CONDITION_ORDER if c in df["condition"].unique()]
-    x = np.arange(len(conds))
-    for i, task in enumerate(TASKS):
+    fig, ax = plt.subplots(figsize=(8, 5.5))
+    offsets = np.linspace(-0.22, 0.22, len(TASKS))
+    for i, (task, off) in enumerate(zip(TASKS, offsets)):
         sub = df[df["task"] == task].set_index("condition").reindex(conds)
         accs = sub["accuracy"].values * 100
         lo = (sub["accuracy"].values - sub["ci_lo"].values) * 100
         hi = (sub["ci_hi"].values - sub["accuracy"].values) * 100
-        ax.bar(x + (i - 1) * bar_w * 1.05, accs, bar_w,
-               yerr=[lo, hi], color=TASK_COLOR[task],
-               label=TASK_LABEL[task], capsize=2.5, edgecolor="white", linewidth=0.6)
-    ax.set_xticks(x)
-    ax.set_xticklabels([nd(CONDITION_LABEL[c]) for c in conds], rotation=22, ha="right")
-    ax.set_ylabel("Accuracy (%)")
-    ax.set_ylim(60, 100)
-    ax.legend(loc="lower left", ncols=3)
+        y = np.arange(len(conds)) + off
+        ax.errorbar(accs, y, xerr=[lo, hi], fmt="o", color=TASK_COLOR[task],
+                    label=TASK_LABEL[task], capsize=3, ms=6, lw=1.5)
+    ax.set_yticks(np.arange(len(conds)))
+    ax.set_yticklabels([nd(CONDITION_LABEL[c]) for c in conds])
+    ax.set_xlabel("Accuracy (%)")
+    ax.set_xlim(60, 100)
+    ax.invert_yaxis()
+    ax.axvline(ax.get_xlim()[0], color="black", lw=0.5)
+    ax.legend(loc="lower right", ncols=1)
+    fig.tight_layout()
     save(fig, "fig_main_accuracy")
 
 
@@ -273,18 +274,20 @@ def fig_exp_d_intrinsic_dim():
     tasks = [r["task"] for r in rows]
     cor = [r["intrinsic_dim_correct"] for r in rows]
     inc = [r["intrinsic_dim_incorrect"] for r in rows]
-    x = np.arange(len(tasks))
-    fig, ax = plt.subplots(figsize=(7, 4))
-    w = 0.35
-    ax.bar(x - w/2, cor, w, label="Correct", color="#3D5A80")
-    ax.bar(x + w/2, inc, w, label="Incorrect", color="#E07A5F")
-    ax.set_xticks(x)
-    ax.set_xticklabels([TASK_LABEL[t] for t in tasks])
-    ax.set_ylabel("Intrinsic dimension (TwoNN)")
-    ax.legend()
-    for i, (c, n) in enumerate(zip(cor, inc)):
-        ax.text(i - w/2, c + 0.2, f"{c:.1f}", ha="center", fontsize=8)
-        ax.text(i + w/2, n + 0.2, f"{n:.1f}", ha="center", fontsize=8)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    y = np.arange(len(tasks))
+    for i, (c, n, task) in enumerate(zip(cor, inc, tasks)):
+        ax.plot([c, n], [i, i], color="grey", lw=1.2, zorder=1)
+        ax.scatter([c], [i], color="#3D5A80", s=70, zorder=2, label="Correct" if i == 0 else "")
+        ax.scatter([n], [i], color="#E07A5F", s=70, zorder=2, marker="D",
+                   label="Incorrect" if i == 0 else "")
+        ax.text(c - 0.3, i, f"{c:.1f}", va="center", ha="right", fontsize=8, color="#3D5A80")
+        ax.text(n + 0.3, i, f"{n:.1f}", va="center", ha="left", fontsize=8, color="#E07A5F")
+    ax.set_yticks(y)
+    ax.set_yticklabels([TASK_LABEL[t] for t in tasks])
+    ax.set_xlabel("Intrinsic dimension (TwoNN)")
+    ax.legend(loc="lower right")
+    fig.tight_layout()
     save(fig, "fig_exp_d_intrinsic_dim")
 
 
@@ -312,14 +315,14 @@ def fig_exp_e_role():
             - E["latent_mas"][t]["E2_agent_id_classifier"]["ci_lo"]) * 100 for t in TASKS]
     his = [(E["latent_mas"][t]["E2_agent_id_classifier"]["ci_hi"]
             - E["latent_mas"][t]["E2_agent_id_classifier"]["accuracy"]) * 100 for t in TASKS]
-    ax.bar(x, accs, yerr=[los, his], color=[TASK_COLOR[t] for t in TASKS], capsize=4)
     ax.axhline(33.3, color="grey", ls="--", lw=1, label="chance")
+    ax.errorbar(x, accs, yerr=[los, his], fmt="o", color="#2E86AB", capsize=4, ms=8, lw=2)
     ax.set_xticks(x); ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
     ax.set_ylim(30, 102)
     ax.set_ylabel("Agent-ID classifier accuracy (%)")
     ax.legend()
     for i, v in enumerate(accs):
-        ax.text(i, v + 1, f"{v:.1f}", ha="center", fontsize=9)
+        ax.text(i, v + 1.5, f"{v:.1f}", ha="center", fontsize=9)
     fig.tight_layout()
     save(fig, "fig_exp_e_role")
 
@@ -425,29 +428,26 @@ def fig_exp_j_uncertainty():
         print("  [skip] exp_j.json not found")
         return
     J = J["J2"]
-    rows = []
-    for t in TASKS:
-        for src, key in [("Latent", "auc_latent"), ("Text-regex", "auc_text_regex"),
-                         ("Single-agent", "auc_single_agent")]:
-            v = J[t][key]
-            rows.append({"task": TASK_LABEL[t], "source": src, "auc": v["auc"],
-                         "lo": v["auc"] - v["ci_lo"], "hi": v["ci_hi"] - v["auc"]})
-    df = pd.DataFrame(rows)
-    fig, ax = plt.subplots(figsize=(10, 4))
-    sources = ["Latent", "Text-regex", "Single-agent"]
-    src_color = {"Latent": "#2E86AB", "Text-regex": "#3D5A80", "Single-agent": "#E07A5F"}
-    width = 0.25
-    x = np.arange(len(TASKS))
-    for i, src in enumerate(sources):
-        sub = df[df["source"] == src].set_index("task").reindex([TASK_LABEL[t] for t in TASKS])
-        ax.bar(x + (i - 1) * width, sub["auc"].values, width,
-               yerr=[sub["lo"].values, sub["hi"].values], capsize=3,
-               color=src_color[src], label=src)
-    ax.axhline(0.5, color="grey", ls="--", lw=1)
-    ax.set_xticks(x); ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
-    ax.set_ylabel("Correctness AUC")
-    ax.set_ylim(0.4, 0.8)
-    ax.legend()
+    sources = [("Latent", "auc_latent", "#2E86AB"),
+               ("Text-regex", "auc_text_regex", "#3D5A80"),
+               ("Single-agent", "auc_single_agent", "#E07A5F")]
+    fig, ax = plt.subplots(figsize=(9, 4))
+    offsets = np.linspace(-0.18, 0.18, len(sources))
+    for i, (src, key, color) in enumerate(sources):
+        aucs = [J[t][key]["auc"] for t in TASKS]
+        los = [J[t][key]["auc"] - J[t][key]["ci_lo"] for t in TASKS]
+        his = [J[t][key]["ci_hi"] - J[t][key]["auc"] for t in TASKS]
+        y = np.arange(len(TASKS)) + offsets[i]
+        ax.errorbar(aucs, y, xerr=[los, his], fmt="o", color=color,
+                    label=src, capsize=3, ms=6, lw=1.5)
+    ax.axvline(0.5, color="grey", ls="--", lw=1)
+    ax.set_yticks(np.arange(len(TASKS)))
+    ax.set_yticklabels([TASK_LABEL[t] for t in TASKS])
+    ax.set_xlabel("Correctness AUC")
+    ax.set_xlim(0.4, 0.8)
+    ax.invert_yaxis()
+    ax.legend(loc="lower right")
+    fig.tight_layout()
     save(fig, "fig_exp_j_uncertainty")
 
 
@@ -499,31 +499,30 @@ def fig_exp_m_wa_ablation():
     if M is None:
         print("  [skip] exp_m.json not found")
         return
-    fig, ax = plt.subplots(figsize=(10, 4.2))
-    width = 0.25
-    x = np.arange(len(TASKS))
     series = [
         ("LatentMAS (trained Wa)", "latent_mas", "#2E86AB"),
         ("Identity Wa", "exp_m_identity_wa", "#3D5A80"),
         ("No transfer", "no_transfer", "#E07A5F"),
     ]
-    for i, (label, key, color) in enumerate(series):
-        accs = [M[t]["accuracy"][key]["accuracy"] * 100 for t in TASKS]
+    labels = [nd(s[0]) for s in series]
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    x = np.arange(len(series))
+    for t in TASKS:
+        accs = [M[t]["accuracy"][key]["accuracy"] * 100 for _, key, _ in series]
         los = [(M[t]["accuracy"][key]["accuracy"] - M[t]["accuracy"][key]["ci_lo"]) * 100
-               for t in TASKS]
+               for _, key, _ in series]
         his = [(M[t]["accuracy"][key]["ci_hi"] - M[t]["accuracy"][key]["accuracy"]) * 100
-               for t in TASKS]
-        ax.bar(x + (i - 1) * width, accs, width, yerr=[los, his], capsize=3,
-               color=color, label=nd(label))
-    ax.set_xticks(x); ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
+               for _, key, _ in series]
+        ax.plot(x, accs, marker="o", color=TASK_COLOR[t], label=TASK_LABEL[t], ms=7)
+        ax.errorbar(x, accs, yerr=[los, his], fmt="none", color=TASK_COLOR[t], capsize=3, lw=1.5)
+    for i, (_, key, color) in enumerate(series):
+        ax.axvline(i, color="lightgrey", lw=0.7, zorder=0)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
     ax.set_ylabel("Accuracy (%)")
     ax.set_ylim(60, 100)
     ax.legend(loc="lower left")
-    for i, t in enumerate(TASKS):
-        delta = M[t]["paired_vs_latent_mas"]["no_transfer"]["diff_pp"]
-        p = M[t]["paired_vs_latent_mas"]["no_transfer"]["p_value"]
-        ax.text(i, 62, f"no-transfer\n{delta:+.1f}pp  p={p:.3f}",
-                ha="center", fontsize=8, color="#E07A5F")
+    fig.tight_layout()
     save(fig, "fig_exp_m_wa_ablation")
 
 
@@ -559,19 +558,22 @@ def fig_exp_n_sycophancy():
         return
     fig, axes = plt.subplots(1, 3, figsize=(14, 4))
 
-    # Panel 1: dominance R2 per agent
+    # Panel 1: dominance R2 per agent — lollipop
     ax = axes[0]
+    agent_colors = ["#2E86AB", "#3D5A80", "#E07A5F"]
+    offsets = np.linspace(-0.22, 0.22, 3)
     x = np.arange(len(TASKS))
-    width = 0.25
     for a in range(3):
         vals = [N["latent_mas"][t]["N1_dominance_per_agent"][a] for t in TASKS]
-        ax.bar(x + (a - 1) * width, vals, width, label=f"Agent {a}",
-               color=["#2E86AB", "#3D5A80", "#E07A5F"][a])
-    ax.set_xticks(x); ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
-    ax.set_ylabel("Dominance R2")
-    ax.legend()
+        y = x + offsets[a]
+        ax.hlines(y, 0, vals, color=agent_colors[a], lw=1.5, alpha=0.7)
+        ax.scatter(vals, y, color=agent_colors[a], s=55, zorder=3, label=f"Agent {a}")
+    ax.set_yticks(x); ax.set_yticklabels([TASK_LABEL[t] for t in TASKS])
+    ax.set_xlabel("Dominance R2")
+    ax.invert_yaxis()
+    ax.legend(loc="lower right")
 
-    # Panel 2: N2 shift toward dominant (fraction positive + mean shift)
+    # Panel 2: N2 shift toward dominant — dot with CI + fraction annotation
     ax = axes[1]
     frac_pos = [N["latent_mas"][t]["N2_fraction_positive"] * 100 for t in TASKS]
     means = [N["latent_mas"][t]["N2_mean_shift_toward_dominant"] for t in TASKS]
@@ -579,25 +581,35 @@ def fig_exp_n_sycophancy():
     ci_his = [N["latent_mas"][t]["N2_ci"][1] for t in TASKS]
     lo_err = [m - lo for m, lo in zip(means, ci_los)]
     hi_err = [hi - m for hi, m in zip(ci_his, means)]
-    ax.bar(x, means, color=[TASK_COLOR[t] for t in TASKS],
-           yerr=[lo_err, hi_err], capsize=4)
-    ax.set_xticks(x); ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
-    ax.set_ylabel("Mean cosine shift toward dominant agent")
-    for i, (v, fp) in enumerate(zip(means, frac_pos)):
-        ax.text(i, v + 0.005, f"{fp:.0f}% pos", ha="center", fontsize=8)
+    y2 = np.arange(len(TASKS))
+    ax.axvline(0, color="grey", ls="--", lw=1)
+    for i, (t, m, lo, hi, fp) in enumerate(zip(TASKS, means, lo_err, hi_err, frac_pos)):
+        ax.hlines(i, 0, m, color=TASK_COLOR[t], lw=2)
+        ax.errorbar([m], [i], xerr=[[lo], [hi]], fmt="o", color=TASK_COLOR[t], capsize=3, ms=7)
+        off = 0.001 if m >= 0 else -0.001
+        ha = "left" if m >= 0 else "right"
+        ax.text(m + off, i - 0.25, f"{fp:.0f}% pos", fontsize=8, ha=ha, color="dimgrey")
+    ax.set_yticks(y2); ax.set_yticklabels([TASK_LABEL[t] for t in TASKS])
+    ax.set_xlabel("Mean cosine shift toward dominant agent")
+    ax.invert_yaxis()
 
-    # Panel 3: sycophancy direction AUC
+    # Panel 3: sycophancy direction AUC — horizontal lollipop
     ax = axes[2]
     aucs = [N["latent_mas"][t]["N4_sycophancy_direction_auc"]["auc"] for t in TASKS]
     los = [N["latent_mas"][t]["N4_sycophancy_direction_auc"]["auc"]
            - N["latent_mas"][t]["N4_sycophancy_direction_auc"]["ci_lo"] for t in TASKS]
     his = [N["latent_mas"][t]["N4_sycophancy_direction_auc"]["ci_hi"]
            - N["latent_mas"][t]["N4_sycophancy_direction_auc"]["auc"] for t in TASKS]
-    ax.bar(x, aucs, yerr=[los, his], capsize=3, color=[TASK_COLOR[t] for t in TASKS])
-    ax.axhline(0.5, color="grey", ls="--", lw=1)
-    ax.set_xticks(x); ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
-    ax.set_ylim(0.45, 0.78)
-    ax.set_ylabel("Sycophancy direction AUC")
+    y = np.arange(len(TASKS))
+    ax.axvline(0.5, color="grey", ls="--", lw=1)
+    y = np.arange(len(TASKS))
+    for i, (t, auc, lo, hi) in enumerate(zip(TASKS, aucs, los, his)):
+        ax.hlines(i, 0.5, auc, color=TASK_COLOR[t], lw=2)
+        ax.errorbar([auc], [i], xerr=[[lo], [hi]], fmt="o", color=TASK_COLOR[t], capsize=3, ms=7)
+    ax.set_yticks(y); ax.set_yticklabels([TASK_LABEL[t] for t in TASKS])
+    ax.set_xlim(0.45, 0.78)
+    ax.invert_yaxis()
+    ax.set_xlabel("Sycophancy direction AUC")
 
     fig.tight_layout()
     save(fig, "fig_exp_n_sycophancy")
@@ -645,20 +657,25 @@ def fig_exp_p_probe():
              ("Random k-PCA", P["P3_baselines"]["random_kd"]["auc"]),
              ("Question length", P["P3_baselines"]["question_length"]["auc"]),
              ("Task one-hot", P["P3_baselines"]["task_onehot"]["auc"])]
-    fig, ax = plt.subplots(figsize=(8, 4))
+    palette = ["#2E86AB", "#3D5A80", "#9DA5BD", "#9DA5BD", "#E07A5F"]
+    fig, ax = plt.subplots(figsize=(7, 4))
+    y = np.arange(len(items))
     names = [n for n, _ in items]
     aucs = [v["auc"] for _, v in items]
     los = [v["auc"] - v["ci_lo"] for _, v in items]
     his = [v["ci_hi"] - v["auc"] for _, v in items]
-    palette = ["#2E86AB", "#3D5A80", "#9DA5BD", "#9DA5BD", "#E07A5F"]
-    bars = ax.bar(names, aucs, yerr=[los, his], capsize=3, color=palette)
-    ax.axhline(0.5, color="grey", ls="--", lw=1)
-    ax.set_ylim(0.45, 0.85)
-    ax.set_ylabel("Bucket-1 prediction AUC")
-    plt.xticks(rotation=15, ha="right")
-    for bar, v in zip(bars, aucs):
-        ax.text(bar.get_x() + bar.get_width() / 2, v + 0.015, f"{v:.2f}",
-                ha="center", fontsize=9)
+    ax.axvline(0.5, color="grey", ls="--", lw=1)
+    for i, (auc, lo, hi, c) in enumerate(zip(aucs, los, his, palette)):
+        ax.hlines(i, 0.5, auc, color=c, lw=2)
+        ax.errorbar([auc], [i], xerr=[[lo], [hi]], fmt="o", color=c, capsize=3, ms=8)
+    for i, (v, name) in enumerate(zip(aucs, names)):
+        ax.text(v + 0.01, i, f"{v:.2f}", va="center", fontsize=9)
+    ax.set_yticks(y)
+    ax.set_yticklabels(names)
+    ax.set_xlim(0.45, 0.85)
+    ax.set_xlabel("Bucket-1 prediction AUC")
+    ax.invert_yaxis()
+    fig.tight_layout()
     save(fig, "fig_exp_p_probe")
 
 
@@ -676,9 +693,6 @@ def fig_exp_q_gated():
         print("  [skip] exp_q has no topk_gated data")
         return
 
-    fig, ax = plt.subplots(figsize=(8, 4))
-    x = np.arange(len(TASKS))
-    width = 0.3
     diffs, ps, ns = [], [], []
     for t in TASKS:
         d = Q.get(t, {}).get(gate, {})
@@ -687,16 +701,21 @@ def fig_exp_q_gated():
         ps.append(ov.get("p_value", 1))
         ns.append(d.get("n_paired", 0))
 
+    fig, ax = plt.subplots(figsize=(6, 3.5))
+    y = np.arange(len(TASKS))
     colors = ["#2E86AB" if d >= 0 else "#E07A5F" for d in diffs]
-    ax.bar(x, diffs, width, color=colors)
-    ax.axhline(0, color="black", lw=0.8)
-    ax.set_xticks(x)
-    ax.set_xticklabels([TASK_LABEL[t] for t in TASKS])
-    ax.set_ylabel("Accuracy diff vs LatentMAS (pp)")
+    ax.axvline(0, color="black", lw=0.8)
+    ax.hlines(y, 0, diffs, color=colors, lw=2.5)
+    ax.scatter(diffs, y, color=colors, s=70, zorder=3)
     for i, (d, p, n) in enumerate(zip(diffs, ps, ns)):
         sig = "*" if p < 0.05 else ""
-        ax.text(i, d + (0.3 if d >= 0 else -0.5), f"{d:+.1f}pp{sig}\np={p:.3f}\nn={n}",
-                ha="center", fontsize=8)
+        off = 0.15 if d >= 0 else -0.15
+        ha = "left" if d >= 0 else "right"
+        ax.text(d + off, i, f"{d:+.1f}pp{sig}  p={p:.3f}", va="center", fontsize=8, ha=ha)
+    ax.set_yticks(y)
+    ax.set_yticklabels([TASK_LABEL[t] for t in TASKS])
+    ax.set_xlabel("Accuracy diff vs LatentMAS (pp)")
+    ax.invert_yaxis()
     fig.tight_layout()
     save(fig, "fig_exp_q_gated")
 
@@ -800,7 +819,7 @@ Generated by make_figures.py. All figures: no titles, no em dashes.
 Each figure is saved as both .pdf (use in LaTeX) and .png (for preview).
 
 fig_main_accuracy
-  Grouped bar chart: accuracy (%) across all 8 conditions x 3 tasks, with
+  Cleveland dot plot: accuracy (%) across all 8 conditions x 3 tasks, with
   Wilson 95% CI error bars. Use as Table 1 companion or main results figure.
   Key story: LatentMAS vs single-agent and TextMAS baselines.
 
@@ -811,11 +830,6 @@ fig_wallclock
 fig_tokens
   Horizontal bar chart: generated tokens per example, per task (3 panels).
   TextMAS shows 0 (vLLM counter not exposed). LatentMAS is token-efficient.
-
-fig_exp_b_patching
-  Recovery-rate heatmap per (agent, round) site for activation patching.
-  One panel per task. High value = patching clean hidden state at that site
-  recovers the correct answer. Identifies which site is causally critical.
 
 fig_exp_c_task_geometry
   Left: heatmap of task-identity probe accuracy at each (agent, round) site.
