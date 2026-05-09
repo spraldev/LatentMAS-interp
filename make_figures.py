@@ -146,46 +146,6 @@ def fig_compute_efficiency():
     save(fig, "fig_tokens")
 
 
-def fig_exp_b_patching():
-    data = load_json("exp_b/exp_b.json")
-    if data is None:
-        print("  [skip] exp_b.json not found")
-        return
-    per_task = data.get("per_task", [])
-    if not per_task:
-        print("  [skip] exp_b has no per_task data")
-        return
-
-    n_tasks = len(per_task)
-    fig, axes = plt.subplots(1, n_tasks, figsize=(5 * n_tasks, 4.2), sharey=False)
-    if n_tasks == 1:
-        axes = [axes]
-
-    for ax, t in zip(axes, per_task):
-        task = t["task"]
-        heatmap_path = RESULTS / "exp_b" / f"recovery_heatmap_{task}.npy"
-        if not heatmap_path.exists():
-            ax.text(0.5, 0.5, "no heatmap", ha="center", transform=ax.transAxes)
-            continue
-        H = np.load(heatmap_path)
-        im = ax.imshow(H, vmin=0, vmax=1, cmap="Reds", aspect="auto")
-        ax.set_xticks(range(H.shape[1]))
-        ax.set_yticks(range(H.shape[0]))
-        ax.set_xticklabels([f"R{r}" for r in range(H.shape[1])])
-        ax.set_yticklabels([f"A{a}" for a in range(H.shape[0])])
-        ax.set_xlabel("Round")
-        ax.set_ylabel("Agent")
-        ax.set_title(nd(TASK_LABEL.get(task, task)))
-        for i in range(H.shape[0]):
-            for j in range(H.shape[1]):
-                ax.text(j, i, f"{H[i,j]:.2f}", ha="center", va="center",
-                        color="white" if H[i, j] > 0.5 else "black", fontsize=9)
-        plt.colorbar(im, ax=ax, label="Recovery rate")
-        ax.set_title(nd(TASK_LABEL.get(task, task)))
-
-    fig.tight_layout()
-    save(fig, "fig_exp_b_patching")
-
 
 def fig_exp_c_geometry():
     C = load_json("exp_c/exp_c.json")
@@ -926,7 +886,6 @@ if __name__ == "__main__":
 
     fig_main_accuracy()
     fig_compute_efficiency()
-    fig_exp_b_patching()
     fig_exp_c_geometry()
     fig_exp_d_trajectory()
     fig_exp_d_intrinsic_dim()
