@@ -8,5 +8,4 @@ tar/new_data.tar.gz
 __pycache__/
 *.pyc
 *.pyo
-figures/*.pdf
-figures.zip
+figures/*.pdffigures.zip
