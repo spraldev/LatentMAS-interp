@@ -10,3 +10,4 @@ __pycache__/
 *.pyo
 figures/*.pdffigures.zip
 figures.zip
+self_consistency.tar.gz
