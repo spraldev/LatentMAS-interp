@@ -9,3 +9,4 @@ __pycache__/
 *.pyc
 *.pyo
 figures/*.pdffigures.zip
+figures.zip
