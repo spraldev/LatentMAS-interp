@@ -680,6 +680,55 @@ def fig_exp_q_gated():
     save(fig, "fig_exp_q_gated")
 
 
+def fig_exp_kv_shuffled():
+    KV = load_json("exp_kv_shuffled/exp_kv_shuffled.json")
+    if KV is None:
+        print("  [skip] exp_kv_shuffled.json not found")
+        return
+
+    comparisons = [
+        ("vs latent_mas", "vs_latent_mas", "#2E86AB"),
+        ("vs kv_blocked", "vs_kv_blocked", "#3D5A80"),
+        ("vs no_transfer", "vs_no_transfer", "#9DA5BD"),
+    ]
+    fig, axes = plt.subplots(1, len(TASKS), figsize=(13, 4), sharey=False)
+
+    for ax, task in zip(axes, TASKS):
+        td = KV.get(task, {})
+        if td.get("skipped"):
+            ax.text(0.5, 0.5, "no data", ha="center", transform=ax.transAxes)
+            continue
+
+        labels = [nd(label) for label, _, _ in comparisons]
+        diffs, ps = [], []
+        for _, key, _ in comparisons:
+            ov = td.get(key, {}).get("vs_overall", {})
+            diffs.append(ov.get("diff_pp", 0))
+            ps.append(ov.get("p_value", 1))
+
+        colors = ["#2E86AB" if d <= 0 else "#E07A5F" for d in diffs]
+        y = np.arange(len(comparisons))
+        ax.axvline(0, color="black", lw=0.8)
+        for i, (d, p, c) in enumerate(zip(diffs, ps, colors)):
+            ax.hlines(i, 0, d, color=c, lw=2.5)
+            ax.scatter([d], [i], color=c, s=60, zorder=3)
+            sig = "*" if p < 0.05 else ""
+            off = 0.12 if d >= 0 else -0.12
+            ha = "left" if d >= 0 else "right"
+            ax.text(d + off, i, f"{d:+.1f}pp{sig}", va="center", fontsize=8, ha=ha)
+        ax.set_yticks(y)
+        ax.set_yticklabels(labels if task == TASKS[0] else [""] * len(labels))
+        ax.set_xlabel("kv_shuffled diff (pp)")
+        acc = td.get("kv_shuffled_accuracy", 0) * 100
+        ax.set_title_text = ""  # no title
+        ax.annotate(f"{TASK_LABEL[task]}\n{acc:.1f}%", xy=(0.5, 0.97),
+                    xycoords="axes fraction", ha="center", va="top", fontsize=9)
+        ax.invert_yaxis()
+
+    fig.tight_layout()
+    save(fig, "fig_exp_kv_shuffled")
+
+
 def fig_summary_panel():
     df_acc_path = RESULTS / "report" / "accuracy.csv"
     df_cmp_path = RESULTS / "report" / "compute.csv"
